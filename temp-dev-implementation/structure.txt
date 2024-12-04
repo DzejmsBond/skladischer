@@ -1,0 +1,15 @@
+Proposed struktura za projekt:
+├── app                     # "app" is a Python package
+│   ├── __init__.py         # this file makes "app" a "Python package"
+│   ├── main.py             # "main" module, e.g. import app.main
+│   ├── dependencies.py     # "dependencies" module, e.g. import app.dependencies
+│   └── admin               # "admin" is a "Python subpackage"
+│   │   ├── __init__.py     # makes "admin" a "Python subpackage"
+│   │   ├── uporabniki.py   # "uporabniki" submodule, e.g. import app.admin.uporabniki
+│   └── user
+│   │   ├── __init__.py
+│   │   └── produkti.py
+│   │   └── skladisca.py
+│   └── qr_kode
+│       ├── __init__.py
+│       └── qr_kode.py

@@ -1,15 +1,52 @@
 Proposed struktura za projekt:
-├── app                     # "app" is a Python package
-│   ├── __init__.py         # this file makes "app" a "Python package"
-│   ├── main.py             # "main" module, e.g. import app.main
-│   ├── dependencies.py     # "dependencies" module, e.g. import app.dependencies
-│   └── admin               # "admin" is a "Python subpackage"
-│   │   ├── __init__.py     # makes "admin" a "Python subpackage"
-│   │   ├── uporabniki.py   # "uporabniki" submodule, e.g. import app.admin.uporabniki
-│   └── user
+skladischer/
+├── codes-ms/
+│   ├── app/
 │   │   ├── __init__.py
-│   │   └── produkti.py
-│   │   └── skladisca.py
-│   └── qr_kode
-│       ├── __init__.py
-│       └── qr_kode.py
+│   │   ├── main.py
+│   │   ├── dependencies.py
+│   │   └── ...
+│   ├── tests/
+│   │   ├── test_main.py
+│   │   └── ...
+│   ├── Dockerfile
+│   ├── requirements.txt            # Text file with lib requirements for pip install -r requirements.txt in Docker image building.
+│   └── .env
+├── products-ms/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── main.py
+│   │   ├── dependencies.py
+│   │   └── ...
+│   ├── tests/
+│   │   ├── test_helpers.py
+│   │   └── ...
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── .env
+├── storages-ms/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── main.py
+│   │   ├── dependencies.py
+│   │   └── ...
+│   ├── tests/
+│   │   ├── test_helpers.py
+│   │   └── ...
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── .env
+├── users-ms/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── main.py
+│   │   ├── dependencies.py
+│   │   └── ...
+│   ├── tests/
+│   │   ├── test_helpers.py
+│   │   └── ...
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── .env
+├── docker-compose.yml
+└── README.md

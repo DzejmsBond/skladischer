@@ -1,9 +1,7 @@
 from fastapi import FastAPI
 
-from .dependencies import *
 from .admin import uporabniki
-from .user import produkti, skladisca
-from .qr_kode import qr_kode
+from .user import skladisca
 
 app = FastAPI()
 
