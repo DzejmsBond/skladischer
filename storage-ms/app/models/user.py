@@ -12,6 +12,10 @@ class User(BaseModel):
     display_name: Optional[str] = None
     storages: List[Storage]
 
+    class Config:
+        arbitrary_types_allowed = True
+
+
 
 
 

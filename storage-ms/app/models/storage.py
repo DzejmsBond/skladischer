@@ -10,3 +10,6 @@ class Storage(BaseModel):
     id: Optional[ObjectId] = Field(default_factory=ObjectId)
     name: str
     content: List[Item]
+
+    class Config:
+        arbitrary_types_allowed = True

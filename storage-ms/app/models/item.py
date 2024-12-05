@@ -14,3 +14,6 @@ class Item(BaseModel):
     date_added: datetime = Field(default_factory=datetime.now)  #TODO: Handle timezone later.
     code_gen_token: Optional[str] = Field(default=None)
 
+    class Config:
+        arbitrary_types_allowed = True
+
