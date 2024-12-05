@@ -1,6 +1,7 @@
 # Author: Jure
 # Date created: 4.12.2024
 
+
 from ..schemas import user_schemas as schema
 from ..models.user import User
 from .database_helpers import get_users_collection
@@ -17,4 +18,6 @@ async def create_user(user_create : schema.UserCreate):
     result = await db_users.insert_one(user_dict)
     if not result.acknowledged:
         return None
+
+    user.set_id(result.inserted_id)
     return user

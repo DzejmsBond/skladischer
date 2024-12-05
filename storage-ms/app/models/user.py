@@ -2,18 +2,22 @@
 # Date created: 4.12.2024
 
 from pydantic import BaseModel, Field
-from bson import ObjectId
 from typing import Optional, List
 from .storage import Storage
+from .objectIdWrapper import *
 
 class User(BaseModel):
-    id: Optional[int] = None #Optional[ObjectId] = Field(default_factory=ObjectId)
-    ref_id: int = 0 #ref_id: ObjectId # To je ID, ki ga povezuje s tabelo admin.
+    id: Optional[str] = Field(alias='_id', default=None)
+    ref_id: str # To je ID, ki ga povezuje s tabelo admin.
     display_name: Optional[str] = None
     storages: List[Storage]
 
     class Config:
         arbitrary_types_allowed = True
+
+    def set_id(self, oid : ObjectId):
+        self.id = oid_to_str(oid)
+
 
 
 

@@ -3,11 +3,11 @@
 
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field, PastDatetime
-from bson import ObjectId
 from typing import Optional, List
+from .objectIdWrapper import *
 
 class Item(BaseModel):
-    id: int = 0 #Optional[ObjectId] = Field(default_factory=ObjectId)
+    id: Optional[str] = Field(alias='_id', default=None)
     name: str
     amount: int = Field(default=1)
     description: Optional[str] = Field(default=None)
@@ -17,3 +17,5 @@ class Item(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+    def set_id(self, oid : ObjectId):
+        self.id = oid_to_str(oid)
