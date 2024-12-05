@@ -9,7 +9,12 @@ async def create_user(user_create : schema.UserCreate):
     ref_id = user_create.ref_id
     display_name = user_create.display_name
     user = User(ref_id=ref_id, display_name=display_name, storages=[] )
-    db_users = get_users_collection()
-    result = await db_users.insert_one(user.model_dump())
-    if result.acknowledged: return None
+    db_users = await get_users_collection()
+    if db_users is None:
+        return None
+
+    user_dict = user.model_dump()
+    result = await db_users.insert_one(user_dict)
+    if not result.acknowledged:
+        return None
     return user

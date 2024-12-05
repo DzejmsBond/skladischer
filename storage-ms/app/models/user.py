@@ -7,7 +7,7 @@ from typing import Optional, List
 from .storage import Storage
 
 class User(BaseModel):
-    id: int = 0 #Optional[ObjectId] = Field(default_factory=ObjectId)
+    id: Optional[int] = None #Optional[ObjectId] = Field(default_factory=ObjectId)
     ref_id: int = 0 #ref_id: ObjectId # To je ID, ki ga povezuje s tabelo admin.
     display_name: Optional[str] = None
     storages: List[Storage]
