@@ -7,7 +7,7 @@ from typing import Optional, List
 from .item import Item
 
 class Storage(BaseModel):
-    id: Optional[ObjectId] = Field(default_factory=ObjectId)
+    id: int = 0 #Optional[ObjectId] = Field(default_factory=ObjectId)
     name: str
     content: List[Item]
 

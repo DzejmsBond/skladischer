@@ -7,7 +7,7 @@ from bson import ObjectId
 from typing import Optional, List
 
 class Item(BaseModel):
-    id: Optional[ObjectId] = Field(default_factory=ObjectId)
+    id: int = 0 #Optional[ObjectId] = Field(default_factory=ObjectId)
     name: str
     amount: int = Field(default=1)
     description: Optional[str] = Field(default=None)

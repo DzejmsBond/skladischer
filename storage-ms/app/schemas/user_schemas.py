@@ -7,7 +7,7 @@ from bson import ObjectId
 from typing import Optional, List
 
 class UserCreate(BaseModel):
-    ref_id: ObjectId
+    ref_id: int = 0 #ref_id: ObjectId
     display_name: Optional[str] = None
 
     class Config:

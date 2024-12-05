@@ -10,6 +10,8 @@ router = APIRouter(
     tags=["users"]
 )
 
-@router.post("/create-user")
+@router.post("/create-user", response_model=schema.UserCreate)
 async def create_user(user_schema : schema.UserCreate):
     result = utils.create_user(user_schema)
+    print(result)
+    return result
