@@ -2,20 +2,19 @@
 # Date created: 4.12.2024
 
 from datetime import datetime, timezone
-from pydantic import BaseModel, Field, PastDatetime
+from pydantic import BaseModel, Field, PastDatetime, field_serializer
 from typing import Optional, List
-from .objectIdWrapper import *
+from .py_object_id import PyObjectId
 
 class Item(BaseModel):
-    id: Optional[str] = Field(alias='_id', default=None)
+    # TODO: This isn't doing it. They are written in database as strings. I think. They should be like 'new ObjectID('1234').
+    id: PyObjectId = Field(alias='_id', default_factory=PyObjectId)
     name: str
-    amount: int = Field(default=1)
+    amount: Optional[int] = Field(default=13)
     description: Optional[str] = Field(default=None)
-    date_added: datetime = Field(default_factory=datetime.now)  #TODO: Handle timezone later.
+    date_added: datetime = Field(default_factory=lambda data : datetime.now(tz=timezone.utc))
     code_gen_token: Optional[str] = Field(default=None)
 
-    class Config:
-        arbitrary_types_allowed = True
-
-    def set_id(self, oid : ObjectId):
-        self.id = oid_to_str(oid)
+    @field_serializer("id")
+    def serialize_objectid(self, value: PyObjectId) -> str:
+        return str(value)

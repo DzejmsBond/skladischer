@@ -24,11 +24,10 @@ class PyObjectId(ObjectId):
         return str(value)
 
     @classmethod
-    #def __get_pydantic_json_schema__(cls, schema: core_schema.CoreSchema, handler: GetCoreSchemaHandler) -> JsonSchemaValue:
-    def __get_pydantic_json_schema__(cls) -> JsonSchemaValue:
+    def __get_pydantic_json_schema__(cls, schema: core_schema.CoreSchema, handler: GetCoreSchemaHandler) -> JsonSchemaValue:
         return {"type": "string"}
 
-    # TODO: it works as is. read documentation and write it more proper?
+    # TODO: it works as is. read documentation and write it more proper
     @classmethod
     def __get_pydantic_core_schema__(
             cls, source: Type[Any], handler: GetCoreSchemaHandler
@@ -44,5 +43,12 @@ class PyObjectId(ObjectId):
             ),
         )
 
+"""
+    Does this work?
+        return core_schema.chain_schema([
+            core_schema.str_schema(),  # Allows string input
+            core_schema.no_info_plain_validator_function(cls.validate),  # Custom validation logic
+        ])
+        """
 
 

@@ -14,12 +14,14 @@ class UserCreate(BaseModel):
 class StorageCreate(BaseModel):
     name: str #TODO: enforce uniqueness
 
-
 class StorageUpdate(BaseModel):
     name: str
     new_name: Optional[str] = None
     # TODO: think about handling updating the contents of storage.
 
-
-class StorageDelete(BaseModel):
+class ItemCreate(BaseModel):
     name: str
+    amount: Optional[int]
+    description: Optional[str]
+
+
