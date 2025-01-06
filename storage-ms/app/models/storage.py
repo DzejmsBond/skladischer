@@ -6,7 +6,6 @@ from typing import Optional, List
 from .item import Item
 from .py_object_id import PyObjectId
 
-
 class Storage(BaseModel):
     id: PyObjectId = Field(alias='_id', default_factory=PyObjectId)
     user_id: PyObjectId

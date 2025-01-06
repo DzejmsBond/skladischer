@@ -6,7 +6,6 @@ from typing import Optional, List
 from .storage import Storage
 from ..models.py_object_id import PyObjectId
 
-
 class User(BaseModel):
     id: PyObjectId = Field(alias='_id', default_factory=PyObjectId)
     ref_id: str # To je ID, ki ga povezuje s tabelo admin.

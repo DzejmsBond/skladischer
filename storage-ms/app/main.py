@@ -3,7 +3,7 @@
 
 import uvicorn
 from fastapi import FastAPI
-from .api import usersApi
+from .api import users_api
 
 app = FastAPI(
     title="My API",
@@ -12,11 +12,7 @@ app = FastAPI(
     openapi_url="/openapi.json"   # OpenAPI schema URL
 )
 
-app.include_router(usersApi.router)
-
-@app.get("/")
-async def root():
-    return {"message": "ROOT"}
+app.include_router(users_api.router)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8001)
