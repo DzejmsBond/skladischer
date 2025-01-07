@@ -3,8 +3,8 @@
 
 from ..schemas import storage_schemas as schema
 from ..models.storage import Storage
-from .database_helpers import get_users_collection
-from .error import ErrorResponse as Err
+from ..helpers.database_helpers import get_users_collection
+from ..helpers.error import ErrorResponse as Err
 from bson import ObjectId as Id
 
 async def create_storage(user_id : str, storage_create : schema.Create):
@@ -86,3 +86,17 @@ async def update_storage_name(user_id : str, storage_name : str, new_name : str)
     if not result.acknowledged or result.modified_count == 0:
         return Err(message=f"Updating storage name '{storage_name}' with '{new_name}' failed.")
     return None
+
+async def empty_storage(user_id : str, storage_name : str):
+    db_users = await get_users_collection()
+    if db_users is None:
+        return Err(message=f"Cannot get DB collection.")
+
+    result = await db_users.update_one(
+        {"_id": Id(user_id), "storages.name": storage_name},
+        {"$set": {"storages.$.content": []}})
+
+    if not result.acknowledged or result.modified_count == 0:
+        return Err(message=f"Emptying '{storage_name}' contents failed.")
+    return None
+

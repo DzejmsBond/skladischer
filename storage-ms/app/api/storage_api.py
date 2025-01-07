@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException
 from ..schemas import storage_schemas as schema
 from ..services import storage_utils as utils
 from ..models.storage import Storage
-from ..services.error import ErrorResponse as Err
+from ..helpers.error import ErrorResponse as Err
 
 router = APIRouter(
     prefix="/users",
@@ -19,7 +19,6 @@ async def create_storage(user_id: str, storage_schema : schema.Create):
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 
-    print(f"Created storage: {result}")
     return {"detail": f"Storage successfully created."}
 
 @router.get("/{user_id}/{storage_name}", response_model=Storage)
@@ -28,7 +27,6 @@ async def get_storage(user_id: str, storage_name: str):
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 
-    print(f"Obtained storage: {result}")
     return result
 
 @router.delete("/{user_id}/{storage_name}", status_code=204)
@@ -37,7 +35,6 @@ async def delete_storage(user_id: str, storage_name: str):
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 
-    print(f"Deleted storage with id: {storage_name} from user: {user_id}.")
     return {"detail": f"Storage '{storage_name}' successfully deleted."}
 
 @router.put("/{user_id}/{storage_name}/update-name", status_code=204)
@@ -46,5 +43,12 @@ async def update_storage_name(user_id: str, storage_name: str, new_name : str):
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 
-    print(f"Got storage: {result}")
     return {"detail": f"Storage successfully updated with name '{new_name}'."}
+
+@router.put("/{user_id}/{storage_name}/empty-storage", status_code=204)
+async def empty_storage(user_id: str, storage_name: str, new_name : str):
+    result = await utils.empty_storage(user_id, storage_name)
+    if isinstance(result, Err):
+        raise HTTPException(status_code=result.code, detail=result.message)
+
+    return {"detail": f"Storage successfully emptied."}
