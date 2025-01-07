@@ -6,16 +6,17 @@ from fastapi import APIRouter, HTTPException
 from ..schemas import item_schemas as schema
 from ..services import item_utils as utils
 from ..models.item import Item
+from ..services.error import ErrorResponse as Err
 
 router = APIRouter(
     prefix="/users",
     tags=["users"]
 )
 
-@router.post("/{user_id}/{storage_id}/create-item", response_model=Item)
-async def create_item(user_id: str, storage_id: str, item_schema: schema.ItemCreate):
-    result = await utils.create_item(user_id, storage_id, item_schema)
-    print(f"Created item: {result} in storage {storage_id} of user {user_id}.")
-    if result is None:
-        raise HTTPException(status_code=400, detail="Item could not be created.")
-    return result
+@router.post("/{user_id}/{storage_name}/create-item", status_code=204)
+async def create_item(user_id: str, storage_name: str, item_schema: schema.ItemCreate):
+    result = await utils.create_item(user_id, storage_name, item_schema)
+    print(f"Created item: {result} in storage {storage_name} of user {user_id}.")
+    if isinstance(result, Err):
+        raise HTTPException(status_code=result.code, detail=result.message)
+    return {"detail": "Item successfully created."}

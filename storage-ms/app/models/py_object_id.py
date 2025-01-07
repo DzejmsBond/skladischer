@@ -43,12 +43,4 @@ class PyObjectId(ObjectId):
             ),
         )
 
-"""
-    Does this work?
-        return core_schema.chain_schema([
-            core_schema.str_schema(),  # Allows string input
-            core_schema.no_info_plain_validator_function(cls.validate),  # Custom validation logic
-        ])
-        """
-
 

@@ -6,7 +6,6 @@ from pydantic import BaseModel
 from typing import Optional
 
 class UserCreate(BaseModel):
-    ref_id: str
     display_name: Optional[str] = None
 
 

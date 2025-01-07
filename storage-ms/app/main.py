@@ -3,7 +3,7 @@
 
 import uvicorn
 from fastapi import FastAPI
-from .api import users_api
+from .api import users_api, item_api, storage_api
 
 app = FastAPI(
     title="My API",
@@ -13,6 +13,8 @@ app = FastAPI(
 )
 
 app.include_router(users_api.router)
+app.include_router(item_api.router)
+app.include_router(storage_api.router)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8001)

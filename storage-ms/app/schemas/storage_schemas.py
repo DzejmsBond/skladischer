@@ -5,15 +5,6 @@
 from pydantic import BaseModel
 from typing import Optional
 
-class StorageCreate(BaseModel):
-    name: str #TODO: enforce uniqueness.
-
-class StorageUpdate(BaseModel):
+class Create(BaseModel):
     name: str
-    new_name: Optional[str] = None
-    # TODO: think about handling updating the contents of storage.
 
-class ItemCreate(BaseModel):
-    name: str
-    amount: Optional[int]
-    description: Optional[str]
