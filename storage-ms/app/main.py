@@ -17,4 +17,4 @@ app.include_router(item_api.router)
 app.include_router(storage_api.router)
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8001)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
