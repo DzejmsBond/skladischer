@@ -7,6 +7,12 @@ from ..helpers.database_helpers import get_users_collection
 from ..helpers.error import ErrorResponse as Err
 from bson import ObjectId as Id
 
+"""
+User class to represent a user in the system.
+
+:param user_id: The name of the user.
+:type user_id: str
+"""
 async def create_item(user_id : str, storage_name : str, item : schema.ItemCreate):
     db_users = await get_users_collection()
     if db_users is None:
