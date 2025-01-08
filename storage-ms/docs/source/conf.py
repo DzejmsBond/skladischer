@@ -20,7 +20,6 @@ templates_path = ['_templates']
 # -- Options for HTML output -------------------------------------------------
 html_permalinks_icon = '<span>#</span>'
 html_theme = 'pydata_sphinx_theme'
-html_static_path = ['_static']
 
 html_theme_options = {
     "show_nav_level": 2,  # Show up to level 2 headings in the navigation sidebar.
@@ -39,8 +38,7 @@ html_show_sourcelink = False
 # -- Autogeneration ----------------------------------------------------------
 autodoc_default_options = {
     "members": True,
-    "undoc-members": True,  # Include members without docstrings.
     "imported-members": True,  # Include imported members.
-    "show-inheritance": True,
+    "exclude-members": 'model_config'
 }
 

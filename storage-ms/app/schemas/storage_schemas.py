@@ -6,5 +6,9 @@ from pydantic import BaseModel
 from typing import Optional
 
 class StorageCreate(BaseModel):
+    """
+    This schema defines the required field for creating a new storage.
+    """
+
     name: str
 

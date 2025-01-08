@@ -18,8 +18,6 @@ async def create_item(user_id : str, storage_name : str, item : schema.ItemCreat
     cannot be retrieved, due to any of these reasons or the input fails validation,
     an error response is returned.
 
-    This is just a test linking: :func:`~app.services.get_item`
-
     Args:
         user_id (str): The identifier of the user creating the item.
         storage_name (str): The name of the storage where the item is being added.
