@@ -4,8 +4,10 @@
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field, PastDatetime, field_serializer
 from typing import Optional, List
+from bson import ObjectId
 import secrets
 
+# TODO: Needs a username field!
 class Item(BaseModel):
     """
     Represents an item model.
@@ -15,7 +17,8 @@ class Item(BaseModel):
 
     # TODO: This is a hack. This value should be provided by the Codes-MS microservice.
     # This is the unique identifier of the item.
-    code_gen_token: str = Field(default_factory=lambda : secrets.token_hex(16) )
+    code_id: str = Field(default_factory= lambda : str(ObjectId()))
+    image_base64: str = Field(default_factory=lambda : secrets.token_hex(16) )
     name: str
     amount: Optional[int] = Field(default=1)
     description: Optional[str] = Field(default=None)

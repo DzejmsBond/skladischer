@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from .api import users_api, item_api, storage_api
 
 app = FastAPI(
-    title="My API",
+    title="Storage Managment Microservice",
     docs_url="/docs",             # Swagger UI
     redoc_url="/redoc",           # Redoc UI
     openapi_url="/openapi.json"   # OpenAPI schema URL
