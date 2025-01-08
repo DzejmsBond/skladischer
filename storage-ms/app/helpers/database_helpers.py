@@ -1,6 +1,5 @@
 # Author: Nina Mislej
 # Date created: 5.12.2024
-from sys import exception
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo import errors

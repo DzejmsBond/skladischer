@@ -7,7 +7,7 @@ from ..helpers.database_helpers import get_users_collection
 from ..helpers.error import ErrorResponse as Err
 from bson import ObjectId as Id
 
-async def create_storage(user_id : str, storage : schema.Create):
+async def create_storage(user_id : str, storage : schema.StorageCreate):
     db_users = await get_users_collection()
     if db_users is None:
         return Err(message=f"Cannot get DB collection.")

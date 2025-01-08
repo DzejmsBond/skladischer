@@ -5,6 +5,6 @@
 from pydantic import BaseModel
 from typing import Optional
 
-class Create(BaseModel):
+class StorageCreate(BaseModel):
     name: str
 

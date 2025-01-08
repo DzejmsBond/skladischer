@@ -7,13 +7,27 @@ from ..helpers.database_helpers import get_users_collection
 from ..helpers.error import ErrorResponse as Err
 from bson import ObjectId as Id
 
-"""
-User class to represent a user in the system.
+async def create_item(user_id : str, storage_name : str, item : schema.ItemCreate) -> Err | None:
+    """
+    Create an item and associate it with a user and a specific storage.
 
-:param user_id: The name of the user.
-:type user_id: str
-"""
-async def create_item(user_id : str, storage_name : str, item : schema.ItemCreate):
+    This function retrieves the user's collection from the database and the
+    corresponding storage and adds a new item to the collection. An item with
+    ``amount`` specified to zero cannot be created. An item with ``code_gen_token``
+    already existant in the database cannot be created. If the database collection
+    cannot be retrieved, due to any of these reasons or the input fails validation,
+    an error response is returned.
+
+    This is just a test linking: :func:`~app.services.get_item`
+
+    Args:
+        user_id (str): The ID of the user creating the item.
+        storage_name (str): The name of the storage where the item is being added.
+        item (ItemCreate): The item details to be created, adhering to the schema.
+
+    Returns:
+        ErrorResponse | None: The error response if an error occurred or None otherwise.
+    """
     db_users = await get_users_collection()
     if db_users is None:
         return Err(message=f"Cannot get DB collection.")

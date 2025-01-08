@@ -1,10 +1,13 @@
-.. Skladischer documentation master file, created by
-   sphinx-quickstart on Wed Jan  8 02:49:51 2025.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. Skladischer documentation master file.
 
 Skladischer Documentation
 =========================
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   services-module
 
 =================
 Overview

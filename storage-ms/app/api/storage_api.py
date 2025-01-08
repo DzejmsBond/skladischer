@@ -14,7 +14,7 @@ router = APIRouter(
 )
 
 @router.post("/{user_id}/create-storage", status_code=204)
-async def create_storage(user_id: str, storage_schema : schema.Create):
+async def create_storage(user_id: str, storage_schema : schema.StorageCreate):
     result = await utils.create_storage(user_id, storage_schema)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
