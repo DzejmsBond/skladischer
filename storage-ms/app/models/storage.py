@@ -6,5 +6,6 @@ from typing import Optional, List
 from .item import Item
 
 class Storage(BaseModel):
+    # This is the unique identifier of the item.
     name: str
     content: List[Item]

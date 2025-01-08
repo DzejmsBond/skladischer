@@ -4,13 +4,7 @@ from sys import exception
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo import errors
-
-# MongoDB connection settings.
-MONGO_URL = "mongodb+srv://admin:qg0B3fJqlwzWEy0K@skladischerdb.mf4qp.mongodb.net/?retryWrites=true&w=majority&appName=skladischerDB"
-DATABASE_NAME = "skladischer"
-COLLECTIONS = {
-    "users" : "users"
-}
+from ..config import MONGO_URL, DATABASE_NAME, COLLECTION
 
 client = AsyncIOMotorClient(MONGO_URL)
 
@@ -19,15 +13,11 @@ async def get_users_collection():
     if DATABASE_NAME not in names:
         return None
 
-    if "users" not in COLLECTIONS:
-        return None
-
     db = client[DATABASE_NAME]
-    collection_name = COLLECTIONS["users"]
     try:
-        return db.get_collection(collection_name)
+        return db.get_collection(COLLECTION)
     except errors.InvalidName:
-        print(f"Invalid name for collection: {collection_name}")
+        print(f"Invalid name for collection: {COLLECTION}")
         return None
     except Exception as e:
         print(f"Unknown exception: {e}")

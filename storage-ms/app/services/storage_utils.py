@@ -7,16 +7,15 @@ from ..helpers.database_helpers import get_users_collection
 from ..helpers.error import ErrorResponse as Err
 from bson import ObjectId as Id
 
-async def create_storage(user_id : str, storage_create : schema.Create):
+async def create_storage(user_id : str, storage : schema.Create):
     db_users = await get_users_collection()
     if db_users is None:
         return Err(message=f"Cannot get DB collection.")
 
     # NOTE: No need to check whether the user exists or not,
     # the database query does not throw but rahter returns 0 in case of no matchings.
-    name = storage_create.name
-    storage = Storage(name=name, content=[])
-    storage_dict = storage.model_dump(by_alias=True)
+    name = storage.name
+    storage_dict = Storage(name=name, content=[]).model_dump(by_alias=True)
 
     if not isinstance(await get_storage(user_id, name), Err):
         return Err(message=f"Storage name '{name}' already exists and cannot be created.")

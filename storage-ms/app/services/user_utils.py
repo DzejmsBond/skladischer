@@ -9,14 +9,13 @@ from bson import ObjectId as Id
 
 # TODO: What would be better than None?
 #       Returning 'user' seems to be misleading because it is not really part of the result.
-async def create_user(user_create : schema.UserCreate):
+async def create_user(user : schema.UserCreate):
     db_users = await get_users_collection()
     if db_users is None:
         return Err(message=f"Cannot get DB collection.")
 
-    display_name = user_create.display_name
-    user = User(display_name=display_name, storages=[])
-    user_dict = user.model_dump(by_alias=True)
+    display_name = user.display_name
+    user_dict = User(display_name=display_name, storages=[]).model_dump(by_alias=True)
     result = await db_users.insert_one(user_dict)
     if not result.acknowledged:
         return Err(message=f"Creating user failed.")
