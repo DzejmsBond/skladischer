@@ -4,8 +4,8 @@ Skladischer Documentation
 =========================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
+   :caption: Module Documentation:
 
    services-module
 

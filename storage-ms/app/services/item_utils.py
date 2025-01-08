@@ -21,7 +21,7 @@ async def create_item(user_id : str, storage_name : str, item : schema.ItemCreat
     This is just a test linking: :func:`~app.services.get_item`
 
     Args:
-        user_id (str): The ID of the user creating the item.
+        user_id (str): The identifier of the user creating the item.
         storage_name (str): The name of the storage where the item is being added.
         item (ItemCreate): The item details to be created, adhering to the schema.
 
@@ -44,7 +44,23 @@ async def create_item(user_id : str, storage_name : str, item : schema.ItemCreat
         return Err(message=f"Creating item failed.")
     return None
 
-async def get_item(user_id : str, storage_name : str, item_code : str):
+async def get_item(user_id : str, storage_name : str, item_code : str) -> Err | dict:
+    """
+    Retrieve an item from a user's storage by its unique code.
+
+    This function retrieves a user from the database and attempts to find
+    an item with the specified ``item_code`` in the given ``storage_name``. If the item is
+    not found, or the operation fails for any reason, an error response is returned.
+
+    Args:
+        user_id (str): The identifier of the user who owns the storage.
+        storage_name (str): The name of the storage where the item is located.
+        item_code (str): The unique code of the item to retrieve.
+
+    Returns:
+        ErrorResponse | dict: The error response if an error occurred, or the item details as a dictionary.
+    """
+
     db_users = await get_users_collection()
     if db_users is None:
         return Err(message=f"Cannot get DB collection.")
@@ -70,7 +86,23 @@ async def get_item(user_id : str, storage_name : str, item_code : str):
         return Err(message=f"Item '{item_code}' has more than one storage entry.")
     return result[0]
 
-async def delete_item(user_id : str, storage_name : str, item_code : str):
+async def delete_item(user_id : str, storage_name : str, item_code : str) -> Err | None:
+    """
+    Delete an item from a user's storage.
+
+    This function retrieves a user's collection from the database and removes an item
+    with the specified ``item_code`` from the given ``storage_name``. If the item cannot
+    be deleted, an error response is returned.
+
+    Args:
+        user_id (str): The identifier of the user who owns the storage.
+        storage_name (str): The name of the storage from which the item is to be deleted.
+        item_code (str): The unique code of the item to delete.
+
+    Returns:
+        ErrorResponse | None: The error response if an error occurred, or None if the deletion was successful.
+    """
+
     db_users = await get_users_collection()
     if db_users is None:
         return Err(message=f"Cannot get DB collection.")
@@ -83,7 +115,24 @@ async def delete_item(user_id : str, storage_name : str, item_code : str):
         return Err(message=f"Deleting item '{item_code}' from '{storage_name}' failed.")
     return None
 
-async def update_item(user_id : str, storage_name : str, item_code : str, item : schema.ItemUpdate):
+async def update_item(user_id : str, storage_name : str, item_code : str, item : schema.ItemUpdate) -> Err | None:
+    """
+       Update the details of an item in a user's storage.
+
+       This function retrieves a user's collection from the database and updates the specified
+       fields of an item with the given ``item_code`` in the provided ``storage_name``. If no fields
+       are provided for update or the operation fails, an error response is returned.
+
+       Args:
+           user_id (str): The identifier of the user who owns the storage.
+           storage_name (str): The name of the storage containing the item.
+           item_code (str): The unique code of the item to update.
+           item (ItemUpdate): The new details to update the item with, adhering to the schema.
+
+       Returns:
+           ErrorResponse | None: The error response if an error occurred, or None if the update was successful.
+       """
+
     db_users = await get_users_collection()
     if db_users is None:
         return Err(message=f"Cannot get DB collection.")

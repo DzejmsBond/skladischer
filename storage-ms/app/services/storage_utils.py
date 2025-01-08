@@ -7,7 +7,22 @@ from ..helpers.database_helpers import get_users_collection
 from ..helpers.error import ErrorResponse as Err
 from bson import ObjectId as Id
 
-async def create_storage(user_id : str, storage : schema.StorageCreate):
+async def create_storage(user_id : str, storage : schema.StorageCreate) -> Err | None:
+    """
+    Create a new storage for a specific user.
+
+    This function adds a new storage to the user's storage list. If a storage with the
+    same name already exists, or if the operation fails for any reason, an error response
+    is returned.
+
+    Args:
+        user_id (str): The identifier of the user creating the storage.
+        storage (StorageCreate): The storage details to be created, adhering to the schema.
+
+    Returns:
+        ErrorResponse | None: The error response if an error occurred, or None otherwise.
+    """
+
     db_users = await get_users_collection()
     if db_users is None:
         return Err(message=f"Cannot get DB collection.")
@@ -34,7 +49,21 @@ async def create_storage(user_id : str, storage : schema.StorageCreate):
     return None
 
 
-async def get_storage(user_id : str, storage_name : str):
+async def get_storage(user_id : str, storage_name : str) -> Err | dict:
+    """
+       Retrieve a storage by its name for a specific user.
+
+       This function fetches a storage object for a user based on the `storage_name`.
+       If the storage does not exist or the operation fails, an error response is returned.
+
+       Args:
+           user_id (str): The identifier of the user who owns the storage.
+           storage_name (str): The name of the storage to retrieve.
+
+       Returns:
+           ErrorResponse | dict: The error response if an error occurred, or the storage details as a dictionary.
+    """
+
     db_users = await get_users_collection()
     if db_users is None:
         return Err(message=f"Cannot get DB collection.")
@@ -56,7 +85,21 @@ async def get_storage(user_id : str, storage_name : str):
     return result[0]
 
 
-async def delete_storage(user_id : str, storage_name : str):
+async def delete_storage(user_id : str, storage_name : str) -> Err | None:
+    """
+    Delete a storage by its name for a specific user.
+
+    This function removes a storage object from a user's list of storages based
+    on the `storage_name`. If the operation fails, an error response is returned.
+
+    Args:
+        user_id (str): The identifier of the user who owns the storage.
+        storage_name (str): The name of the storage to delete.
+
+    Returns:
+        ErrorResponse | None: The error response if an error occurred, or None if the deletion was successful.
+    """
+
     db_users = await get_users_collection()
     if db_users is None:
         return Err(message=f"Cannot get DB collection.")
@@ -70,7 +113,22 @@ async def delete_storage(user_id : str, storage_name : str):
     return None
 
 
-async def update_storage_name(user_id : str, storage_name : str, new_name : str):
+async def update_storage_name(user_id : str, storage_name : str, new_name : str) -> Err | None:
+    """
+    Update the name of a storage for a specific user.
+
+    This function changes the name of a storage in a user's storage list.
+    If the new name already exists or the operation fails, an error response is returned.
+
+    Args:
+        user_id (str): The identifier of the user who owns the storage.
+        storage_name (str): The current name of the storage to update.
+        new_name (str): The new name for the storage.
+
+    Returns:
+        ErrorResponse | None: The error response if an error occurred, or None if the update was successful.
+    """
+
     db_users = await get_users_collection()
     if db_users is None:
         return Err(message=f"Cannot get DB collection.")
@@ -86,7 +144,21 @@ async def update_storage_name(user_id : str, storage_name : str, new_name : str)
         return Err(message=f"Updating storage name '{storage_name}' with '{new_name}' failed.")
     return None
 
-async def empty_storage(user_id : str, storage_name : str):
+async def empty_storage(user_id : str, storage_name : str) -> Err | None:
+    """
+    Empty the contents of a storage for a specific user.
+
+    This function clears all the items in the specified storage for a user.
+    If the operation fails, an error response is returned.
+
+    Args:
+        user_id (str): The identifier of the user who owns the storage.
+        storage_name (str): The name of the storage to empty.
+
+    Returns:
+        ErrorResponse | None: The error response if an error occurred, or None if the storage was successfully emptied.
+    """
+
     db_users = await get_users_collection()
     if db_users is None:
         return Err(message=f"Cannot get DB collection.")
