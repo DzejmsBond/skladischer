@@ -1,7 +1,7 @@
 .. Skladischer documentation master file.
 
-Skladischer Documentation
-=========================
+Skladischer: Storage Manager
+============================
 
 .. toctree::
    :maxdepth: 1
@@ -13,44 +13,96 @@ Skladischer Documentation
    models-module
    api-module
 
-=================
 Overview
-=================
-The **Skladischer Management System** is a flexible platform designed to help individuals efficiently record,
-annotate, and manage products across various storage spaces. The system offers detailed product information
-accessible via the web, enabling users to search by name, filter by date, and review stored items seamlessly.
-Each product is assigned a **unique code** upon creation, facilitating precise identification and retrieval.
-Supported codes include **barcodes**, **QR codes**, and custom string identifiers.
+--------
 
-=================
-Architecture
-=================
-The system follows a **microservice architecture**, where each service operates independently and
-communicates via multiple **REST API**:
+The **Storage Microservice** provides a robust solution for managing user-defined storage units, items, and inventory.
+This service is designed to handle the creation, retrieval, updating, and deletion of storages and their associated items,
+offering seamless integration with a scalable database system.
 
-- **User Management Service:** Handles user creation, retrieval, modification and deletion of users, storages and items. This is the application core as it provides the main functionality.
-- **Admin Management Service:** Manages user accounts and other user dependant data.
-- **Wishlist Management Service:** Facilitates wishlist creation and management.
-- **Barcode Management Service:** Generates and manages product barcodes on creation.
+Core Features
+-------------
 
-Each microservice is backed by its own **MongoDB database**, ensuring data isolation and consistency.
+- **User-Specific Storage Management**
+    Create, retrieve, update, and delete storages linked to individual users. Maintain unique storage names per user.
 
-=================
-Use Cases
-=================
-- **Freezer Inventory Management:** Managing freezer contents is often challenging due to limited visibility, inconsistent organization, and temperature sensitivity. Our application simplifies this by assigning each product a unique **QR code**, allowing users to quickly identify items without unnecessary handling. The system also maintains a clear overview of all stored items, including expiration dates, quantities, and storage conditions, ensuring better inventory control and reduced waste.
+- **Item Management**
+  Add, retrieve, update, and remove items within a storage. Enforce item uniqueness using a ``code_id``.
 
-- **Workshop Tool Tracking:** Keeping track of tools in a busy workshop environment can be chaotic, especially when tools are frequently borrowed, returned, or misplaced. With our application, every tool can be tracked with relevant attributes such as **location**, **current user**, and **tool condition**. This ensures that tools are always accounted for, reducing the risk of loss or damage and increasing overall efficiency in workshop operations.
+- **Error Handling**
+  - Use standardized error responses for operations that fail, such as invalid inputs or database errors.
 
-- **Shopping Assistance:** Ever forgotten whether you still have a key ingredient while shopping? With our application, users can remotely **access real-time storage content** from their mobile devices. By checking available items and quantities directly from the app, grocery shopping becomes more efficient, reducing unnecessary purchases and avoiding duplicate items. Additionally, the system can suggest shopping lists based on current storage inventory.
+API Endpoints
+-------------
 
-=================
-Deployment
-=================
-The system leverages **Docker** for containerization and **Kubernetes** for orchestration,
-ensuring a smooth and scalable deployment process.
+.. list-table::
+   :header-rows: 1
 
+   * - Endpoint
+     - Method
+     - Description
+   * - :func:`~app.api.create_user`
+     - POST
+     - Create a new user.
+   * - :func:`~app.api.get_user`
+     - POST
+     - Retrieve an user by its id.
+   * - :func:`~app.api.delete_user`
+     - DELETE
+     - Delete an user by its id.
+   * - :func:`~app.api.update_display_name`
+     - PUT
+     - Updates users display name.
+   * - :func:`~app.api.empty_storages`
+     - PUT
+     - Delete all storages of user.
+   * - :func:`~app.api.create_storage`
+     - POST
+     - Create a new storage for a user.
+   * - :func:`~app.api.get_storage`
+     - GET
+     - Retrieve a storage by its name.
+   * - :func:`~app.api.delete_storage`
+     - DELETE
+     - Delete a storage by its name.
+   * - :func:`~app.api.update_storage_name`
+     - PUT
+     - Update the name of a storage.
+   * - :func:`~app.api.empty_storage`
+     - PUT
+     - Clear all items in a storage.
+   * - :func:`~app.api.create_item`
+     - POST
+     - Add a new item to a storage.
+   * - :func:`~app.api.get_item`
+     - GET
+     - Retrieve an item by its unique code.
+   * - :func:`~app.api.delete_item`
+     - DELETE
+     - Remove an item by its unique code.
+   * - :func:`~app.api.update_item`
+     - PUT
+     - Update item details in a storage.
 
+Technologies Used
+-----------------
 
+- **FastAPI**: For building scalable and easy-to-use APIs.
+- **MongoDB**: For storing user, storage, and item data.
+- **Pydantic**: For data validation and serialization.
 
+Getting Started
+---------------
+
+1. Clone the repository::
+
+       git clone https://github.com/DzejmsBond/skladischer.git
+
+2. Set up the environment::
+
+       pip install -r requirements.txt
+
+3. Run the service::
+
+       uvicorn app.main:app --reload
 

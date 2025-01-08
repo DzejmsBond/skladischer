@@ -1,7 +1,7 @@
 .. Skladischer documentation master file.
 
-Skladischer Documentation
-=========================
+Skladischer: Item Code Manager
+==============================
 
 .. toctree::
    :maxdepth: 1
@@ -10,45 +10,64 @@ Skladischer Documentation
    services-module
    schemas-module
    helpers-module
-   models-module
    api-module
 
-=================
 Overview
-=================
-The **Skladischer Management System** is a flexible platform designed to help individuals efficiently record,
-annotate, and manage products across various storage spaces. The system offers detailed product information
-accessible via the web, enabling users to search by name, filter by date, and review stored items seamlessly.
-Each product is assigned a **unique code** upon creation, facilitating precise identification and retrieval.
-Supported codes include **barcodes**, **QR codes**, and custom string identifiers.
+--------
 
-=================
-Architecture
-=================
-The system follows a **microservice architecture**, where each service operates independently and
-communicates via multiple **REST API**:
+The **QR Code Microservice** is a utility service for generating and managing QR codes.
+It integrates with the **Storage Microservice** to provide quick access to storage units and items through QR codes.
 
-- **User Management Service:** Handles user creation, retrieval, modification and deletion of users, storages and items. This is the application core as it provides the main functionality.
-- **Admin Management Service:** Manages user accounts and other user dependant data.
-- **Wishlist Management Service:** Facilitates wishlist creation and management.
-- **Barcode Management Service:** Generates and manages product barcodes on creation.
+Core Features
+-------------
 
-Each microservice is backed by its own **MongoDB database**, ensuring data isolation and consistency.
+- **QR Code Generation**
+  Generate QR codes for storages and items. Codes are encoded and saved to items. Support for barcodes and custom hashes as well.
 
-=================
-Use Cases
-=================
-- **Freezer Inventory Management:** Managing freezer contents is often challenging due to limited visibility, inconsistent organization, and temperature sensitivity. Our application simplifies this by assigning each product a unique **QR code**, allowing users to quickly identify items without unnecessary handling. The system also maintains a clear overview of all stored items, including expiration dates, quantities, and storage conditions, ensuring better inventory control and reduced waste.
+- **Integration with Storage Microservice**
+  Automatically link generated QR codes to storages or items. Enable fast retrieval and updates via QR scans.
 
-- **Workshop Tool Tracking:** Keeping track of tools in a busy workshop environment can be chaotic, especially when tools are frequently borrowed, returned, or misplaced. With our application, every tool can be tracked with relevant attributes such as **location**, **current user**, and **tool condition**. This ensures that tools are always accounted for, reducing the risk of loss or damage and increasing overall efficiency in workshop operations.
+- **Customizable QR Codes**
+  Include user-defined metadata or links in the generated QR codes.
 
-- **Shopping Assistance:** Ever forgotten whether you still have a key ingredient while shopping? With our application, users can remotely **access real-time storage content** from their mobile devices. By checking available items and quantities directly from the app, grocery shopping becomes more efficient, reducing unnecessary purchases and avoiding duplicate items. Additionally, the system can suggest shopping lists based on current storage inventory.
+- **Error Handling**
+  Handle invalid requests with standardized error responses.
 
-=================
-Deployment
-=================
-The system leverages **Docker** for containerization and **Kubernetes** for orchestration,
-ensuring a smooth and scalable deployment process.
+API Endpoints
+-------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Endpoint
+     - Method
+     - Description
+   * - :func:`~app.api.create_code`
+     - POST
+     - Generate a QR code for a specific item.
+
+Technologies Used
+-----------------
+
+- **FastAPI**: For building and managing the API endpoints.
+- **Pydantic**: For data validation and serialization.
+- **MongoDB**: For storing metadata and QR code details.
+- **QR code generator API**: Reliable and simple outsourced code generation.
+
+Getting Started
+---------------
+
+1. Clone the repository::
+
+       git clone https://github.com/DzejmsBond/skladischer.git
+
+2. Install dependencies::
+
+       pip install -r requirements.txt
+
+3. Start the service::
+
+       uvicorn app.main:app --reload
 
 
 
