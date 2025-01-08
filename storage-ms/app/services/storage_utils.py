@@ -22,31 +22,34 @@ async def create_storage(user_id : str, storage : schema.StorageCreate) -> Err |
     Returns:
         ErrorResponse | None: The error response if an error occurred, or None otherwise.
     """
+    try:
+        db_users = await get_users_collection()
+        if db_users is None:
+            return Err(message=f"Cannot get DB collection.")
 
-    db_users = await get_users_collection()
-    if db_users is None:
-        return Err(message=f"Cannot get DB collection.")
+        # NOTE: No need to check whether the user exists or not,
+        # the database query does not throw but rahter returns 0 in case of no matchings.
+        name = storage.name
+        storage_dict = Storage(name=name, content=[]).model_dump(by_alias=True)
 
-    # NOTE: No need to check whether the user exists or not,
-    # the database query does not throw but rahter returns 0 in case of no matchings.
-    name = storage.name
-    storage_dict = Storage(name=name, content=[]).model_dump(by_alias=True)
+        if not isinstance(await get_storage(user_id, name), Err):
+            return Err(message=f"Storage name '{name}' already exists and cannot be created.")
 
-    if not isinstance(await get_storage(user_id, name), Err):
-        return Err(message=f"Storage name '{name}' already exists and cannot be created.")
+        # Update the 'user' document's field 'storages',
+        # using the operator '$push' to add a value to an array.
+        # Before accessing any attributes of the 'pymongo.results' objects
+        # aknowledged needs to be checked:
+        # if false all other attributes of this class will raise InvalidOperation when accessed.
+        result = await db_users.update_one({"_id": Id(user_id)}, {"$push": {"storages": storage_dict}})
+        if not result.acknowledged:
+            return Err(message=f"Creating storage '{name}' failed.")
 
-    # Update the 'user' document's field 'storages',
-    # using the operator '$push' to add a value to an array.
-    # Before accessing any attributes of the 'pymongo.results' objects
-    # aknowledged needs to be checked:
-    # if false all other attributes of this class will raise InvalidOperation when accessed.
-    result = await db_users.update_one({"_id": Id(user_id)}, {"$push": {"storages": storage_dict}})
-    if not result.acknowledged:
-        return Err(message=f"Creating storage '{name}' failed.")
+        if result.modified_count == 0:
+            return Err(message=f"Creating storage '{name}' modified zero entries.")
+        return None
 
-    if result.modified_count == 0:
-        return Err(message=f"Creating storage '{name}' modified zero entries.")
-    return None
+    except Exception as e:
+        return Err(message=f"Unknown exception: {e}", code=500)
 
 
 async def get_storage(user_id : str, storage_name : str) -> Err | dict:
@@ -64,25 +67,29 @@ async def get_storage(user_id : str, storage_name : str) -> Err | dict:
            ErrorResponse | dict: The error response if an error occurred, or the storage details as a dictionary.
     """
 
-    db_users = await get_users_collection()
-    if db_users is None:
-        return Err(message=f"Cannot get DB collection.")
+    try:
+        db_users = await get_users_collection()
+        if db_users is None:
+            return Err(message=f"Cannot get DB collection.")
 
-    # A cleaner way of finding all matchings and a sanity check that there are unique.
-    pipeline = [
-        {"$match": {"_id": Id(user_id)}}, # Finds the user.
-        {"$unwind": "$storages"},  # Deconstruct the storages array.
-        {"$match": {"storages.name": storage_name}}, # Match the specific storage.
-        {"$replaceRoot": {"newRoot": "$storages"}}  # Replace the root document with the storage object.
-    ]
+        # A cleaner way of finding all matchings and a sanity check that there are unique.
+        pipeline = [
+            {"$match": {"_id": Id(user_id)}}, # Finds the user.
+            {"$unwind": "$storages"},  # Deconstruct the storages array.
+            {"$match": {"storages.name": storage_name}}, # Match the specific storage.
+            {"$replaceRoot": {"newRoot": "$storages"}}  # Replace the root document with the storage object.
+        ]
 
-    result = await db_users.aggregate(pipeline).to_list()
-    if not result:
-        return Err(message=f"Getting storage '{storage_name}' failed.")
+        result = await db_users.aggregate(pipeline).to_list()
+        if not result:
+            return Err(message=f"Getting storage '{storage_name}' failed.")
 
-    if len(result) > 1:
-        return Err(message=f"Storage '{storage_name}' has more than one storage entry.")
-    return result[0]
+        if len(result) > 1:
+            return Err(message=f"Storage '{storage_name}' has more than one storage entry.")
+        return result[0]
+
+    except Exception as e:
+        return Err(message=f"Unknown exception: {e}", code=500)
 
 
 async def delete_storage(user_id : str, storage_name : str) -> Err | None:
@@ -100,17 +107,21 @@ async def delete_storage(user_id : str, storage_name : str) -> Err | None:
         ErrorResponse | None: The error response if an error occurred, or None if the deletion was successful.
     """
 
-    db_users = await get_users_collection()
-    if db_users is None:
-        return Err(message=f"Cannot get DB collection.")
+    try:
+        db_users = await get_users_collection()
+        if db_users is None:
+            return Err(message=f"Cannot get DB collection.")
 
-    result = await db_users.update_one(
-        {"_id": Id(user_id)},
-        {"$pull": {"storages": {"name": storage_name}}})
+        result = await db_users.update_one(
+            {"_id": Id(user_id)},
+            {"$pull": {"storages": {"name": storage_name}}})
 
-    if not result.acknowledged or result.modified_count == 0:
-        return Err(message=f"Deleting storage '{storage_name}' failed.")
-    return None
+        if not result.acknowledged or result.modified_count == 0:
+            return Err(message=f"Deleting storage '{storage_name}' failed.")
+        return None
+
+    except Exception as e:
+        return Err(message=f"Unknown exception: {e}", code=500)
 
 
 async def update_storage_name(user_id : str, storage_name : str, new_name : str) -> Err | None:
@@ -128,21 +139,24 @@ async def update_storage_name(user_id : str, storage_name : str, new_name : str)
     Returns:
         ErrorResponse | None: The error response if an error occurred, or None if the update was successful.
     """
+    try:
+        db_users = await get_users_collection()
+        if db_users is None:
+            return Err(message=f"Cannot get DB collection.")
 
-    db_users = await get_users_collection()
-    if db_users is None:
-        return Err(message=f"Cannot get DB collection.")
+        if not isinstance(await get_storage(user_id, new_name), Err):
+            return Err(message=f"Storage name '{new_name}' already exists.")
 
-    if not isinstance(await get_storage(user_id, new_name), Err):
-        return Err(message=f"Storage name '{new_name}' already exists.")
+        result = await db_users.update_one(
+            {"_id": Id(user_id), "storages.name": storage_name},
+            {"$set": {"storages.$.name": new_name}})
 
-    result = await db_users.update_one(
-        {"_id": Id(user_id), "storages.name": storage_name},
-        {"$set": {"storages.$.name": new_name}})
+        if not result.acknowledged or result.modified_count == 0:
+            return Err(message=f"Updating storage name '{storage_name}' with '{new_name}' failed.")
+        return None
 
-    if not result.acknowledged or result.modified_count == 0:
-        return Err(message=f"Updating storage name '{storage_name}' with '{new_name}' failed.")
-    return None
+    except Exception as e:
+        return Err(message=f"Unknown exception: {e}", code=500)
 
 async def empty_storage(user_id : str, storage_name : str) -> Err | None:
     """
@@ -158,16 +172,19 @@ async def empty_storage(user_id : str, storage_name : str) -> Err | None:
     Returns:
         ErrorResponse | None: The error response if an error occurred, or None if the storage was successfully emptied.
     """
+    try:
+        db_users = await get_users_collection()
+        if db_users is None:
+            return Err(message=f"Cannot get DB collection.")
 
-    db_users = await get_users_collection()
-    if db_users is None:
-        return Err(message=f"Cannot get DB collection.")
+        result = await db_users.update_one(
+            {"_id": Id(user_id), "storages.name": storage_name},
+            {"$set": {"storages.$.content": []}})
 
-    result = await db_users.update_one(
-        {"_id": Id(user_id), "storages.name": storage_name},
-        {"$set": {"storages.$.content": []}})
+        if not result.acknowledged or result.modified_count == 0:
+            return Err(message=f"Emptying '{storage_name}' contents failed.")
+        return None
 
-    if not result.acknowledged or result.modified_count == 0:
-        return Err(message=f"Emptying '{storage_name}' contents failed.")
-    return None
+    except Exception as e:
+        return Err(message=f"Unknown exception: {e}", code=500)
 
