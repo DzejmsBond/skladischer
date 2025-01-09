@@ -4,6 +4,8 @@
 import uvicorn
 from fastapi import FastAPI
 from .api import code_api
+# TODO: dependencies should be managed on a microservice-to-microservice basis.
+#       Not every microservice has to import all dependencies from "pip freeze" output.
 
 app = FastAPI(
     title="Code Generation Microservice",

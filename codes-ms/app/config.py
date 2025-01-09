@@ -7,8 +7,9 @@ import os
 
 # TODO: This should not be in the production version?
 #       Is this the best way to do this?
-ENV_PATH = Path(__file__).resolve().parent / 'config.env'
-load_dotenv(dotenv_path=ENV_PATH)
+# Commented out again because passing env variables properly
+#ENV_PATH = Path(__file__).resolve().parent / 'config.env'
+#load_dotenv(dotenv_path=ENV_PATH)
 
 # Access variables.
 RAPIDAPI_HOST = os.getenv("RAPIDAPI_HOST")

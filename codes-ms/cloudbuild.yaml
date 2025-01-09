@@ -77,14 +77,14 @@ timeout: 1200s  # Adjust timeout as necessary
 
 substitutions:
   _GKE_CLUSTER: deployment-storage-ms-test-cluster
-  _K8S_APP_NAME: deployment-envvars
+  _K8S_APP_NAME: codes-ms
   _GKE_LOCATION: europe-west3
   _K8S_NAMESPACE: default
-  _DOCKERFILE_DIR: storage-ms
+  _DOCKERFILE_DIR: codes-ms
   _OUTPUT_BUCKET_PATH: first-hearth-447116-s1_cloudbuild/deploy
   _DOCKERFILE_NAME: Dockerfile
   _IMAGE_NAME: gcr.io/first-hearth-447116-s1/github.com/dzejmsbond/skladischer
   _GCP_PROJECT: first-hearth-447116-s1
   _CLUSTER_NAME: deployment-storage-ms-test-cluster
   _CLUSTER_REGION: europe-west3
-  _RELEASE_NAME: storage-ms
+  _RELEASE_NAME: codes-ms
