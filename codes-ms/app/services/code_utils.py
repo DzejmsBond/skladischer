@@ -39,7 +39,9 @@ async def create_code(code : schema.CodeCreate) -> Err | str:
         }
 
         if code.label:
-            params["label"] = label
+            params["label"] = code.label
+            params["label_alignment"] = code.label_alignment
+            params["label_size"] = code.label_size
 
         response = await AsyncClient().get(RAPIDAPI_URL, headers=headers, params=params)
         if response.status_code == 200:

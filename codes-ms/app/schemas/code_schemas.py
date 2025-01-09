@@ -14,3 +14,5 @@ class CodeCreate(BaseModel):
     color: Optional[str] = Field(default="#000000")
     background_color: Optional[str] = Field(default="#FFFFFF")
     label: Optional[str] = None
+    label_size: Optional[int] = 20
+    label_alignment: Optional[str] = "center"

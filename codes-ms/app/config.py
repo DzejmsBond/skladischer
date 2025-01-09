@@ -7,7 +7,7 @@ import os
 
 # TODO: This should not be in the production version?
 #       Is this the best way to do this?
-ENV_PATH = Path(__file__).resolve().parent.parent / 'config.env'
+ENV_PATH = Path(__file__).resolve().parent / 'config.env'
 load_dotenv(dotenv_path=ENV_PATH)
 
 # Access variables.
