@@ -1,18 +1,36 @@
 # Author: Nina Mislej
 # Date created: 09.01.2025
 
+# Enable async testing.
 import pytest
+from fastapi import FastAPI
+from httpx import AsyncClient, ASGITransport
+from unittest.mock import AsyncMock, patch
 from mongomock import MongoClient
-from app.models.user import User
-from unittest.mock import patch
 
+# Internal app dependencies.
+from app.api import users_api as api
 
-@pytest.fixture
-@patch("app.helpers.database_helpers.get_collection")
-def get_collection():
+app = FastAPI(title="Storage Managment Microservice - Test")
+app.include_router(api.router)
+
+@pytest.fixture(scope="module")
+async def get_collection():
     client = MongoClient()
     database = client["test-database"]
+    collection = database["users"]
 
-    with patch("app.helpers.database_helpers.get_collection",
-               new=AsyncMock(return_value=database["users"])) as collection:
-        yield collection
+    async with patch("app.helpers.database_helpers.get_collection",
+               new=AsyncMock(return_value=collection)) as mock:
+        yield mock
+
+
+@pytest.fixture(scope="module")
+async def client():
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        yield client
+
+# Remove this for asyncio and trio testing.
+@pytest.fixture(scope="module")
+def anyio_backend():
+    return 'asyncio'

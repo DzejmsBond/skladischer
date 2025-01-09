@@ -10,7 +10,7 @@ from bson import ObjectId as Id
 
 # TODO: What would be better than None?
 #       Returning 'user' seems to be misleading because it is not really part of the result.
-async def create_user(user : schema.UserCreate) -> Err | None:
+async def create_user(user : schema.UserCreate) -> Err | str:
     """
     Create a new user in the database.
 
@@ -21,7 +21,7 @@ async def create_user(user : schema.UserCreate) -> Err | None:
         user (UserCreate): The user details to be created, adhering to the schema.
 
     Returns:
-        ErrorResponse | None: The error response if an error occurred, or None otherwise.
+        ErrorResponse | str: The error response if an error occurred, or generated id otherwise.
     """
 
     try:
@@ -36,7 +36,7 @@ async def create_user(user : schema.UserCreate) -> Err | None:
             return Err(message=f"Creating user failed.")
 
         # NOTE: We could use 'await get_user(result.inserted_id)' to get / check success.
-        return None
+        return str(result.inserted_id)
 
     # TODO: Should the end user know what error happened internally?
     except Exception as e:
