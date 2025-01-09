@@ -65,8 +65,8 @@ spec:
             - name: RAPIDAPI_HOST
               valueFrom:
                 configMapKeyRef:
-                  key: {{ .Values.env.rapidapiUrl.configMapKey }}
-                  name: {{ .Values.env.rapidapiUrl.configMapName }}
+                  key: {{ .Values.env.rapidapiHost.configMapKey }}
+                  name: {{ .Values.env.rapidapiHost.configMapName }}
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
