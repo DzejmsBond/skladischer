@@ -3,7 +3,7 @@
 
 from ..schemas import item_schemas as schema
 from ..models.item import Item
-from ..helpers.database_helpers import get_users_collection
+from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
 from bson import ObjectId as Id
 
@@ -28,7 +28,7 @@ async def create_item(user_id : str, storage_name : str, item : schema.ItemCreat
     """
 
     try:
-        db_users = await get_users_collection()
+        db_users = await get_collection()
         if db_users is None:
             return Err(message=f"Cannot get DB collection.")
 
@@ -65,7 +65,7 @@ async def get_item(user_id : str, storage_name : str, item_code : str) -> Err | 
     """
 
     try:
-        db_users = await get_users_collection()
+        db_users = await get_collection()
         if db_users is None:
             return Err(message=f"Cannot get DB collection.")
 
@@ -110,7 +110,7 @@ async def delete_item(user_id : str, storage_name : str, item_code : str) -> Err
         ErrorResponse | None: The error response if an error occurred, or None if the deletion was successful.
     """
     try:
-        db_users = await get_users_collection()
+        db_users = await get_collection()
         if db_users is None:
             return Err(message=f"Cannot get DB collection.")
 
@@ -143,7 +143,7 @@ async def update_item(user_id : str, storage_name : str, item_code : str, item :
            ErrorResponse | None: The error response if an error occurred, or None if the update was successful.
        """
     try:
-        db_users = await get_users_collection()
+        db_users = await get_collection()
         if db_users is None:
             return Err(message=f"Cannot get DB collection.")
 

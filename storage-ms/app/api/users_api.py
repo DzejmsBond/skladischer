@@ -13,7 +13,7 @@ router = APIRouter(
     tags=["users"]
 )
 
-@router.post("/create-user", status_code=204)
+@router.post("/create-user", status_code=200)
 async def create_user(user_schema : schema.UserCreate):
     """
     This endpoint allows creating a new user in the system.
@@ -57,7 +57,7 @@ async def get_user(user_id: str):
 
     return result
 
-@router.delete("/{user_id}", status_code=204)
+@router.delete("/{user_id}", status_code=200)
 async def delete_user(user_id: str):
     """
     This endpoint removes a user from the system by their identifier.
@@ -79,7 +79,7 @@ async def delete_user(user_id: str):
 
     return {"detail": "User successfully deleted."}
 
-@router.put("/{user_id}/update-name", status_code=204)
+@router.put("/{user_id}/update-name", status_code=200)
 async def update_display_name(user_id: str, new_name : str):
     """
     This endpoint allows updating the display name of a user.
@@ -101,7 +101,7 @@ async def update_display_name(user_id: str, new_name : str):
 
     return {"detail": f"User display name successfully updated with '{new_name}'."}
 
-@router.put("/{user_id}/empty-storages", status_code=204)
+@router.put("/{user_id}/empty-storages", status_code=200)
 async def empty_storages(user_id: str):
     """
     This endpoint clears all storages in a user's account.

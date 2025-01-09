@@ -4,7 +4,7 @@ from typing import Any, Mapping
 
 from ..schemas import user_schemas as schema
 from ..models.user import User
-from ..helpers.database_helpers import get_users_collection
+from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
 from bson import ObjectId as Id
 
@@ -25,7 +25,7 @@ async def create_user(user : schema.UserCreate) -> Err | None:
     """
 
     try:
-        db_users = await get_users_collection()
+        db_users = await get_collection()
         if db_users is None:
             return Err(message=f"Cannot get DB collection.")
 
@@ -58,7 +58,7 @@ async def get_user(user_id : str) -> Err | dict:
     """
 
     try:
-        db_users = await get_users_collection()
+        db_users = await get_collection()
         if db_users is None:
             return Err(message=f"Cannot get DB collection.")
 
@@ -86,7 +86,7 @@ async def delete_user(user_id : str) -> Err | None:
     """
 
     try:
-        db_users = await get_users_collection()
+        db_users = await get_collection()
         if db_users is None:
             return Err(message=f"Cannot get DB collection.")
 
@@ -114,7 +114,7 @@ async def update_display_name(user_id : str, new_name : str) -> Err | None:
     """
 
     try:
-        db_users = await get_users_collection()
+        db_users = await get_collection()
         if db_users is None:
             return Err(message=f"Cannot get DB collection.")
 
@@ -144,7 +144,7 @@ async def empty_storages(user_id : str) -> Err | None:
     """
 
     try:
-        db_users = await get_users_collection()
+        db_users = await get_collection()
         if db_users is None:
             return Err(message=f"Cannot get DB collection.")
 

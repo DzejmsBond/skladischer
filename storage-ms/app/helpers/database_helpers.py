@@ -7,7 +7,7 @@ from ..config import MONGO_URL, DATABASE_NAME, COLLECTION
 
 client = AsyncIOMotorClient(MONGO_URL)
 
-async def get_users_collection() -> AsyncIOMotorCollection | None:
+async def get_collection() -> AsyncIOMotorCollection | None:
     """
     Retrieve the users collection from the database.
 

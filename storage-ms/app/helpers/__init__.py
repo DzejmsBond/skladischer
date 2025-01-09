@@ -3,7 +3,7 @@ The `helpers` module provides generic helper functions for managing the database
 """
 
 from .database_helpers import (
-    get_users_collection)
+    get_collection)
 
 from .error import (
     ErrorResponse)
