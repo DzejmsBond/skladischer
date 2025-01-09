@@ -7,13 +7,13 @@ from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
 from bson import ObjectId as Id
 
-async def create_item(user_id : str, storage_name : str, item : schema.ItemCreate) -> Err | None:
+async def create_item(user_id : str, storage_name : str, item : schema.ItemCreate) -> Err | str:
     """
     Create an item and associate it with a user and a specific storage.
 
     This function retrieves the user's collection from the database and the
     corresponding storage and adds a new item to the collection. An item with
-    ``amount`` specified to zero cannot be created. An item with ``code_gen_token``
+    ``amount`` specified to zero cannot be created. An item with ``code_id``
     already existant in the database cannot be created. If the database collection
     cannot be retrieved, due to any of these reasons or the input fails validation,
     an error response is returned.
@@ -24,7 +24,7 @@ async def create_item(user_id : str, storage_name : str, item : schema.ItemCreat
         item (ItemCreate): The item details to be created, adhering to the schema.
 
     Returns:
-        ErrorResponse | None: The error response if an error occurred or None otherwise.
+        ErrorResponse | str: The error response if an error occurred or ``code_id`` otherwise.
     """
 
     try:
@@ -35,14 +35,15 @@ async def create_item(user_id : str, storage_name : str, item : schema.ItemCreat
         if item.amount == 0:
             return Err(message=f"Cannot create new item with zero instances.")
 
-        item_dict = Item(name=item.name, amount=item.amount, description=item.description).model_dump(by_alias=True)
+        item_model = Item(name=item.name, amount=item.amount, description=item.description)
+        item_dict = item_model.model_dump(by_alias=True)
         result = await db_users.update_one(
             {"_id": Id(user_id), "storages.name": storage_name},
             {"$push": {"storages.$.content": item_dict}})
 
         if result.modified_count == 0:
             return Err(message=f"Creating item failed.")
-        return None
+        return item_model.code_id
 
     except Exception as e:
         return Err(message=f"Unknown  exception: {e}", code=500)
@@ -74,11 +75,11 @@ async def get_item(user_id : str, storage_name : str, item_code : str) -> Err | 
             {"$match":
                 {"_id": Id(user_id),
                 "storages.name": storage_name,
-                "storages.content.code_gen_token": item_code}},
+                "storages.content.code_id": item_code}},
             {"$unwind": "$storages"},  # Deconstruct the storages array.
             {"$match": {"storages.name": storage_name}},  # Match the specific storage.
             {"$unwind": "$storages.content"},  # Deconstruct the content array.
-            {"$match": { "storages.content.code_gen_token": item_code}}, # Match the specific item.
+            {"$match": { "storages.content.code_id": item_code}}, # Match the specific item.
             {"$replaceRoot": {"newRoot": "$storages.content"}}  # Replace the root document with the storage object.
         ]
 
@@ -93,7 +94,7 @@ async def get_item(user_id : str, storage_name : str, item_code : str) -> Err | 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
 
-async def delete_item(user_id : str, storage_name : str, item_code : str) -> Err | None:
+async def delete_item(user_id : str, storage_name : str, item_code : str) -> Err | str:
     """
     Delete an item from a user's storage.
 
@@ -107,7 +108,7 @@ async def delete_item(user_id : str, storage_name : str, item_code : str) -> Err
         item_code (str): The unique code of the item to delete.
 
     Returns:
-        ErrorResponse | None: The error response if an error occurred, or None if the deletion was successful.
+        ErrorResponse | str: The error response if an error occurred, or ``code_id`` if the deletion was successful.
     """
     try:
         db_users = await get_collection()
@@ -116,16 +117,16 @@ async def delete_item(user_id : str, storage_name : str, item_code : str) -> Err
 
         result = await db_users.update_one(
             {"_id": Id(user_id), "storages.name": storage_name},
-            {"$pull": {"storages.$.content": {"code_gen_token": item_code}}})
+            {"$pull": {"storages.$.content": {"code_id": item_code}}})
 
         if not result.acknowledged or result.modified_count == 0:
             return Err(message=f"Deleting item '{item_code}' from '{storage_name}' failed.")
-        return None
+        return item_code
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
 
-async def update_item(user_id : str, storage_name : str, item_code : str, item : schema.ItemUpdate) -> Err | None:
+async def update_item(user_id : str, storage_name : str, item_code : str, item : schema.ItemUpdate) -> Err | str:
     """
        Update the details of an item in a user's storage.
 
@@ -140,7 +141,7 @@ async def update_item(user_id : str, storage_name : str, item_code : str, item :
            item (ItemUpdate): The new details to update the item with, adhering to the schema.
 
        Returns:
-           ErrorResponse | None: The error response if an error occurred, or None if the update was successful.
+           ErrorResponse | str: The error response if an error occurred, or ``code_id`` if the update was successful.
        """
     try:
         db_users = await get_collection()
@@ -150,6 +151,9 @@ async def update_item(user_id : str, storage_name : str, item_code : str, item :
         item_dict = item.model_dump(by_alias=True, exclude_unset=True)
         if not item_dict:
             return Err(message=f"All update values for item '{item_code}' are empty.")
+
+        if item.amount == 0:
+            return Err(message=f"Cannot create new item with zero instances.")
 
         # Loop through fields and construct the update operation for the content array.
         fields_to_update = {
@@ -163,12 +167,12 @@ async def update_item(user_id : str, storage_name : str, item_code : str, item :
             {"$set": fields_to_update},
             array_filters = [
                 {"storage.name": storage_name},
-                {"item.code_gen_token": item_code}
+                {"item.code_id": item_code}
             ])
 
         if not result.acknowledged or result.modified_count == 0:
             return Err(message=f"Updating item '{item_code}' failed.")
-        return None
+        return item_code
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)

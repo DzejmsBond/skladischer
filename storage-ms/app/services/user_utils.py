@@ -71,7 +71,7 @@ async def get_user(user_id : str) -> Err | dict:
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
-async def delete_user(user_id : str) -> Err | None:
+async def delete_user(user_id : str) -> Err | str:
     """
     Delete a user by their identifier.
 
@@ -82,7 +82,7 @@ async def delete_user(user_id : str) -> Err | None:
         user_id (str): The identifier of the user to delete.
 
     Returns:
-        ErrorResponse | None: The error response if an error occurred, or None if the deletion was successful.
+        ErrorResponse | str: The error response if an error occurred, or id if the deletion was successful.
     """
 
     try:
@@ -93,12 +93,12 @@ async def delete_user(user_id : str) -> Err | None:
         result = await db_users.delete_one({"_id": Id(user_id)})
         if not result.acknowledged:
             return Err(message=f"Deleting user '{user_id}' failed.")
-        return None
+        return user_id
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
 
-async def update_display_name(user_id : str, new_name : str) -> Err | None:
+async def update_display_name(user_id : str, new_name : str) -> Err | str:
     """
     Update the display name of a user.
 
@@ -110,7 +110,7 @@ async def update_display_name(user_id : str, new_name : str) -> Err | None:
         new_name (str): The new display name for the user.
 
     Returns:
-        ErrorResponse | None: The error response if an error occurred, or None if the update was successful.
+        ErrorResponse | st: The error response if an error occurred, or id if the update was successful.
     """
 
     try:
@@ -124,12 +124,12 @@ async def update_display_name(user_id : str, new_name : str) -> Err | None:
 
         if not result.acknowledged or result.modified_count == 0:
             return Err(message=f"Updating display name with '{new_name}' failed.")
-        return None
+        return user_id
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
 
-async def empty_storages(user_id : str) -> Err | None:
+async def empty_storages(user_id : str) -> Err | str:
     """
     Empty all storages for a specific user.
 
@@ -140,7 +140,7 @@ async def empty_storages(user_id : str) -> Err | None:
         user_id (str): The identifier of the user whose storages are to be emptied.
 
     Returns:
-        ErrorResponse | None: The error response if an error occurred, or None if the storages were successfully emptied.
+        ErrorResponse | str: The error response if an error occurred, or id if the storages were successfully emptied.
     """
 
     try:
@@ -157,7 +157,7 @@ async def empty_storages(user_id : str) -> Err | None:
 
         if result.matched_count == 0:
             return Err(message=f"Couldnt match to any record in datbabase.")
-        return None
+        return user_id
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)

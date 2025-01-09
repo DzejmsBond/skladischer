@@ -7,7 +7,7 @@ from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
 from bson import ObjectId as Id
 
-async def create_storage(user_id : str, storage : schema.StorageCreate) -> Err | None:
+async def create_storage(user_id : str, storage : schema.StorageCreate) -> Err | str:
     """
     Create a new storage for a specific user.
 
@@ -20,7 +20,7 @@ async def create_storage(user_id : str, storage : schema.StorageCreate) -> Err |
         storage (StorageCreate): The storage details to be created, adhering to the schema.
 
     Returns:
-        ErrorResponse | None: The error response if an error occurred, or None otherwise.
+        ErrorResponse | str: The error response if an error occurred, or storage name otherwise.
     """
     try:
         db_users = await get_collection()
@@ -46,7 +46,7 @@ async def create_storage(user_id : str, storage : schema.StorageCreate) -> Err |
 
         if result.modified_count == 0:
             return Err(message=f"Creating storage '{name}' modified zero entries.")
-        return None
+        return name
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
@@ -92,7 +92,7 @@ async def get_storage(user_id : str, storage_name : str) -> Err | dict:
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
-async def delete_storage(user_id : str, storage_name : str) -> Err | None:
+async def delete_storage(user_id : str, storage_name : str) -> Err | str:
     """
     Delete a storage by its name for a specific user.
 
@@ -104,7 +104,7 @@ async def delete_storage(user_id : str, storage_name : str) -> Err | None:
         storage_name (str): The name of the storage to delete.
 
     Returns:
-        ErrorResponse | None: The error response if an error occurred, or None if the deletion was successful.
+        ErrorResponse | str: The error response if an error occurred, or storage name if the deletion was successful.
     """
 
     try:
@@ -118,13 +118,13 @@ async def delete_storage(user_id : str, storage_name : str) -> Err | None:
 
         if not result.acknowledged or result.modified_count == 0:
             return Err(message=f"Deleting storage '{storage_name}' failed.")
-        return None
+        return storage_name
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
-async def update_storage_name(user_id : str, storage_name : str, new_name : str) -> Err | None:
+async def update_storage_name(user_id : str, storage_name : str, new_name : str) -> Err | str:
     """
     Update the name of a storage for a specific user.
 
@@ -137,7 +137,7 @@ async def update_storage_name(user_id : str, storage_name : str, new_name : str)
         new_name (str): The new name for the storage.
 
     Returns:
-        ErrorResponse | None: The error response if an error occurred, or None if the update was successful.
+        ErrorResponse | str: The error response if an error occurred, or storage name if the update was successful.
     """
     try:
         db_users = await get_collection()
@@ -153,12 +153,12 @@ async def update_storage_name(user_id : str, storage_name : str, new_name : str)
 
         if not result.acknowledged or result.modified_count == 0:
             return Err(message=f"Updating storage name '{storage_name}' with '{new_name}' failed.")
-        return None
+        return new_name
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
 
-async def empty_storage(user_id : str, storage_name : str) -> Err | None:
+async def empty_storage(user_id : str, storage_name : str) -> Err | str:
     """
     Empty the contents of a storage for a specific user.
 
@@ -170,7 +170,7 @@ async def empty_storage(user_id : str, storage_name : str) -> Err | None:
         storage_name (str): The name of the storage to empty.
 
     Returns:
-        ErrorResponse | None: The error response if an error occurred, or None if the storage was successfully emptied.
+        ErrorResponse | str: The error response if an error occurred, or storage name if the storage was successfully emptied.
     """
     try:
         db_users = await get_collection()
@@ -186,7 +186,7 @@ async def empty_storage(user_id : str, storage_name : str) -> Err | None:
 
         if result.matched_count == 0:
             return Err(message=f"Couldnt match to any record in datbabase.")
-        return None
+        return storage_name
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)

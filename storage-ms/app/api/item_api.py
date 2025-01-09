@@ -13,7 +13,7 @@ router = APIRouter(
     tags=["users"]
 )
 
-@router.post("/{user_id}/{storage_name}/create-item", status_code=204)
+@router.post("/{user_id}/{storage_name}/create-item", status_code=200)
 async def create_item(user_id: str, storage_name: str, item_schema: schema.ItemCreate):
     """
     This endpoint allows the creation of a new item within a specific storage for a user.
@@ -59,7 +59,7 @@ async def get_item(user_id: str, storage_name: str, item_code: str):
 
     return result
 
-@router.delete("/{user_id}/{storage_name}/{item_code}", status_code=204)
+@router.delete("/{user_id}/{storage_name}/{item_code}", status_code=200)
 async def delete_item(user_id: str, storage_name: str, item_code: str):
     """
     Delete an item from a user's storage.
@@ -84,7 +84,7 @@ async def delete_item(user_id: str, storage_name: str, item_code: str):
 
     return {"detail": f"Item '{item_code}' successfully deleted."}
 
-@router.put("/{user_id}/{storage_name}/update-item", status_code=204)
+@router.put("/{user_id}/{storage_name}/{item_code}", status_code=200)
 async def update_item(user_id: str, storage_name: str,  item_code: str, item : schema.ItemUpdate):
     """
     This endpoint allows updating the details of an existing item in a specified storage.
