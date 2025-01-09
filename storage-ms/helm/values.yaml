@@ -127,8 +127,9 @@ env:
     secretName: "database-url"
     secretKey: "DATABASE_URL"
   databaseName:
-    configMapName: "deployment-envvars-config-9i70"
+    configMapName: "storage-ms-config"
     configMapKey: "DATABASE_NAME"
   collection:
-    configMapName: "deployment-envvars-config-9i70"
+    configMapName: "storage-ms-config"
     configMapKey: "COLLECTION"
+# Values for these can be passed by helm by /kubectl machine probably.
