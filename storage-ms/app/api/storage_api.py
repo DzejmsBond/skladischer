@@ -13,7 +13,7 @@ router = APIRouter(
     tags=["users"]
 )
 
-@router.post("/{user_id}/create-storage", status_code=204)
+@router.post("/{user_id}/create-storage", status_code=200)
 async def create_storage(user_id: str, storage_schema : schema.StorageCreate):
     """
     This endpoint allows the creation of a storage in a user's account.
@@ -57,7 +57,7 @@ async def get_storage(user_id: str, storage_name: str):
 
     return result
 
-@router.delete("/{user_id}/{storage_name}", status_code=204)
+@router.delete("/{user_id}/{storage_name}", status_code=200)
 async def delete_storage(user_id: str, storage_name: str):
     """
     This endpoint removes a storage from a user's account by its name.
@@ -79,7 +79,7 @@ async def delete_storage(user_id: str, storage_name: str):
 
     return {"detail": f"Storage '{storage_name}' successfully deleted."}
 
-@router.put("/{user_id}/{storage_name}/update-name", status_code=204)
+@router.put("/{user_id}/{storage_name}/update-name", status_code=200)
 async def update_storage_name(user_id: str, storage_name: str, new_name : str):
     """
     This endpoint allows renaming an existing storage in a user's account.
@@ -102,7 +102,7 @@ async def update_storage_name(user_id: str, storage_name: str, new_name : str):
 
     return {"detail": f"Storage successfully updated with name '{new_name}'."}
 
-@router.put("/{user_id}/{storage_name}/empty-storage", status_code=204)
+@router.put("/{user_id}/{storage_name}/empty-storage", status_code=200)
 async def empty_storage(user_id: str, storage_name: str):
     """
     This endpoint clears all items from a specified storage.

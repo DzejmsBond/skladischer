@@ -152,8 +152,11 @@ async def empty_storages(user_id : str) -> Err | None:
             {"_id": Id(user_id)},
             {"$set": {"storages": []}})
 
-        if not result.acknowledged or result.modified_count == 0:
-            return Err(message=f"Emptying storages failed.")
+        if not result.acknowledged:
+            return Err(message=f"Emptying '{storage_name}' contents failed.")
+
+        if result.matched_count == 0:
+            return Err(message=f"Couldnt match to any record in datbabase.")
         return None
 
     except Exception as e:

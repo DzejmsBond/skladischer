@@ -9,10 +9,13 @@ from unittest.mock import AsyncMock, patch
 from mongomock import MongoClient
 
 # Internal app dependencies.
-from app.api import users_api as api
+from app.api import users_api
+from app.api import storage_api
+from app.api import item_api
 
 app = FastAPI(title="Storage Managment Microservice - Test")
-app.include_router(api.router)
+app.include_router(users_api.router)
+app.include_router(storage_api.router)
 
 @pytest.fixture(scope="module")
 async def get_collection():
