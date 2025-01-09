@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sphinx-docs
+  labels:
+    app: sphinx-docs
+spec:
+  replicas: 1  # Adjust the number of replicas based on your needs
+  selector:
+    matchLabels:
+      app: sphinx-docs
+  template:
+    metadata:
+      labels:
+        app: sphinx-docs
+    spec:
+      containers:
+      - name: sphinx-docs
+        image: gcr.io/first-hearth-447116-s1/github.com/dzejmsbond/storage-ms-docs
+        ports:
+        - containerPort: 80  # The port on which your container serves the documentation
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sphinx-docs-service
+spec:
+  type: LoadBalancer  # Expose the service outside the cluster
+  selector:
+    app: sphinx-docs
+  ports:
+    - protocol: TCP
+      port: 80        # External port
+      targetPort: 80  # Internal container port
