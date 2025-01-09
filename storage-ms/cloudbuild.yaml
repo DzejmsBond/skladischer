@@ -76,7 +76,7 @@ options:
 timeout: 1200s  # Adjust timeout as necessary
 
 substitutions:
-  _GKE_CLUSTER: skladischer-cluster1
+  _GKE_CLUSTER: skladischer-cluster-1
   _K8S_APP_NAME: deployment-envvars
   _GKE_LOCATION: europe-west3
   _K8S_NAMESPACE: default
@@ -85,6 +85,6 @@ substitutions:
   _DOCKERFILE_NAME: Dockerfile
   _IMAGE_NAME: gcr.io/first-hearth-447116-s1/github.com/dzejmsbond/skladischer
   _GCP_PROJECT: first-hearth-447116-s1
-  _CLUSTER_NAME: skladischer-cluster1
+  _CLUSTER_NAME: skladischer-cluster-1
   _CLUSTER_REGION: europe-west3
   _RELEASE_NAME: storage-ms
