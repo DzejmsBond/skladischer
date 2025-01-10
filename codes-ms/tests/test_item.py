@@ -3,24 +3,20 @@
 
 # Enable async testing.
 import pytest
-from unittest.mock import AsyncMock, patch
+from httpx import AsyncClient
 
 # Internal app dependencies.
-from app.services import storage_utils, user_utils, item_utils
-from app.schemas import storage_schemas, user_schemas, item_schemas
+from app.services import storage_utils
+from app.services import user_utils
+from app.services import item_utils
+from app.schemas import storage_schemas
+from app.schemas import user_schemas
+from app.schemas import item_schemas
 from app.helpers import ErrorResponse as Err
-from app.helpers import get_collection as gc
-from .helpers import get_collection, USERNAME
-
-# NOTE: If the function passed to the patch should mimic an async one use:
-# CODE: get_collection())
 
 @pytest.mark.anyio
-@patch("app.services.user_utils.get_collection", get_collection)
-@patch("app.services.storage_utils.get_collection", get_collection)
-@patch("app.services.item_utils.get_collection", get_collection)
-async def test_create_item(client):
-    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
+async def test_create_item(client: AsyncClient):
+    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name="Ana Novak"))
     assert not isinstance(user_id, Err)
     storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
     assert not isinstance(storage_name, Err)
@@ -29,11 +25,8 @@ async def test_create_item(client):
     assert response.status_code == 200
 
 @pytest.mark.anyio
-@patch("app.services.user_utils.get_collection", get_collection)
-@patch("app.services.storage_utils.get_collection", get_collection)
-@patch("app.services.item_utils.get_collection", get_collection)
-async def test_get_item(client):
-    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
+async def test_get_item(client: AsyncClient):
+    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name="Ana Novak"))
     assert not isinstance(user_id, Err)
     storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
     assert not isinstance(storage_name, Err)
@@ -44,11 +37,8 @@ async def test_get_item(client):
     assert response.status_code == 200
 
 @pytest.mark.anyio
-@patch("app.services.user_utils.get_collection", get_collection)
-@patch("app.services.storage_utils.get_collection", get_collection)
-@patch("app.services.item_utils.get_collection", get_collection)
-async def test_delete_item(client):
-    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
+async def test_delete_item(client: AsyncClient):
+    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name="Ana Novak"))
     assert not isinstance(user_id, Err)
     storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
     assert not isinstance(storage_name, Err)
@@ -59,11 +49,8 @@ async def test_delete_item(client):
     assert response.status_code == 200
 
 @pytest.mark.anyio
-@patch("app.services.user_utils.get_collection", get_collection)
-@patch("app.services.storage_utils.get_collection", get_collection)
-@patch("app.services.item_utils.get_collection", get_collection)
-async def test_update_item(client):
-    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
+async def test_update_item(client: AsyncClient):
+    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name="Ana Novak"))
     assert not isinstance(user_id, Err)
     storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
     assert not isinstance(storage_name, Err)
