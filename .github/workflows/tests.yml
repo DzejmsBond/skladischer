@@ -1,0 +1,34 @@
+name: Run Tests
+
+on:
+  push:
+    branches:
+      - test-main-merges
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code.
+        uses: actions/checkout@v3
+
+      - name: Set up Python.
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies from text file.
+        run: |
+          cd storage-ms
+          pip install -r dependencies.txt
+          pip install pytest
+
+      - name: Run Tests for Storage MS.
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_NAME: ${{ vars.DATABASE_NAME }}
+          COLLECTION: ${{ vars.COLLECTION }}
+        run: |
+          cd storage-ms
+          pytest tests
