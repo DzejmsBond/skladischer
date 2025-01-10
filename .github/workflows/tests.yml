@@ -32,3 +32,14 @@ jobs:
         run: |
           cd storage-ms
           pytest tests
+
+      - name: Run Tests for Code Generator MS.
+        env:
+          RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+          RAPIDAPI_URL: ${{ vars.RAPIDAPI_URL }}
+          RAPIDAPI_HOST: ${{ vars.RAPIDAPI_HOST }}
+        run: |
+          cd codes-ms
+          pytest tests
+          
+      
