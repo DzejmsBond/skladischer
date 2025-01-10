@@ -15,6 +15,7 @@ from bson import ObjectId as Id
 async def test_create_code(client, encoded_image):
     """
     Test creating a QR code based on user.
+    The call to the code generation API is mimicked in order to avoid third party API calls in tests.
 
     Asserts:
         - The item creation API responds with a 200 status code.
