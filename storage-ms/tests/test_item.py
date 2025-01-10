@@ -13,7 +13,7 @@ from app.helpers import get_collection as gc
 from bson import ObjectId as Id
 from .helpers import get_collection, USERNAME
 
-# NOTE: If the function passed to the patch should mimic an async one use:
+# NOTE: If the function passed to the patch should mimic an async one use do the following:
 # CODE: AsyncMock(return_value=get_collection())
 
 @pytest.mark.anyio
