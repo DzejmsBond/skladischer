@@ -7,7 +7,7 @@ steps:
       - "-c"
       - |
         pip install sphinx
-        cd storage-ms
+        cd codes-ms
         pip install -r dependencies.txt
         pip install pydata-sphinx-theme
         cd docs
@@ -61,9 +61,9 @@ steps:
       - 'upgrade'
       - '--install'
       - '${_RELEASE_NAME}'
-      - './storage-ms/docs/helm'
+      - './codes-ms/docs/helm'
       - '-f'
-      - './storage-ms/docs/helm/values.yaml'
+      - './codes-ms/docs/helm/values.yaml'
       - '--set'
       - 'image.repository=$_DOCS_IMAGE_NAME'
       - '--set'
@@ -86,10 +86,10 @@ timeout: 1200s  # Adjust timeout as necessary
 
 substitutions:
   _DOCS_DOCKERFILE_NAME: Dockerfile
-  _DOCS_DOCKERFILE_DIR: storage-ms/docs
-  _DOCS_IMAGE_NAME: gcr.io/first-hearth-447116-s1/github.com/dzejmsbond/storage-ms-docs
+  _DOCS_DOCKERFILE_DIR: codes-ms/docs
+  _DOCS_IMAGE_NAME: gcr.io/first-hearth-447116-s1/github.com/dzejmsbond/codes-ms-docs
   _GCP_PROJECT: first-hearth-447116-s1
   _CLUSTER_NAME: skladischer-cluster-1
   _CLUSTER_REGION: europe-west3
-  _RELEASE_NAME: storage-ms-docs
+  _RELEASE_NAME: codes-ms-docs
     #TODO: centralize configuration
