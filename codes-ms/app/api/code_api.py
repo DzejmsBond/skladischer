@@ -2,6 +2,7 @@
 # Date created: 5.12.2024
 
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import PlainTextResponse
 
 from ..services import code_utils as utils
 from ..helpers.error import ErrorResponse as Err
@@ -12,7 +13,7 @@ router = APIRouter(
     tags=["codes"]
 )
 
-@router.post("/create-code", status_code=200)
+@router.post("/create-code", status_code=200, response_class=PlainTextResponse)
 async def create_code(code_schema : schema.CodeCreate):
     """
     This endpoint allows the creation of a new item code.
@@ -24,7 +25,7 @@ async def create_code(code_schema : schema.CodeCreate):
         HTTPException: If an error occurs during item creation.
 
     Returns:
-        dict: A success message if the item is created successfully.
+        PlainTextResponse: The encoded QR code image in string format.
     """
 
     result = await utils.create_code(code_schema)

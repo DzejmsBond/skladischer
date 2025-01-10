@@ -14,7 +14,7 @@ from bson import ObjectId as Id
 from .helpers import get_collection, USERNAME
 
 # NOTE: If the function passed to the patch should mimic an async one use:
-# CODE: get_collection())
+# CODE: AsyncMock(return_value=get_collection())
 
 @pytest.mark.anyio
 @patch("app.services.user_utils.get_collection", get_collection)

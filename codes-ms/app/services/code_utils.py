@@ -10,6 +10,23 @@ from ..config import RAPIDAPI_HOST, RAPIDAPI_KEY, RAPIDAPI_URL, SIZE
 # used in a similar manner as curl commands that can process async functions.
 from httpx import AsyncClient
 
+async def get_code(headers: dict, params: dict) -> Err | str:
+    """
+       Create a request from `headers` and `params`.
+
+       Args:
+           headers (dict): Headers of the HTTP GET request.
+           params (dict): Parameters of the HTTP GET request.
+
+       Returns:
+           ErrorResponse | str: The error response if an error occurred or response text otherwise.
+       """
+
+    response = await AsyncClient().get(RAPIDAPI_URL, headers=headers, params=params)
+    if response.status_code == 200:
+        return response.text
+    return Err(message=f"Could not generate code: {response.text}", code=response.status_code)
+
 # TODO: Should colors be represented in HEX?
 #        Good simple library for colors is 'webcolors'.
 async def create_code(code : schema.CodeCreate) -> Err | str:
@@ -43,10 +60,8 @@ async def create_code(code : schema.CodeCreate) -> Err | str:
             params["label_alignment"] = code.label_alignment
             params["label_size"] = code.label_size
 
-        response = await AsyncClient().get(RAPIDAPI_URL, headers=headers, params=params)
-        if response.status_code == 200:
-            return response.text
-        return Err(message=f"Could not generate code: {response.text}", code=response.status_code)
+        response = await get_code(headers, params)
+        return response
 
     except Exception as e:
         return Err(message=f"Unknown  exception: {e}", code=500)
