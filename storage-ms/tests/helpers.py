@@ -11,4 +11,12 @@ NEW_USERNAME = str(secrets.token_hex(32))
 #       Testing shouldn't be done on the same database.
 #       It seems that this function should not be async but it can mimic one!
 def get_collection():
+    """
+    This function mimics the behavior of an async function and returns
+    the database collection using a helper.
+
+    Returns:
+        Collection: The database collection instance.
+    """
+
     return gc()

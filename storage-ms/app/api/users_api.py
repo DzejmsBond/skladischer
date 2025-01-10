@@ -2,6 +2,7 @@
 # Date created: 5.12.2024
 
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import PlainTextResponse
 
 from ..schemas import user_schemas as schema
 from ..services import user_utils as utils
@@ -13,7 +14,7 @@ router = APIRouter(
     tags=["users"]
 )
 
-@router.post("/create-user", status_code=200)
+@router.post("/create-user", status_code=200, response_class=PlainTextResponse)
 async def create_user(user_schema : schema.UserCreate):
     """
     This endpoint allows creating a new user in the system.
@@ -25,7 +26,7 @@ async def create_user(user_schema : schema.UserCreate):
         HTTPException: If an error occurs during user creation.
 
     Returns:
-        dict: A success message if the user is created successfully.
+        PlainTextResponse: The user id if the user is created successfully.
     """
 
     result = await utils.create_user(user_schema)
@@ -33,7 +34,7 @@ async def create_user(user_schema : schema.UserCreate):
         print(f"Creating user failed.")
         raise HTTPException(status_code=result.code, detail=result.message)
 
-    return {"detail": f"User successfully created."}
+    return result
 
 @router.get("/{user_id}", response_model=User)
 async def get_user(user_id: str):
@@ -57,7 +58,7 @@ async def get_user(user_id: str):
 
     return result
 
-@router.delete("/{user_id}", status_code=200)
+@router.delete("/{user_id}", status_code=200, response_class=PlainTextResponse)
 async def delete_user(user_id: str):
     """
     This endpoint removes a user from the system by their identifier.
@@ -69,7 +70,7 @@ async def delete_user(user_id: str):
         HTTPException: If an error occurs during user deletion.
 
     Returns:
-        dict: A success message if the user is deleted successfully.
+        PlainTextResponse: The user id if the user is deleted successfully.
     """
 
     result = await utils.delete_user(user_id)
@@ -77,9 +78,9 @@ async def delete_user(user_id: str):
         print(f"Deleting user {user_id} failed.")
         raise HTTPException(status_code=result.code, detail=result.message)
 
-    return {"detail": "User successfully deleted."}
+    return result
 
-@router.put("/{user_id}/update-name", status_code=200)
+@router.put("/{user_id}/update-name", status_code=200, response_class=PlainTextResponse)
 async def update_display_name(user_id: str, new_name : str):
     """
     This endpoint allows updating the display name of a user.
@@ -92,16 +93,16 @@ async def update_display_name(user_id: str, new_name : str):
         HTTPException: If an error occurs during display name update.
 
     Returns:
-        dict: A success message if the display name is updated successfully.
+        PlainTextResponse: The user id if the users display name is updated successfully.
     """
 
     result = await utils.update_display_name(user_id, new_name)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 
-    return {"detail": f"User display name successfully updated with '{new_name}'."}
+    return result
 
-@router.put("/{user_id}/empty-storages", status_code=200)
+@router.put("/{user_id}/empty-storages", status_code=200, response_class=PlainTextResponse)
 async def empty_storages(user_id: str):
     """
     This endpoint clears all storages in a user's account.
@@ -113,11 +114,11 @@ async def empty_storages(user_id: str):
         HTTPException: If an error occurs during storages clearing.
 
     Returns:
-        dict: A success message if the storages are emptied successfully.
+        PlainTextResponse: The user id if the user storages are emptied successfully.
     """
 
     result = await utils.empty_storages(user_id)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 
-    return {"detail": f"User storages successfully emptied."}
+    return result

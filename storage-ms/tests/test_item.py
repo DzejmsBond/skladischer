@@ -10,6 +10,7 @@ from app.services import storage_utils, user_utils, item_utils
 from app.schemas import storage_schemas, user_schemas, item_schemas
 from app.helpers import ErrorResponse as Err
 from app.helpers import get_collection as gc
+from bson import ObjectId as Id
 from .helpers import get_collection, USERNAME
 
 # NOTE: If the function passed to the patch should mimic an async one use:
@@ -19,9 +20,18 @@ from .helpers import get_collection, USERNAME
 @patch("app.services.user_utils.get_collection", get_collection)
 @patch("app.services.storage_utils.get_collection", get_collection)
 @patch("app.services.item_utils.get_collection", get_collection)
-async def test_create_item(client):
+async def test_create_item(client, cleanup):
+    """
+    Test creating an item in a user's storage.
+
+    Asserts:
+        - The item creation API responds with a 200 status code.
+    """
+
+    # Test successful request.
     user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
     assert not isinstance(user_id, Err)
+    cleanup.append(Id(user_id))
     storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
     assert not isinstance(storage_name, Err)
     item_create = item_schemas.ItemCreate(name="Cheese", amount=2, description="Cheddar.").model_dump()
@@ -32,9 +42,18 @@ async def test_create_item(client):
 @patch("app.services.user_utils.get_collection", get_collection)
 @patch("app.services.storage_utils.get_collection", get_collection)
 @patch("app.services.item_utils.get_collection", get_collection)
-async def test_get_item(client):
+async def test_get_item(client, cleanup):
+    """
+    Test retrieving an item by its unique code.
+
+    Asserts:
+        - The item retrieval API responds with a 200 status code.
+    """
+
+    # Test successful request.
     user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
     assert not isinstance(user_id, Err)
+    cleanup.append(Id(user_id))
     storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
     assert not isinstance(storage_name, Err)
     item = item_schemas.ItemCreate(name="Cheese", amount=2, description="Cheddar.")
@@ -47,9 +66,18 @@ async def test_get_item(client):
 @patch("app.services.user_utils.get_collection", get_collection)
 @patch("app.services.storage_utils.get_collection", get_collection)
 @patch("app.services.item_utils.get_collection", get_collection)
-async def test_delete_item(client):
+async def test_delete_item(client, cleanup):
+    """
+    Test deleting an item from a user's storage.
+
+    Asserts:
+        - The item deletion API responds with a 200 status code.
+    """
+
+    # Test successful request.
     user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
     assert not isinstance(user_id, Err)
+    cleanup.append(Id(user_id))
     storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
     assert not isinstance(storage_name, Err)
     item = item_schemas.ItemCreate(name="Cheese", amount=2, description="Cheddar.")
@@ -62,9 +90,20 @@ async def test_delete_item(client):
 @patch("app.services.user_utils.get_collection", get_collection)
 @patch("app.services.storage_utils.get_collection", get_collection)
 @patch("app.services.item_utils.get_collection", get_collection)
-async def test_update_item(client):
+async def test_update_item(client, cleanup):
+    """
+    Test updating an item's details.
+
+    Asserts:
+        - The item update API responds with a 200 status code.
+        - Updating the item amount to 0 responds with a 400 status code.
+        - Cannot update an item if no fields are provided 400 status code.
+    """
+
+    # Test successful request.
     user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
     assert not isinstance(user_id, Err)
+    cleanup.append(Id(user_id))
     storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
     assert not isinstance(storage_name, Err)
     item = item_schemas.ItemCreate(name="Cheese", amount=2, description="Cheddar.")
@@ -77,4 +116,8 @@ async def test_update_item(client):
     # Test updating item amount to 0.
     update = item_schemas.ItemUpdate(amount=0).model_dump()
     response = await client.put(url=f"/users/{user_id}/{storage_name}/{item_code}", json=update)
+    assert response.status_code == 400
+
+    # Test updating item with zero update fields.
+    response = await client.put(url=f"/users/{user_id}/{storage_name}/{item_code}", json={})
     assert response.status_code == 400

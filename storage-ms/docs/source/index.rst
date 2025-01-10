@@ -12,6 +12,7 @@ Skladischer: Storage Manager
    helpers-module
    models-module
    api-module
+   tests-module
 
 Overview
 --------
@@ -106,3 +107,5 @@ Getting Started
 
        uvicorn app.main:app --reload
 
+
+Testing functions that can be used are documented in the :doc:`tests-module`.

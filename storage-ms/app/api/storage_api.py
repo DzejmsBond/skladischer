@@ -2,6 +2,7 @@
 # Date created: 5.12.2024
 
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import PlainTextResponse
 
 from ..schemas import storage_schemas as schema
 from ..services import storage_utils as utils
@@ -13,7 +14,7 @@ router = APIRouter(
     tags=["users"]
 )
 
-@router.post("/{user_id}/create-storage", status_code=200)
+@router.post("/{user_id}/create-storage", status_code=200, response_class=PlainTextResponse)
 async def create_storage(user_id: str, storage_schema : schema.StorageCreate):
     """
     This endpoint allows the creation of a storage in a user's account.
@@ -26,14 +27,14 @@ async def create_storage(user_id: str, storage_schema : schema.StorageCreate):
         HTTPException: If an error occurs during storage creation.
 
     Returns:
-        dict: A success message if the storage is created successfully.
+        PlainTextResponse: The storage name if the storage is created successfully.
     """
 
     result = await utils.create_storage(user_id, storage_schema)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 
-    return {"detail": f"Storage successfully created."}
+    return result
 
 @router.get("/{user_id}/{storage_name}", response_model=Storage)
 async def get_storage(user_id: str, storage_name: str):
@@ -57,7 +58,7 @@ async def get_storage(user_id: str, storage_name: str):
 
     return result
 
-@router.delete("/{user_id}/{storage_name}", status_code=200)
+@router.delete("/{user_id}/{storage_name}", status_code=200, response_class=PlainTextResponse)
 async def delete_storage(user_id: str, storage_name: str):
     """
     This endpoint removes a storage from a user's account by its name.
@@ -70,16 +71,16 @@ async def delete_storage(user_id: str, storage_name: str):
         HTTPException: If an error occurs during storage deletion.
 
     Returns:
-        dict: A success message if the storage is deleted successfully.
+        PlainTextResponse: The storage name if the storage is deleted successfully.
     """
 
     result = await utils.delete_storage(user_id, storage_name)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 
-    return {"detail": f"Storage '{storage_name}' successfully deleted."}
+    return result
 
-@router.put("/{user_id}/{storage_name}/update-name", status_code=200)
+@router.put("/{user_id}/{storage_name}/update-name", status_code=200, response_class=PlainTextResponse)
 async def update_storage_name(user_id: str, storage_name: str, new_name : str):
     """
     This endpoint allows renaming an existing storage in a user's account.
@@ -93,16 +94,16 @@ async def update_storage_name(user_id: str, storage_name: str, new_name : str):
         HTTPException: If an error occurs during storage name update.
 
     Returns:
-        dict: A success message if the storage name is updated successfully.
+        PlainTextResponse: The storage name if the storage name is updated successfully.
     """
 
     result = await utils.update_storage_name(user_id, storage_name, new_name)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 
-    return {"detail": f"Storage successfully updated with name '{new_name}'."}
+    return result
 
-@router.put("/{user_id}/{storage_name}/empty-storage", status_code=200)
+@router.put("/{user_id}/{storage_name}/empty-storage", status_code=200, response_class=PlainTextResponse)
 async def empty_storage(user_id: str, storage_name: str):
     """
     This endpoint clears all items from a specified storage.
@@ -115,11 +116,11 @@ async def empty_storage(user_id: str, storage_name: str):
         HTTPException: If an error occurs during storage clearing.
 
     Returns:
-        dict: A success message if the storage is emptied successfully.
+        PlainTextResponse: The storage name if the storage is emptied successfully.
     """
 
     result = await utils.empty_storage(user_id, storage_name)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 
-    return {"detail": f"Storage successfully emptied."}
+    return result

@@ -33,7 +33,7 @@ async def create_storage(user_id : str, storage : schema.StorageCreate) -> Err |
         storage_dict = Storage(name=name, content=[]).model_dump(by_alias=True)
 
         if not isinstance(await get_storage(user_id, name), Err):
-            return Err(message=f"Storage name '{name}' already exists and cannot be created.")
+            return Err(message=f"Storage name '{name}' already exists and cannot be created.", code=409)
 
         # Update the 'user' document's field 'storages',
         # using the operator '$push' to add a value to an array.
@@ -145,7 +145,7 @@ async def update_storage_name(user_id : str, storage_name : str, new_name : str)
             return Err(message=f"Cannot get DB collection.")
 
         if not isinstance(await get_storage(user_id, new_name), Err):
-            return Err(message=f"Storage name '{new_name}' already exists.")
+            return Err(message=f"Storage name '{new_name}' already exists.", code=409)
 
         result = await db_users.update_one(
             {"_id": Id(user_id), "storages.name": storage_name},

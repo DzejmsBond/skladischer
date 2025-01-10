@@ -17,32 +17,52 @@ app.include_router(users_api.router)
 app.include_router(storage_api.router)
 app.include_router(item_api.router)
 
+# NOTE: Whatever is done before the yields is executed before the test function
+# everything after yields is excecuted after test function.
+
 @pytest.fixture(scope="session")
 async def client():
+    """
+    This fixture initializes a FastAPI test client that persists across the testing session.
+
+    Yields:
+        AsyncClient: An asynchronous test client for sending API requests.
+    """
+
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         yield client
 
 # Remove this for both asyncio and trio testing.
 @pytest.fixture(scope="session")
 def anyio_backend():
+    """
+    Specify the backend for async tests.
+
+    Returns:
+        str: The async backend to use which is `asyncio`.
+    """
+
     return 'asyncio'
 
 # Clean up code from database after finished.
 @pytest.fixture(scope="function", autouse=True)
 async def cleanup():
-    yield
-    # Delete all users with display_name USERNAME or NEW_USERNAME.
+    """
+    This fixture deletes test data created during a test function's execution.
+
+    Yields:
+        list: A list of user IDs to be cleaned up after the test.
+    """
+
+    user_ids = []
+    yield user_ids
+
     db_users = await get_collection()
     if db_users is None:
         print(f" Database cleanup unsuccessful.")
         return
 
-    result = await db_users.delete_many({"display_name": USERNAME})
-    if not result.acknowledged:
-        print(f" Database cleanup unsuccessful.")
-        return
-
-    result = await db_users.delete_many({"display_name": NEW_USERNAME})
+    result = await db_users.delete_many({"_id": {"$in": user_ids}})
     if not result.acknowledged:
         print(f" Database cleanup unsuccessful.")
         return
