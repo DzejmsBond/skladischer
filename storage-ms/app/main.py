@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from ariadne import load_schema_from_path, make_executable_schema
 from ariadne.asgi import GraphQL
 
+from .graphql.resolvers import resolvers
 from .api import (
     users_api,
     item_api,
@@ -20,7 +21,7 @@ app = FastAPI(
 )
 
 type_defs = load_schema_from_path("app/graphql/schemas.graphql")
-schema = make_executable_schema(type_defs, item_api.query)
+schema = make_executable_schema(type_defs, [resolvers.query, resolvers.items])
 
 app.include_router(users_api.router)
 app.include_router(item_api.router)

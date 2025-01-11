@@ -3,25 +3,22 @@ schema {
 }
 
 type Query {
-    items(user_id: ID!, storage_name: String!, filtering: ItemFilter): Item!
-    hello: String!
+    items(user_id: String!, storage_name: String!, filtering: Filter!): [Item]
+    reachable: String!
 }
 
-input ItemFilter {
+input Filter {
+    code_id: String
     name: String
+    amount: Int
     description: String
-    amount: AmountFilter
-}
-
-input AmountFilter {
-    eq: Int
-    gt: Int
-    lt: Int
 }
 
 type Item {
-    codeId: ID!
+    code_id: String!
+    image_base64: String!
     name: String!
-    amount: Int
+    amount: Int!
     description: String
+    date_added: String!
 }

@@ -23,3 +23,13 @@ class ItemUpdate(BaseModel):
     name: Optional[str] = None
     amount: Optional[int] = None
     description: Optional[str] = None
+
+class ItemFilter(BaseModel):
+    """
+    This schema defines the fields that can be used for filetring an existing item.
+    """
+
+    code_id: Optional[str] = None
+    name: Optional[str] = None
+    amount: Optional[int] = None
+    description: Optional[str] = None

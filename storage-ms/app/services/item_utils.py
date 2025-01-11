@@ -153,7 +153,7 @@ async def update_item(user_id : str, storage_name : str, item_code : str, item :
             return Err(message=f"All update values for item '{item_code}' are empty.")
 
         if item.amount == 0:
-            return Err(message=f"Cannot create new item with zero instances.")
+            return Err(message=f"Cannot update an item with zero instances.")
 
         # Loop through fields and construct the update operation for the content array.
         fields_to_update = {
@@ -176,3 +176,51 @@ async def update_item(user_id : str, storage_name : str, item_code : str, item :
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
+
+async def filter_items(user_id: str, storage_name: str, flt: schema.ItemFilter) -> list[Item] | Err:
+    """
+    Retrieve and filter items in a user's storage.
+
+    Args:
+        user_id (str): The user ID owning the storage.
+        storage_name (str): The name of the storage.
+        flt (dict): The filtering criteria.
+
+    Returns:
+        ErrorResponse | List[Item]: A list of items matching the filter criteria, which can be an empty list.
+            If the query fails an error response is returned.
+    """
+    try:
+        db_users = await get_collection()
+        if db_users is None:
+            return Err(message=f"Cannot get DB collection.")
+
+        flt_dict = flt.model_dump(by_alias=True, exclude_unset=True)
+        if not flt_dict:
+            return Err(message=f"All filtering values are empty.")
+
+        fields_to_match = {
+            f"storages.content.{field}": value
+            for field, value in flt_dict.items()}
+
+        # A cleaner way of finding all matchings and a sanity check that there are unique.
+        pipeline = [
+            {"$match":
+                {"_id": Id(user_id),
+                "storages.name": storage_name}},
+            {"$unwind": "$storages"},  # Deconstruct the storages array.
+            {"$match": {"storages.name": storage_name}},  # Match the specific storage.
+            {"$unwind": "$storages.content"},  # Deconstruct the content array.
+            {"$match": fields_to_match}, # Match the specific item.
+            {"$replaceRoot": {"newRoot": "$storages.content"}}  # Replace the root document with the storage object.
+        ]
+
+        result = await db_users.aggregate(pipeline).to_list()
+        if not result:
+            return []
+
+        return result
+
+    except Exception as e:
+        return Err(message=f"Unknown exception: {e}", code=500)
+
