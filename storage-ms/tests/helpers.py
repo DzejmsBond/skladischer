@@ -2,10 +2,12 @@
 # Date created: 10.01.2025
 
 from app.helpers import get_collection as gc
+from pathlib import Path
 import secrets
 
 USERNAME = str(secrets.token_hex(32))
 NEW_USERNAME = str(secrets.token_hex(32))
+QUERY_PATH = Path(__file__).resolve().parent / 'helpers.graphql'
 
 # TODO: This should be included when the app reaches production.
 #       Testing shouldn't be done on the same database.

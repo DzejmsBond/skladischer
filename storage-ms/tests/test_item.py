@@ -11,7 +11,7 @@ from app.schemas import storage_schemas, user_schemas, item_schemas
 from app.helpers import ErrorResponse as Err
 from app.helpers import get_collection as gc
 from bson import ObjectId as Id
-from .helpers import get_collection, get_filter_vars, USERNAME
+from .helpers import get_collection, get_filter_vars, USERNAME, QUERY_PATH
 
 # NOTE: If the function passed to the patch should mimic an async one use:
 # CODE: AsyncMock(return_value=get_collection())
@@ -145,7 +145,7 @@ async def test_filter_item(client, cleanup):
     assert not isinstance(item_code, Err)
 
     # Load the query from a file.
-    with open("helpers.graphql", "r") as file:
+    with open(QUERY_PATH, "r") as file:
         query = file.read()
 
     variables = get_filter_vars(user_id, storage_name, "Cheese", 2)
