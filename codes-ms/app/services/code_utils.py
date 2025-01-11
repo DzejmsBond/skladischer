@@ -10,6 +10,12 @@ from ..config import RAPIDAPI_HOST, RAPIDAPI_KEY, RAPIDAPI_URL, SIZE
 # used in a similar manner as curl commands that can process async functions.
 from httpx import AsyncClient
 
+async def check_reachable():
+    response = await AsyncClient().get(RAPIDAPI_URL)
+    if response.status_code == 401:
+        return True
+    return False
+
 async def get_code(headers: dict, params: dict) -> Err | str:
     """
        Create a request from `headers` and `params`.
