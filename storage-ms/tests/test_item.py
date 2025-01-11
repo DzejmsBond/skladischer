@@ -11,7 +11,7 @@ from app.schemas import storage_schemas, user_schemas, item_schemas
 from app.helpers import ErrorResponse as Err
 from app.helpers import get_collection as gc
 from bson import ObjectId as Id
-from .helpers import get_collection, USERNAME
+from .helpers import get_collection, get_filter_vars, USERNAME
 
 # NOTE: If the function passed to the patch should mimic an async one use:
 # CODE: AsyncMock(return_value=get_collection())
@@ -121,3 +121,36 @@ async def test_update_item(client, cleanup):
     # Test updating item with zero update fields.
     response = await client.put(url=f"/users/{user_id}/{storage_name}/{item_code}", json={})
     assert response.status_code == 400
+
+@pytest.mark.anyio
+@patch("app.services.user_utils.get_collection", get_collection)
+@patch("app.services.storage_utils.get_collection", get_collection)
+@patch("app.services.item_utils.get_collection", get_collection)
+async def test_filter_item(client, cleanup):
+    """
+    Test filtering items.
+
+    Asserts:
+        - The item update API responds with a 200 status code.
+    """
+
+    # Test successful request.
+    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
+    assert not isinstance(user_id, Err)
+    cleanup.append(Id(user_id))
+    storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
+    assert not isinstance(storage_name, Err)
+    item = item_schemas.ItemCreate(name="Cheese", amount=2, description="Cheddar.")
+    item_code = await item_utils.create_item(user_id, storage_name, item)
+    assert not isinstance(item_code, Err)
+
+    # Load the query from a file.
+    with open("helpers.graphql", "r") as file:
+        query = file.read()
+
+    variables = get_filter_vars(user_id, storage_name, "Cheese", 2)
+    response = await client.post(url=f"/users/", json={"query": query, "variables": variables})
+    assert response.status_code == 200
+    variables = get_filter_vars(user_id, storage_name, "Cheese", 1)
+    response = await client.post(url=f"/users/", json={"query": query, "variables": variables})
+    assert response.status_code == 200

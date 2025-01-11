@@ -20,3 +20,13 @@ def get_collection():
     """
 
     return gc()
+
+def get_filter_vars(user_id, storage_name, name, amount):
+    return {
+        "user_id": user_id,
+        "storage_name": storage_name,
+        "filtering": {
+            "name": name,
+            "amount": amount
+        }
+    }
