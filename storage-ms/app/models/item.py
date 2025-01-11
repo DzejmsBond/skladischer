@@ -20,6 +20,6 @@ class Item(BaseModel):
     code_id: str = Field(default_factory= lambda : str(ObjectId()))
     image_base64: str = Field(default_factory=lambda : secrets.token_hex(16) )
     name: str
-    amount: Optional[int] = Field(default=1)
+    amount: int = Field(default=1)
     description: Optional[str] = Field(default=None)
     date_added: datetime = Field(default_factory=lambda data : datetime.now(tz=timezone.utc))

@@ -1,0 +1,7 @@
+query FilterItems($user_id: String!, $storage_name: String!, $filtering: Filter!) {
+    items(user_id: $user_id, storage_name: $storage_name, filtering: $filtering) {
+        code_id
+        description
+        amount
+    }
+}

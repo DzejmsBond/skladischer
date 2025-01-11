@@ -1,8 +1,11 @@
 # Author: Nina Mislej
 # Date created: 5.12.2024
 
+# REST FastAPI dependencies.
 from fastapi import APIRouter
 from fastapi.responses import PlainTextResponse
+
+# Internal dependencies.
 from ..helpers.database_helpers import get_collection
 
 router = APIRouter()

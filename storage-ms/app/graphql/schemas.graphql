@@ -1,0 +1,24 @@
+schema {
+    query: Query
+}
+
+type Query {
+    items(user_id: String!, storage_name: String!, filtering: Filter!): [Item]
+    reachable: String!
+}
+
+input Filter {
+    code_id: String
+    name: String
+    amount: Int
+    description: String
+}
+
+type Item {
+    code_id: String!
+    image_base64: String!
+    name: String!
+    amount: Int!
+    description: String
+    date_added: String!
+}
