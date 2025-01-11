@@ -1,14 +1,20 @@
 # Author: Nina Mislej
 # Date created: 5.12.2024
 
+# REST FastAPI dependencies.
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import PlainTextResponse
 
+# GraphQL dependencies.
+from ariadne import QueryType
+
+# Internal dependencies.
 from ..schemas import item_schemas as schema
 from ..models.item import Item
 from ..services import item_utils as utils
 from ..helpers.error import ErrorResponse as Err
 
+query = QueryType()
 router = APIRouter(
     prefix="/users",
     tags=["users"]
@@ -108,3 +114,7 @@ async def update_item(user_id: str, storage_name: str,  item_code: str, item : s
         raise HTTPException(status_code=result.code, detail=result.message)
 
     return result
+
+@query.field("hello")
+def resolve_hello(*_):
+    return "Hello world!"

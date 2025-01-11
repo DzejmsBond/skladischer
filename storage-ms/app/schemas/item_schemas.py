@@ -4,6 +4,8 @@
 from pydantic import BaseModel
 from typing import Optional
 
+# These are pydantic models used by FastAPI.
+
 class ItemCreate(BaseModel):
     """
     This schema defines the required and optional fields for creating a new item.

@@ -1,9 +1,11 @@
 # Author: Nina Mislej
 # Date created: 5.12.2024
 
+# REST FastAPI dependencies.
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import PlainTextResponse
 
+# Internal dependencies.
 from ..schemas import storage_schemas as schema
 from ..services import storage_utils as utils
 from ..models.storage import Storage

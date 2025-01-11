@@ -1,0 +1,27 @@
+schema {
+    query: Query
+}
+
+type Query {
+    items(user_id: ID!, storage_name: String!, filtering: ItemFilter): Item!
+    hello: String!
+}
+
+input ItemFilter {
+    name: String
+    description: String
+    amount: AmountFilter
+}
+
+input AmountFilter {
+    eq: Int
+    gt: Int
+    lt: Int
+}
+
+type Item {
+    codeId: ID!
+    name: String!
+    amount: Int
+    description: String
+}

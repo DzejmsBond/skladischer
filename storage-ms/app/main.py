@@ -3,7 +3,14 @@
 
 import uvicorn
 from fastapi import FastAPI
-from .api import users_api, item_api, storage_api, health_check_api
+from ariadne import load_schema_from_path, make_executable_schema
+from ariadne.asgi import GraphQL
+
+from .api import (
+    users_api,
+    item_api,
+    storage_api,
+    health_check_api)
 
 app = FastAPI(
     title="Storage Managment Microservice",
@@ -12,10 +19,18 @@ app = FastAPI(
     openapi_url="/openapi.json"   # OpenAPI schema URL
 )
 
+type_defs = load_schema_from_path("app/graphql/schemas.graphql")
+schema = make_executable_schema(type_defs, item_api.query)
+
 app.include_router(users_api.router)
 app.include_router(item_api.router)
 app.include_router(storage_api.router)
 app.include_router(health_check_api.router)
+
+# To test the endpoint use:
+# CODE: GraphQL(schema, debug=True)
+app.mount("/users/", GraphQL(schema, debug=True))
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
