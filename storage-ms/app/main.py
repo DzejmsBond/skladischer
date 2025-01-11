@@ -5,6 +5,7 @@ import uvicorn
 from fastapi import FastAPI
 from ariadne import load_schema_from_path, make_executable_schema
 from ariadne.asgi import GraphQL
+from pathlib import Path
 
 from .graphql import resolvers
 from .api import (
@@ -21,7 +22,8 @@ app = FastAPI(
 )
 
 # Used by graphQL to create schemas.
-type_defs = load_schema_from_path("app/graphql/schemas.graphql")
+path = Path(__file__).resolve().parent / 'graphql' / 'schemas.graphql'
+type_defs = load_schema_from_path(path)
 schema = make_executable_schema(type_defs, [resolvers.query, resolvers.items])
 
 app.include_router(users_api.router)
