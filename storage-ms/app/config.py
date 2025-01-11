@@ -17,3 +17,4 @@ COLLECTION = os.getenv("COLLECTION")
 
 # Other microservices.
 CODES_MS_HOST = os.getenv("CODES_MS_HOST")
+CODES_MS_PORT = os.getenv("CODES_MS_PORT")

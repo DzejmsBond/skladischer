@@ -34,8 +34,7 @@ jobs:
            DATABASE_NAME: ${{ vars.DATABASE_NAME }}
            COLLECTION: ${{ vars.COLLECTION }}
         run: |
-           cd storage-ms
-           pytest tests
+           pytest storage-ms/tests
 
       - name: Run Tests for Code Generator MS.
         env:
@@ -43,6 +42,5 @@ jobs:
            RAPIDAPI_URL: ${{ vars.RAPIDAPI_URL }}
            RAPIDAPI_HOST: ${{ vars.RAPIDAPI_HOST }}
         run: |
-           cd codes-ms
-           pytest tests
+           pytest storage-ms/tests
       
