@@ -24,9 +24,14 @@ jobs:
 
       - name: Install dependencies from text file.
         run: |
-          cd storage-ms
-          pip install -r requirements.txt
+          pip install -r storage-ms/requirements.txt
+          pip install -r codes-ms/requirements.txt
           pip install pytest
+
+      - name: Install Proto Module
+        run: |
+          pip install -e ./proto
+          echo "PYTHONPATH=$(pwd)">>$GITHUB_ENV
 
       - name: Run Tests for Storage MS.
         env:
@@ -34,7 +39,7 @@ jobs:
            DATABASE_NAME: ${{ vars.DATABASE_NAME }}
            COLLECTION: ${{ vars.COLLECTION }}
         run: |
-           pytest storage-ms/tests
+            pytest storage-ms/tests
 
       - name: Run Tests for Code Generator MS.
         env:
@@ -42,5 +47,5 @@ jobs:
            RAPIDAPI_URL: ${{ vars.RAPIDAPI_URL }}
            RAPIDAPI_HOST: ${{ vars.RAPIDAPI_HOST }}
         run: |
-           pytest storage-ms/tests
+            pytest codes-ms/tests
       
