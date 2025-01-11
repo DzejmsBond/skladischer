@@ -5,7 +5,7 @@
 from fastapi import APIRouter
 from fastapi.responses import PlainTextResponse
 
-
+# Internal dependencies.
 from ..helpers.database_helpers import get_collection
 
 router = APIRouter()

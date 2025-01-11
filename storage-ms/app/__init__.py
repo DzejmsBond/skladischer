@@ -26,3 +26,6 @@ from .schemas import (
     item_schemas,
     storage_schemas,
     user_schemas)
+
+from .graphql import (
+    resolvers)
