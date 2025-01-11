@@ -22,7 +22,7 @@ async def test_create_code(client, encoded_image):
     """
 
     # Test successful request.
-    with patch("app.services.code_utils.get_code", AsyncMock(return_value=encoded_image)):
+    with patch("app.services.code_utils.generate_code", AsyncMock(return_value=encoded_image)):
         code_id =  str(Id())
         code_data = code_schemas.CodeCreate(code_id=code_id, label="test code").model_dump()
         response = await client.post(url=f"/codes/create-code", json=code_data)

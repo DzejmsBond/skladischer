@@ -16,7 +16,7 @@ async def check_reachable():
         return True
     return False
 
-async def get_code(headers: dict, params: dict) -> Err | str:
+async def generate_code(headers: dict, params: dict) -> Err | str:
     """
        Create a request from `headers` and `params`.
 
@@ -66,7 +66,7 @@ async def create_code(code : schema.CodeCreate) -> Err | str:
             params["label_alignment"] = code.label_alignment
             params["label_size"] = code.label_size
 
-        response = await get_code(headers, params)
+        response = await generate_code(headers, params)
         return response
 
     except Exception as e:
