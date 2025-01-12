@@ -80,9 +80,9 @@ substitutions:
   _K8S_APP_NAME: storage-ms
   _GKE_LOCATION: europe-west3
   _K8S_NAMESPACE: default
-  _DOCKERFILE_DIR: storage-ms
+  _DOCKERFILE_DIR: .
+  _DOCKERFILE_NAME: storage-ms/Dockerfile
   _OUTPUT_BUCKET_PATH: first-hearth-447116-s1_cloudbuild/deploy
-  _DOCKERFILE_NAME: Dockerfile
   _IMAGE_NAME: gcr.io/first-hearth-447116-s1/github.com/dzejmsbond/storage-ms
   _GCP_PROJECT: first-hearth-447116-s1
   _CLUSTER_NAME: skladischer-cluster-1

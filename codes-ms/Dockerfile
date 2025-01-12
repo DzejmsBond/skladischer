@@ -4,7 +4,10 @@ LABEL authors="Jure"
 
 WORKDIR /app
 
-COPY . /app
+COPY codes-ms /app
+COPY proto /app/proto
+
+RUN export PYTHONPATH=. && pip install --no-cache-dir -e ./proto
 
 RUN pip install --no-cache-dir -r requirements.txt
 

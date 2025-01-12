@@ -6,6 +6,8 @@ steps:
     args:
       - "-c"
       - |
+        export PYTHONPATH=$(pwd)
+        pip install -e ./proto
         pip install sphinx
         cd storage-ms
         pip install -r requirements.txt
