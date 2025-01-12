@@ -23,6 +23,17 @@ def get_collection():
 
     return gc()
 
+def generate_item_code():
+    """
+    This function mimics the behavior of the code generation call
+    that is routed to another microservice.
+
+    Returns:
+        str: 'This is a test code id.' string used for testing.
+    """
+
+    return "This is a test code id."
+
 def get_filter_vars(user_id, storage_name, name, amount):
     return {
         "user_id": user_id,

@@ -11,7 +11,13 @@ from app.schemas import storage_schemas, user_schemas, item_schemas
 from app.helpers import ErrorResponse as Err
 from app.helpers import get_collection as gc
 from bson import ObjectId as Id
-from .helpers import get_collection, get_filter_vars, USERNAME, QUERY_PATH
+
+from .helpers import (
+    get_collection,
+    get_filter_vars,
+    generate_item_code,
+    USERNAME,
+    QUERY_PATH)
 
 # NOTE: If the function passed to the patch should mimic an async one use:
 # CODE: AsyncMock(return_value=get_collection())
@@ -20,6 +26,7 @@ from .helpers import get_collection, get_filter_vars, USERNAME, QUERY_PATH
 @patch("app.services.user_utils.get_collection", get_collection)
 @patch("app.services.storage_utils.get_collection", get_collection)
 @patch("app.services.item_utils.get_collection", get_collection)
+@patch("app.services.item_utils.create_code", AsyncMock(return_value=generate_item_code()))
 async def test_create_item(client, cleanup):
     """
     Test creating an item in a user's storage.
@@ -42,6 +49,7 @@ async def test_create_item(client, cleanup):
 @patch("app.services.user_utils.get_collection", get_collection)
 @patch("app.services.storage_utils.get_collection", get_collection)
 @patch("app.services.item_utils.get_collection", get_collection)
+@patch("app.services.item_utils.create_code", AsyncMock(return_value=generate_item_code()))
 async def test_get_item(client, cleanup):
     """
     Test retrieving an item by its unique code.
@@ -66,6 +74,7 @@ async def test_get_item(client, cleanup):
 @patch("app.services.user_utils.get_collection", get_collection)
 @patch("app.services.storage_utils.get_collection", get_collection)
 @patch("app.services.item_utils.get_collection", get_collection)
+@patch("app.services.item_utils.create_code", AsyncMock(return_value=generate_item_code()))
 async def test_delete_item(client, cleanup):
     """
     Test deleting an item from a user's storage.
@@ -90,6 +99,7 @@ async def test_delete_item(client, cleanup):
 @patch("app.services.user_utils.get_collection", get_collection)
 @patch("app.services.storage_utils.get_collection", get_collection)
 @patch("app.services.item_utils.get_collection", get_collection)
+@patch("app.services.item_utils.create_code", AsyncMock(return_value=generate_item_code()))
 async def test_update_item(client, cleanup):
     """
     Test updating an item's details.
@@ -126,6 +136,7 @@ async def test_update_item(client, cleanup):
 @patch("app.services.user_utils.get_collection", get_collection)
 @patch("app.services.storage_utils.get_collection", get_collection)
 @patch("app.services.item_utils.get_collection", get_collection)
+@patch("app.services.item_utils.create_code", AsyncMock(return_value=generate_item_code()))
 async def test_filter_item(client, cleanup):
     """
     Test filtering items.
