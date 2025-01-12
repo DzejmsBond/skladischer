@@ -12,3 +12,7 @@ This section documents the `api` module in the `app` package.
 .. automodule:: app.api
    :members:
    :undoc-members:
+
+.. automodule:: app.googlerpc
+   :members:
+   :undoc-members:

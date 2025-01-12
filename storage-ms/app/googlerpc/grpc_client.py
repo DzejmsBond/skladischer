@@ -12,6 +12,16 @@ from proto.config import CREATE_CODE_PORT
 import grpc
 
 async def create_code(item_code : str) -> None:
+    """
+    Sends a GRPC request to the CodeService to create a code for a given item.
+
+    Args:
+        item_code (str): The unique identifier of the item for which the code is created.
+
+    Returns:
+        str: The generated code image in Base64 format.
+    """
+
     async with grpc.aio.insecure_channel(f"{CODES_MS_HOST}:{CREATE_CODE_PORT}") as channel:
         stub = pb_grpc.CodeServiceStub(channel)
         response = await stub.CreateCode(pb.CodeRequest(item_code=item_code))
