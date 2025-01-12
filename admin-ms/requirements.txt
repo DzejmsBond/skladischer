@@ -36,3 +36,4 @@ websockets==14.1
 ariadne==0.24.0
 grpcio==1.69.0
 grpcio-tools==1.69.0
+bcrypt==4.2.1
