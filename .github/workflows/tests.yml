@@ -24,6 +24,7 @@ jobs:
         run: |
           pip install -r storage-ms/requirements.txt
           pip install -r codes-ms/requirements.txt
+          pip install -r admin-ms/requirements.txt
           pip install pytest
 
       - name: Install Proto Module
