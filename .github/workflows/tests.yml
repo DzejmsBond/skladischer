@@ -1,8 +1,6 @@
 name: Run Tests
 
 on:
-  pull_request:
-  merge_group:
   push:
     branches:
       - "*"
@@ -26,6 +24,7 @@ jobs:
         run: |
           pip install -r storage-ms/requirements.txt
           pip install -r codes-ms/requirements.txt
+          pip install -r admin-ms/requirements.txt
           pip install pytest
 
       - name: Install Proto Module
@@ -37,7 +36,7 @@ jobs:
         env:
            DATABASE_URL: ${{ secrets.DATABASE_URL }}
            DATABASE_NAME: ${{ vars.DATABASE_NAME }}
-           COLLECTION: ${{ vars.COLLECTION }}
+           COLLECTION: ${{ vars.COLLECTION_USERS }}
         run: |
             pytest storage-ms/tests
 
@@ -48,4 +47,11 @@ jobs:
            RAPIDAPI_HOST: ${{ vars.RAPIDAPI_HOST }}
         run: |
             pytest codes-ms/tests
-      
+
+      - name: Run Tests for Admin MS.
+        env:
+           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+           DATABASE_NAME: ${{ vars.DATABASE_NAME }}
+           COLLECTION: ${{ vars.COLLECTION_ADMIN }}
+        run: |
+            pytest admin-ms/tests

@@ -33,7 +33,6 @@ async def create_user(user_schema : schema.UserCreate):
 
     result = await utils.create_user(user_schema)
     if isinstance(result, Err):
-        print(f"Creating user failed.")
         raise HTTPException(status_code=result.code, detail=result.message)
 
     return result
@@ -55,7 +54,6 @@ async def get_user(user_id: str):
 
     result = await utils.get_user(user_id)
     if isinstance(result, Err):
-        print(f"Getting user {user_id} failed.")
         raise HTTPException(status_code=result.code, detail=result.message)
 
     return result
@@ -77,7 +75,6 @@ async def delete_user(user_id: str):
 
     result = await utils.delete_user(user_id)
     if isinstance(result, Err):
-        print(f"Deleting user {user_id} failed.")
         raise HTTPException(status_code=result.code, detail=result.message)
 
     return result
