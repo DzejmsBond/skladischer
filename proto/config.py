@@ -10,10 +10,5 @@ import os
 # CODE: ENV_PATH = Path(__file__).resolve().parent.parent / 'config.env'
 #       load_dotenv(dotenv_path=ENV_PATH)
 
-# Access variables.
-MONGO_URL = os.getenv("DATABASE_URL")
-DATABASE_NAME = os.getenv("DATABASE_NAME")
-COLLECTION = os.getenv("COLLECTION")
-
-# Other microservices.
-CODES_MS_HOST = os.getenv("CODES_MS_HOST")
+# Port variables.
+CREATE_CODE_PORT = os.getenv("CREATE_CODE_PORT")

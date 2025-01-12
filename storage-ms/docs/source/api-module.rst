@@ -16,3 +16,7 @@ This section documents the `api` module in the `app` package.
 .. automodule:: app.graphql
    :members:
    :undoc-members:
+
+.. automodule:: app.googlerpc
+   :members:
+   :undoc-members:

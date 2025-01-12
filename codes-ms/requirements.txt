@@ -33,3 +33,5 @@ typing_extensions==4.12.2
 uvicorn==0.32.1
 watchfiles==1.0.0
 websockets==14.1
+grpcio==1.69.0
+grpcio-tools==1.69.0

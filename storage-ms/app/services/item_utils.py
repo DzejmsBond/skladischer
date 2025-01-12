@@ -5,6 +5,7 @@ from ..schemas import item_schemas as schema
 from ..models.item import Item
 from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
+from ..googlerpc.grpc_client import create_code
 from bson import ObjectId as Id
 
 async def create_item(user_id : str, storage_name : str, item : schema.ItemCreate) -> Err | str:
@@ -17,6 +18,9 @@ async def create_item(user_id : str, storage_name : str, item : schema.ItemCreat
     already existant in the database cannot be created. If the database collection
     cannot be retrieved, due to any of these reasons or the input fails validation,
     an error response is returned.
+
+    When creating the item another microservice is called using GRPC to
+    create the 'base64' encoding of the item code image.
 
     Args:
         user_id (str): The identifier of the user creating the item.
@@ -36,6 +40,9 @@ async def create_item(user_id : str, storage_name : str, item : schema.ItemCreat
             return Err(message=f"Cannot create new item with zero instances.")
 
         item_model = Item(name=item.name, amount=item.amount, description=item.description)
+        image_base64 = await create_code(item_code=item_model.code_id)
+        item_model.image_base64 = image_base64
+
         item_dict = item_model.model_dump(by_alias=True)
         result = await db_users.update_one(
             {"_id": Id(user_id), "storages.name": storage_name},

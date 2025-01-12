@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package codeservice;
+
+service CodeService {
+  rpc CreateCode (CodeRequest) returns (CodeResponse);
+}
+
+message CodeRequest {
+  string item_code = 1;
+}
+
+message CodeResponse {
+  string image_base64 = 1;
+}

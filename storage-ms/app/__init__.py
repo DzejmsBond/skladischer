@@ -29,3 +29,6 @@ from .schemas import (
 
 from .graphql import (
     resolvers)
+
+from .googlerpc import (
+    grpc_client)
