@@ -23,17 +23,17 @@ async def create_credentials(credentials : schema.CreateCredentials) -> Err | st
     """
 
     try:
-        db_users = await get_collection()
-        if db_users is None:
+        db_admin = await get_collection()
+        if db_admin is None:
             return Err(message=f"Cannot get DB collection.")
 
-        result = await db_users.find_one({"username": credentials.username})
+        result = await db_admin.find_one({"username": credentials.username})
         if result:
             return Err(message=f"User with username {credentials.username} already exists.")
 
         user_dict = Credentials(username=credentials.username,
                                 password=credentials.password).model_dump(by_alias=True)
-        result = await db_users.insert_one(user_dict)
+        result = await db_admin.insert_one(user_dict)
         if not result.acknowledged:
             return Err(message=f"Creating user failed.")
 
@@ -61,15 +61,17 @@ async def validate_credentials(username: str, credentials : schema.ValidateCrede
     """
 
     try:
-        db_users = await get_collection()
-        if db_users is None:
+        db_admin = await get_collection()
+        if db_admin is None:
             return Err(message=f"Cannot get DB collection.")
 
-        result  = await db_users.find_one(
-            {"username": credentials.username, "password": credentials.password})
+        result  = await db_admin.find_one({"username": username})
+        if not result or "password" not in result or "username" not in result:
+            return Err(message=f"User validation '{username}' failed.", code=403)
 
-        if not result or "username" not in result or "password" not in result:
-            return Err(message=f"Getting user '{credentials.username}' failed.")
+        check = checkpw(credentials.password.encode('utf8'), result["password"].encode('utf8'))
+        if not check:
+            return Err(message=f"Password for '{username}' is wrong.", code=403)
         return result["username"]
 
     except Exception as e:
@@ -92,15 +94,18 @@ async def delete_credentials(username: str, credentials : schema.ValidateCredent
     """
 
     try:
-        db_users = await get_collection()
-        if db_users is None:
+        db_admin = await get_collection()
+        if db_admin is None:
             return Err(message=f"Cannot get DB collection.")
 
-        result = await db_users.delete_one(
-            {"username": credentials.username, "password": credentials.password})
+        check = await validate_credentials(username, credentials)
+        if isinstance(check, Err):
+            return check
+
+        result = await db_admin.delete_one({"username": username})
         if not result.acknowledged or result.deleted_count == 0:
             return Err(message=f"Deleting user '{user_id}' failed.")
-        return credentials.username
+        return username
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
@@ -122,17 +127,21 @@ async def update_password(username: str, credentials: schema.UpdateCredentials) 
     """
 
     try:
-        db_users = await get_collection()
-        if db_users is None:
+        db_admin = await get_collection()
+        if db_admin is None:
             return Err(message=f"Cannot get DB collection.")
 
-        result = await db_users.update_one(
-            {"username": credentials.username, "password": credentials.password},
+        check = await validate_credentials(username, schema.ValidateCredentials(password=credentials.password))
+        if isinstance(check, Err):
+            return check
+
+        result = await db_admin.update_one(
+            {"username": username},
             {"$set": {"password": credentials.new_password}})
 
         if not result.acknowledged or result.modified_count == 0:
             return Err(message=f"Updating the password failed.")
-        return credentials.username
+        return username
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)

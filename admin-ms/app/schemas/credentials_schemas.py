@@ -29,11 +29,6 @@ class ValidateCredentials(BaseModel):
 
     password: str
 
-    @field_validator('password', mode='before')
-    @classmethod
-    def hash_password(cls, ps):
-        return hashpw(ps.encode('utf8'), gensalt()).decode('utf8')
-
 class UpdateCredentials(BaseModel):
     """
     This schema defines the fields required to create a new user.
@@ -42,11 +37,6 @@ class UpdateCredentials(BaseModel):
 
     password: str
     new_password: str
-
-    @field_validator('password', mode='before')
-    @classmethod
-    def hash_password(cls, ps: str)-> str:
-        return hashpw(ps.encode('utf8'), gensalt()).decode('utf8')
 
     @field_validator('new_password', mode='before')
     @classmethod

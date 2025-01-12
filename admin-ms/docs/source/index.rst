@@ -12,6 +12,7 @@ Skladischer: Credentials Manager
    helpers-module
    models-module
    api-module
+   tests-module
 
 Overview
 --------
