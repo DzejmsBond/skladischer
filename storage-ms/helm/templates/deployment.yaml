@@ -67,6 +67,17 @@ spec:
                 configMapKeyRef:
                   key: {{ .Values.env.collection.configMapKey }}
                   name: {{ .Values.env.collection.configMapName }}
+            - name: CODES_MS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: {{ .Values.env.codesmsHost.configMapKey }}
+                  name: {{ .Values.env.codesmsHost.configMapName }}
+            - name: CREATE_CODE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: {{ .Values.env.codesmsPort.configMapKey }}
+                  name: {{ .Values.env.codesmsPort.configMapName }}
+
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}

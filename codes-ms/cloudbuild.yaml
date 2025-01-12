@@ -1,4 +1,5 @@
 steps:
+  # 1: Build Docker image
   - name: gcr.io/cloud-builders/docker
     args:
       - build
@@ -10,14 +11,14 @@ steps:
     dir: $_DOCKERFILE_DIR
     id: Build
 
-  # Step 2: Push the Docker image
+  # 2: Push the image
   - name: gcr.io/cloud-builders/docker
     args:
       - push
       - '$_IMAGE_NAME:$COMMIT_SHA'
     id: Push
 
-  # Step 4: Set up Google Cloud project
+  # 3: Set up Google Cloud project
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'config'
@@ -26,7 +27,7 @@ steps:
       - '${_GCP_PROJECT}'
     id: Set Project
 
-  # Step 5: Authenticate kubectl
+  # 4: Authenticate kubectl
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'container'
@@ -37,6 +38,7 @@ steps:
       - '${_CLUSTER_REGION}'
     id: Authenticate Kubernetes
 
+  # 5: Run helm chart for app and deploy
   - name: 'gcr.io/$_GCP_PROJECT/helm'
     args:
       - 'upgrade'
@@ -80,9 +82,9 @@ substitutions:
   _K8S_APP_NAME: codes-ms
   _GKE_LOCATION: europe-west3
   _K8S_NAMESPACE: default
-  _DOCKERFILE_DIR: codes-ms
+  _DOCKERFILE_DIR: .
+  _DOCKERFILE_NAME: codes-ms/Dockerfile
   _OUTPUT_BUCKET_PATH: first-hearth-447116-s1_cloudbuild/deploy
-  _DOCKERFILE_NAME: Dockerfile
   _IMAGE_NAME: gcr.io/first-hearth-447116-s1/github.com/dzejmsbond/codes-ms #TODO: make these names a bit prettier
   _GCP_PROJECT: first-hearth-447116-s1
   _CLUSTER_NAME: skladischer-cluster-1

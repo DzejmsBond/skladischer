@@ -6,6 +6,8 @@ steps:
     args:
       - "-c"
       - |
+        export PYTHONPATH=$(pwd)
+        pip install -e ./proto
         pip install sphinx
         cd codes-ms
         pip install -r requirements.txt
@@ -14,7 +16,6 @@ steps:
         make html
 
     id: Make Docs
-        # pip install -r requirements.txt
 
   # 2: Build Docker image
   - name: gcr.io/cloud-builders/docker

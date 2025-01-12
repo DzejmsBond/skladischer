@@ -1,6 +1,20 @@
-# Default values for helm.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+# Environment variables
+env:
+  databaseUrl:
+    secretName: "database-url"
+    secretKey: "DATABASE_URL"
+  databaseName:
+    configMapName: "storage-ms-config"
+    configMapKey: "DATABASE_NAME"
+  collection:
+    configMapName: "storage-ms-config"
+    configMapKey: "COLLECTION"
+  codesmsHost:
+    configMapName: "storage-ms-config"
+    configMapKey: "CODES_MS_HOST"
+  codesmsPort:
+    configMapName: "codes-ms-config"
+    configMapKey: "CREATE_CODE_PORT"
 
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 replicaCount: 2
@@ -120,16 +134,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-# Environment variables
-env:
-  databaseUrl:
-    secretName: "database-url"
-    secretKey: "DATABASE_URL"
-  databaseName:
-    configMapName: "storage-ms-config"
-    configMapKey: "DATABASE_NAME"
-  collection:
-    configMapName: "storage-ms-config"
-    configMapKey: "COLLECTION"
-# Values for these can be passed by helm by /kubectl machine probably.
