@@ -6,6 +6,7 @@ from ..schemas import credentials_schemas as schema
 from ..models.credentials import Credentials
 from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
+from bcrypt import checkpw
 
 async def create_credentials(credentials : schema.CreateCredentials) -> Err | str:
     """
@@ -25,6 +26,10 @@ async def create_credentials(credentials : schema.CreateCredentials) -> Err | st
         db_users = await get_collection()
         if db_users is None:
             return Err(message=f"Cannot get DB collection.")
+
+        result = await db_users.find_one({"username": credentials.username})
+        if result:
+            return Err(message=f"User with username {credentials.username} already exists.")
 
         user_dict = Credentials(username=credentials.username,
                                 password=credentials.password).model_dump(by_alias=True)

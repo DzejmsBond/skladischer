@@ -17,7 +17,7 @@ router = APIRouter(
 )
 
 @router.post("/create-user", status_code=200, response_class=PlainTextResponse)
-async def create_user(credentials_schema : schema.CreateCredentials):
+async def create_credentials(credentials_schema : schema.CreateCredentials):
     """
     This endpoint allows creating new user credentials in the system.
 
@@ -38,7 +38,7 @@ async def create_user(credentials_schema : schema.CreateCredentials):
     return result
 
 @router.get("/{username}", response_class=PlainTextResponse)
-async def validate_user(username: str, credentials_schema : schema.ValidateCredentials):
+async def validate_credentials(username: str, credentials_schema : schema.ValidateCredentials):
     """
     This endpoint validates the details of a user based on their username and password.
 
@@ -60,7 +60,7 @@ async def validate_user(username: str, credentials_schema : schema.ValidateCrede
     return result
 
 @router.delete("/{username}", status_code=200, response_class=PlainTextResponse)
-async def delete_user(username: str, credentials_schema : schema.ValidateCredentials):
+async def delete_credentials(username: str, credentials_schema : schema.ValidateCredentials):
     """
     This endpoint removes a user from the system by their credentials.
 
