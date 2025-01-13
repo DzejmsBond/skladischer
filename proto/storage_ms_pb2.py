@@ -3,7 +3,6 @@
 # NO CHECKED-IN PROTOBUF GENCODE
 # source: storage_ms.proto
 # Protobuf Python Version: 5.29.0
-"""Generated protocol buffer code."""
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version

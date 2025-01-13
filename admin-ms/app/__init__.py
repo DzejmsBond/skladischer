@@ -13,3 +13,6 @@ from .models import (
 
 from .schemas import (
     credentials_schemas)
+
+from .googlerpc import (
+    grpc_client)

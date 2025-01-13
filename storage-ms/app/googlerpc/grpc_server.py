@@ -27,6 +27,17 @@ class StorageService(pb_grpc.StorageServiceServicer):
     """
 
     async def CreateUser(self, request, context):
+        """
+        Handles the gRPC request to create a new user.
+
+        Args:
+            request: The gRPC request containing the `username` to create.
+            context: The gRPC context for managing request metadata and status.
+
+        Returns:
+            pb.UserResponse: A response containing the created username.
+                             Returns an empty response with a 400 status if an error occurs.
+        """
         user_info = schema.UserCreate(username=request.username)
         result = await utils.create_user(user_info)
         if isinstance(result, Err):
@@ -36,6 +47,18 @@ class StorageService(pb_grpc.StorageServiceServicer):
         return pb.UserResponse(username=result)
 
     async def DeleteUser(self, request, context):
+        """
+        Handles the gRPC request to delete an existing user.
+
+        Args:
+            request: The gRPC request containing the `username` to delete.
+            context: The gRPC context for managing request metadata and status.
+
+        Returns:
+            pb.UserResponse: A response containing the deleted username.
+                             Returns an empty response with a 400 status if an error occurs.
+        """
+
         result = await utils.delete_user(request.username)
         if isinstance(result, Err):
             context.set_code(400)
