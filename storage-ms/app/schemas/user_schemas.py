@@ -10,6 +10,7 @@ class UserCreate(BaseModel):
     If the user does not specify a ``display_name`` the username will be used.
     """
 
+    username: str
     display_name: Optional[str] = None
 
 

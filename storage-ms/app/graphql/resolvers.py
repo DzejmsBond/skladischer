@@ -14,7 +14,7 @@ query = QueryType()
 items = ObjectType("Item")
 
 @query.field("items")
-async def resolve_items(_, info, user_id: str, storage_name: str, filtering: dict):
+async def resolve_items(_, info, username: str, storage_name: str, filtering: dict):
     """
     Resolver for fetching and filtering items in a storage.
     This resolver processes a GraphQL query to retrieve items stored in a specific
@@ -25,7 +25,7 @@ async def resolve_items(_, info, user_id: str, storage_name: str, filtering: dic
     Args:
         _ (Any): Placeholder for the parent resolver.
         info (GraphQLResolveInfo): Metadata about the query.
-        user_id (str): The identifier of the user owning the storage.
+        username (str): The username of the user owning the storage.
         storage_name (str): The name of the storage to fetch items from.
         filtering (dict): A dictionary containing filtering criteria for items.
             This is validated against the `ItemFilter` schema.
@@ -44,7 +44,7 @@ async def resolve_items(_, info, user_id: str, storage_name: str, filtering: dic
     except Exception as e:
         raise Exception(f"This filter does not adhere to the filtering possibilities.")
 
-    result = await utils.filter_items(user_id, storage_name, flt)
+    result = await utils.filter_items(username, storage_name, flt)
     if isinstance(result, Err):
         raise Exception(f"{result.message}")
     return result

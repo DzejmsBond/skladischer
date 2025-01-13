@@ -1,0 +1,23 @@
+
+syntax = "proto3";
+
+/* Implementation of all requests where the server is Storage Microservice
+should be done here. and not on the client side of the exchange. */
+
+package codeservice;
+
+/* Defines all remote procedure calls. */
+service StorageService {
+  rpc CreateUser (UserRequest) returns (UserResponse);
+  rpc DeleteUser (UserRequest) returns (UserResponse);
+}
+
+/* User request sent to the server. */
+message UserRequest {
+  string username = 1;
+}
+
+/* User response sent to the client. */
+message UserResponse {
+  string username = 1;
+}

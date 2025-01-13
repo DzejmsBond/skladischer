@@ -6,7 +6,7 @@ from pathlib import Path
 import secrets
 
 USERNAME = str(secrets.token_hex(32))
-NEW_USERNAME = str(secrets.token_hex(32))
+DISPLAYNAME = str(secrets.token_hex(32))
 QUERY_PATH = Path(__file__).resolve().parent / 'helpers.graphql'
 
 # TODO: This should be included when the app reaches production.
@@ -34,9 +34,9 @@ def generate_item_code():
 
     return "This is a test code id."
 
-def get_filter_vars(user_id, storage_name, name, amount):
+def get_filter_vars(username, storage_name, name, amount):
     return {
-        "user_id": user_id,
+        "username": username,
         "storage_name": storage_name,
         "filtering": {
             "name": name,

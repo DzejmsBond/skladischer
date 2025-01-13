@@ -10,7 +10,6 @@ from app.services import storage_utils, user_utils
 from app.schemas import storage_schemas, user_schemas
 from app.helpers import ErrorResponse as Err
 from app.helpers import get_collection as gc
-from bson import ObjectId as Id
 from .helpers import get_collection, USERNAME
 
 # NOTE: If the function passed to the patch should mimic an async one use:
@@ -29,15 +28,15 @@ async def test_create_storage(client, cleanup):
     """
 
     # Test successful request.
-    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
-    assert not isinstance(user_id, Err)
-    cleanup.append(Id(user_id))
+    username = await user_utils.create_user(user_schemas.UserCreate(username=USERNAME))
+    assert not isinstance(username, Err)
+    cleanup.append(username)
     storage_create = storage_schemas.StorageCreate(name="Fridge").model_dump()
-    response = await client.post(url=f"/users/{user_id}/create-storage", json=storage_create)
+    response = await client.post(url=f"/users/{username}/create-storage", json=storage_create)
     assert response.status_code == 200
 
     # Test duplicated name unsuccessful request.
-    response = await client.post(url=f"/users/{user_id}/create-storage", json=storage_create)
+    response = await client.post(url=f"/users/{username}/create-storage", json=storage_create)
     assert response.status_code == 409
 
 @pytest.mark.anyio
@@ -52,12 +51,12 @@ async def test_get_storage(client, cleanup):
     """
 
     # Test successful request.
-    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
-    assert not isinstance(user_id, Err)
-    cleanup.append(Id(user_id))
-    storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
+    username = await user_utils.create_user(user_schemas.UserCreate(username=USERNAME))
+    assert not isinstance(username, Err)
+    cleanup.append(username)
+    storage_name = await storage_utils.create_storage(username, storage_schemas.StorageCreate(name="Fridge"))
     assert not isinstance(storage_name, Err)
-    response = await client.get(url=f"/users/{user_id}/Fridge")
+    response = await client.get(url=f"/users/{username}/Fridge")
     assert response.status_code == 200
 
 @pytest.mark.anyio
@@ -72,12 +71,12 @@ async def test_delete_storage(client, cleanup):
     """
 
     # Test successful request.
-    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
-    assert not isinstance(user_id, Err)
-    cleanup.append(Id(user_id))
-    storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
+    username = await user_utils.create_user(user_schemas.UserCreate(username=USERNAME))
+    assert not isinstance(username, Err)
+    cleanup.append(username)
+    storage_name = await storage_utils.create_storage(username, storage_schemas.StorageCreate(name="Fridge"))
     assert not isinstance(storage_name, Err)
-    response = await client.delete(url=f"/users/{user_id}/Fridge")
+    response = await client.delete(url=f"/users/{username}/Fridge")
     assert response.status_code == 200
 
 @pytest.mark.anyio
@@ -93,17 +92,17 @@ async def test_update_storage_name(client, cleanup):
     """
 
     # Test successful request.
-    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
-    assert not isinstance(user_id, Err)
-    cleanup.append(Id(user_id))
-    storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
+    username = await user_utils.create_user(user_schemas.UserCreate(username=USERNAME))
+    assert not isinstance(username, Err)
+    cleanup.append(username)
+    storage_name = await storage_utils.create_storage(username, storage_schemas.StorageCreate(name="Fridge"))
     assert not isinstance(storage_name, Err)
-    response = await client.put(url=f"/users/{user_id}/Fridge/update-name", params={"new_name": "Freezer"})
+    response = await client.put(url=f"/users/{username}/Fridge/update-name", params={"new_name": "Freezer"})
     assert response.status_code == 200
 
     # Test duplicated name unsuccessful request.
-    storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Shelf"))
-    response = await client.put(url=f"/users/{user_id}/Freezer/update-name", params={"new_name": "Shelf"})
+    storage_name = await storage_utils.create_storage(username, storage_schemas.StorageCreate(name="Shelf"))
+    response = await client.put(url=f"/users/{username}/Freezer/update-name", params={"new_name": "Shelf"})
     assert response.status_code == 409
 
 @pytest.mark.anyio
@@ -118,10 +117,10 @@ async def test_delete_storage_items(client, cleanup):
     """
 
     # Test successful request.
-    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
-    assert not isinstance(user_id, Err)
-    cleanup.append(Id(user_id))
-    storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
+    username = await user_utils.create_user(user_schemas.UserCreate(username=USERNAME))
+    assert not isinstance(username, Err)
+    cleanup.append(username)
+    storage_name = await storage_utils.create_storage(username, storage_schemas.StorageCreate(name="Fridge"))
     assert not isinstance(storage_name, Err)
-    response = await client.put(url=f"/users/{user_id}/Fridge/empty-storage")
+    response = await client.put(url=f"/users/{username}/Fridge/empty-storage")
     assert response.status_code == 200

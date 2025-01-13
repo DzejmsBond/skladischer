@@ -66,15 +66,15 @@ async def cleanup():
         list: A list of user IDs to be cleaned up after the test.
     """
 
-    user_ids = []
-    yield user_ids
+    usernames = []
+    yield usernames
 
     db_users = await get_collection()
     if db_users is None:
         print(f" Database cleanup unsuccessful.")
         return
 
-    result = await db_users.delete_many({"_id": {"$in": user_ids}})
+    result = await db_users.delete_many({"username": {"$in": usernames}})
     if not result.acknowledged:
         print(f" Database cleanup unsuccessful.")
         return

@@ -8,9 +8,10 @@ from .storage import Storage
 class User(BaseModel):
     """
     Represents a user model.
-    This model defines the attributes of a user, including their display name and the list of storages they own.
+    This model defines the attributes of a user, including their username, display name and the list of storages they own.
     While display name is optional, username is required.
     """
 
+    username: str
     display_name: Optional[str] = None
     storages: List[Storage]

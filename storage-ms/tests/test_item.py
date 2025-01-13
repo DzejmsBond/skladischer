@@ -10,7 +10,6 @@ from app.services import storage_utils, user_utils, item_utils
 from app.schemas import storage_schemas, user_schemas, item_schemas
 from app.helpers import ErrorResponse as Err
 from app.helpers import get_collection as gc
-from bson import ObjectId as Id
 
 from .helpers import (
     get_collection,
@@ -36,13 +35,13 @@ async def test_create_item(client, cleanup):
     """
 
     # Test successful request.
-    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
-    assert not isinstance(user_id, Err)
-    cleanup.append(Id(user_id))
-    storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
+    username = await user_utils.create_user(user_schemas.UserCreate(username=USERNAME))
+    assert not isinstance(username, Err)
+    cleanup.append(username)
+    storage_name = await storage_utils.create_storage(username, storage_schemas.StorageCreate(name="Fridge"))
     assert not isinstance(storage_name, Err)
     item_create = item_schemas.ItemCreate(name="Cheese", amount=2, description="Cheddar.").model_dump()
-    response = await client.post(url=f"/users/{user_id}/{storage_name}/create-item", json=item_create)
+    response = await client.post(url=f"/users/{username}/{storage_name}/create-item", json=item_create)
     assert response.status_code == 200
 
 @pytest.mark.anyio
@@ -59,15 +58,15 @@ async def test_get_item(client, cleanup):
     """
 
     # Test successful request.
-    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
-    assert not isinstance(user_id, Err)
-    cleanup.append(Id(user_id))
-    storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
+    username = await user_utils.create_user(user_schemas.UserCreate(username=USERNAME))
+    assert not isinstance(username, Err)
+    cleanup.append(username)
+    storage_name = await storage_utils.create_storage(username, storage_schemas.StorageCreate(name="Fridge"))
     assert not isinstance(storage_name, Err)
     item = item_schemas.ItemCreate(name="Cheese", amount=2, description="Cheddar.")
-    item_code = await item_utils.create_item(user_id, storage_name, item)
+    item_code = await item_utils.create_item(username, storage_name, item)
     assert not isinstance(item_code, Err)
-    response = await client.get(url=f"/users/{user_id}/{storage_name}/{item_code}")
+    response = await client.get(url=f"/users/{username}/{storage_name}/{item_code}")
     assert response.status_code == 200
 
 @pytest.mark.anyio
@@ -84,15 +83,15 @@ async def test_delete_item(client, cleanup):
     """
 
     # Test successful request.
-    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
-    assert not isinstance(user_id, Err)
-    cleanup.append(Id(user_id))
-    storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
+    username = await user_utils.create_user(user_schemas.UserCreate(username=USERNAME))
+    assert not isinstance(username, Err)
+    cleanup.append(username)
+    storage_name = await storage_utils.create_storage(username, storage_schemas.StorageCreate(name="Fridge"))
     assert not isinstance(storage_name, Err)
     item = item_schemas.ItemCreate(name="Cheese", amount=2, description="Cheddar.")
-    item_code = await item_utils.create_item(user_id, storage_name, item)
+    item_code = await item_utils.create_item(username, storage_name, item)
     assert not isinstance(item_code, Err)
-    response = await client.delete(url=f"/users/{user_id}/{storage_name}/{item_code}")
+    response = await client.delete(url=f"/users/{username}/{storage_name}/{item_code}")
     assert response.status_code == 200
 
 @pytest.mark.anyio
@@ -111,25 +110,25 @@ async def test_update_item(client, cleanup):
     """
 
     # Test successful request.
-    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
-    assert not isinstance(user_id, Err)
-    cleanup.append(Id(user_id))
-    storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
+    username = await user_utils.create_user(user_schemas.UserCreate(username=USERNAME))
+    assert not isinstance(username, Err)
+    cleanup.append(username)
+    storage_name = await storage_utils.create_storage(username, storage_schemas.StorageCreate(name="Fridge"))
     assert not isinstance(storage_name, Err)
     item = item_schemas.ItemCreate(name="Cheese", amount=2, description="Cheddar.")
-    item_code = await item_utils.create_item(user_id, storage_name, item)
+    item_code = await item_utils.create_item(username, storage_name, item)
     assert not isinstance(item_code, Err)
     update = item_schemas.ItemUpdate(description="Parmigiano.").model_dump()
-    response = await client.put(url=f"/users/{user_id}/{storage_name}/{item_code}", json=update)
+    response = await client.put(url=f"/users/{username}/{storage_name}/{item_code}", json=update)
     assert response.status_code == 200
 
     # Test updating item amount to 0.
     update = item_schemas.ItemUpdate(amount=0).model_dump()
-    response = await client.put(url=f"/users/{user_id}/{storage_name}/{item_code}", json=update)
+    response = await client.put(url=f"/users/{username}/{storage_name}/{item_code}", json=update)
     assert response.status_code == 400
 
     # Test updating item with zero update fields.
-    response = await client.put(url=f"/users/{user_id}/{storage_name}/{item_code}", json={})
+    response = await client.put(url=f"/users/{username}/{storage_name}/{item_code}", json={})
     assert response.status_code == 400
 
 @pytest.mark.anyio
@@ -146,22 +145,22 @@ async def test_filter_item(client, cleanup):
     """
 
     # Test successful request.
-    user_id = await user_utils.create_user(user_schemas.UserCreate(display_name=USERNAME))
-    assert not isinstance(user_id, Err)
-    cleanup.append(Id(user_id))
-    storage_name = await storage_utils.create_storage(user_id, storage_schemas.StorageCreate(name="Fridge"))
+    username = await user_utils.create_user(user_schemas.UserCreate(username=USERNAME))
+    assert not isinstance(username, Err)
+    cleanup.append(username)
+    storage_name = await storage_utils.create_storage(username, storage_schemas.StorageCreate(name="Fridge"))
     assert not isinstance(storage_name, Err)
     item = item_schemas.ItemCreate(name="Cheese", amount=2, description="Cheddar.")
-    item_code = await item_utils.create_item(user_id, storage_name, item)
+    item_code = await item_utils.create_item(username, storage_name, item)
     assert not isinstance(item_code, Err)
 
     # Load the query from a file.
     with open(QUERY_PATH, "r") as file:
         query = file.read()
 
-    variables = get_filter_vars(user_id, storage_name, "Cheese", 2)
+    variables = get_filter_vars(username, storage_name, "Cheese", 2)
     response = await client.post(url=f"/users/", json={"query": query, "variables": variables})
     assert response.status_code == 200
-    variables = get_filter_vars(user_id, storage_name, "Cheese", 1)
+    variables = get_filter_vars(username, storage_name, "Cheese", 1)
     response = await client.post(url=f"/users/", json={"query": query, "variables": variables})
     assert response.status_code == 200

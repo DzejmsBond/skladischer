@@ -5,9 +5,8 @@ from ..schemas import storage_schemas as schema
 from ..models.storage import Storage
 from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
-from bson import ObjectId as Id
 
-async def create_storage(user_id : str, storage : schema.StorageCreate) -> Err | str:
+async def create_storage(username : str, storage : schema.StorageCreate) -> Err | str:
     """
     Create a new storage for a specific user.
 
@@ -16,7 +15,7 @@ async def create_storage(user_id : str, storage : schema.StorageCreate) -> Err |
     is returned.
 
     Args:
-        user_id (str): The identifier of the user creating the storage.
+        username (str): The username of the user creating the storage.
         storage (StorageCreate): The storage details to be created, adhering to the schema.
 
     Returns:
@@ -30,9 +29,10 @@ async def create_storage(user_id : str, storage : schema.StorageCreate) -> Err |
         # NOTE: No need to check whether the user exists or not,
         # the database query does not throw but rahter returns 0 in case of no matchings.
         name = storage.name
-        storage_dict = Storage(name=name, content=[]).model_dump(by_alias=True)
+        storage_dict = Storage(name=name,
+                               content=[]).model_dump(by_alias=True)
 
-        if not isinstance(await get_storage(user_id, name), Err):
+        if not isinstance(await get_storage(username, name), Err):
             return Err(message=f"Storage name '{name}' already exists and cannot be created.", code=409)
 
         # Update the 'user' document's field 'storages',
@@ -40,7 +40,7 @@ async def create_storage(user_id : str, storage : schema.StorageCreate) -> Err |
         # Before accessing any attributes of the 'pymongo.results' objects
         # aknowledged needs to be checked:
         # if false all other attributes of this class will raise InvalidOperation when accessed.
-        result = await db_users.update_one({"_id": Id(user_id)}, {"$push": {"storages": storage_dict}})
+        result = await db_users.update_one({"username": username}, {"$push": {"storages": storage_dict}})
         if not result.acknowledged:
             return Err(message=f"Creating storage '{name}' failed.")
 
@@ -52,7 +52,7 @@ async def create_storage(user_id : str, storage : schema.StorageCreate) -> Err |
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
-async def get_storage(user_id : str, storage_name : str) -> Err | dict:
+async def get_storage(username : str, storage_name : str) -> Err | dict:
     """
        Retrieve a storage by its name for a specific user.
 
@@ -60,7 +60,7 @@ async def get_storage(user_id : str, storage_name : str) -> Err | dict:
        If the storage does not exist or the operation fails, an error response is returned.
 
        Args:
-           user_id (str): The identifier of the user who owns the storage.
+           username (str): The username of the user who owns the storage.
            storage_name (str): The name of the storage to retrieve.
 
        Returns:
@@ -74,7 +74,7 @@ async def get_storage(user_id : str, storage_name : str) -> Err | dict:
 
         # A cleaner way of finding all matchings and a sanity check that there are unique.
         pipeline = [
-            {"$match": {"_id": Id(user_id)}}, # Finds the user.
+            {"$match": {"username": username}}, # Finds the user.
             {"$unwind": "$storages"},  # Deconstruct the storages array.
             {"$match": {"storages.name": storage_name}}, # Match the specific storage.
             {"$replaceRoot": {"newRoot": "$storages"}}  # Replace the root document with the storage object.
@@ -92,7 +92,7 @@ async def get_storage(user_id : str, storage_name : str) -> Err | dict:
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
-async def delete_storage(user_id : str, storage_name : str) -> Err | str:
+async def delete_storage(username : str, storage_name : str) -> Err | str:
     """
     Delete a storage by its name for a specific user.
 
@@ -100,7 +100,7 @@ async def delete_storage(user_id : str, storage_name : str) -> Err | str:
     on the `storage_name`. If the operation fails, an error response is returned.
 
     Args:
-        user_id (str): The identifier of the user who owns the storage.
+        username (str): The username of the user who owns the storage.
         storage_name (str): The name of the storage to delete.
 
     Returns:
@@ -113,7 +113,7 @@ async def delete_storage(user_id : str, storage_name : str) -> Err | str:
             return Err(message=f"Cannot get DB collection.")
 
         result = await db_users.update_one(
-            {"_id": Id(user_id)},
+            {"username": username},
             {"$pull": {"storages": {"name": storage_name}}})
 
         if not result.acknowledged or result.modified_count == 0:
@@ -124,7 +124,7 @@ async def delete_storage(user_id : str, storage_name : str) -> Err | str:
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
-async def update_storage_name(user_id : str, storage_name : str, new_name : str) -> Err | str:
+async def update_storage_name(username : str, storage_name : str, new_name : str) -> Err | str:
     """
     Update the name of a storage for a specific user.
 
@@ -132,7 +132,7 @@ async def update_storage_name(user_id : str, storage_name : str, new_name : str)
     If the new name already exists or the operation fails, an error response is returned.
 
     Args:
-        user_id (str): The identifier of the user who owns the storage.
+        username (str): The username of the user who owns the storage.
         storage_name (str): The current name of the storage to update.
         new_name (str): The new name for the storage.
 
@@ -144,11 +144,11 @@ async def update_storage_name(user_id : str, storage_name : str, new_name : str)
         if db_users is None:
             return Err(message=f"Cannot get DB collection.")
 
-        if not isinstance(await get_storage(user_id, new_name), Err):
+        if not isinstance(await get_storage(username, new_name), Err):
             return Err(message=f"Storage name '{new_name}' already exists.", code=409)
 
         result = await db_users.update_one(
-            {"_id": Id(user_id), "storages.name": storage_name},
+            {"username": username, "storages.name": storage_name},
             {"$set": {"storages.$.name": new_name}})
 
         if not result.acknowledged or result.modified_count == 0:
@@ -158,7 +158,7 @@ async def update_storage_name(user_id : str, storage_name : str, new_name : str)
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
 
-async def empty_storage(user_id : str, storage_name : str) -> Err | str:
+async def empty_storage(username : str, storage_name : str) -> Err | str:
     """
     Empty the contents of a storage for a specific user.
 
@@ -166,7 +166,7 @@ async def empty_storage(user_id : str, storage_name : str) -> Err | str:
     If the operation fails, an error response is returned.
 
     Args:
-        user_id (str): The identifier of the user who owns the storage.
+        username (str): The username of the user who owns the storage.
         storage_name (str): The name of the storage to empty.
 
     Returns:
@@ -178,7 +178,7 @@ async def empty_storage(user_id : str, storage_name : str) -> Err | str:
             return Err(message=f"Cannot get DB collection.")
 
         result = await db_users.update_one(
-            {"_id": Id(user_id), "storages.name": storage_name},
+            {"username": username, "storages.name": storage_name},
             {"$set": {"storages.$.content": []}})
 
         if not result.acknowledged:
