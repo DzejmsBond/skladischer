@@ -27,9 +27,10 @@ jobs:
           pip install -r admin-ms/requirements.txt
           pip install pytest
 
-      - name: Install Proto Module
+      - name: Generate Proto Files and Install Module.
         run: |
           pip install -e ./proto
+          make generate-proto-files
           echo "PYTHONPATH=$(pwd)">>$GITHUB_ENV
 
       - name: Run Tests for Storage MS.
