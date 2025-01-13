@@ -3,7 +3,7 @@
 from typing import Any, Mapping
 
 from ..schemas import sensor_schemas as schema
-from ..models.user import HumiditySensor, DoorSensor, TemperatureSensor
+from ..models.sensors import HumiditySensor, DoorSensor, TemperatureSensor, Sensor
 from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
 
@@ -27,20 +27,21 @@ async def create_humidity_sensor(username: str, sensor : schema.HumiditySensorCr
         if db_users is None:
             return Err(message=f"Cannot get DB collection.")
 
-        sensor_dict = HumiditySensor(name=sensor.name,
-                                      max_humidity=sensor.max_humidity,
-                                      min_humidity=sensor.min_humidity).model_dump(by_alias=True)
+        data = HumiditySensor(max_humidity=sensor.max_humidity,
+                                      min_humidity=sensor.min_humidity)
+
+        sensor_dict = Sensor(name=sensor.name, data=data).model_dump(exclude_none=True)
 
         if not isinstance(await get_sensor(username, sensor.name), Err):
-            return Err(message=f"Sensor name '{name}' already exists and cannot be created.", code=409)
+            return Err(message=f"Sensor name '{sensor.name}' already exists and cannot be created.", code=409)
 
         result = await db_users.update_one({"username": username},
                                            {"$push": {"sensors": sensor_dict}})
         if not result.acknowledged:
-            return Err(message=f"Creating sensor '{name}' failed.")
+            return Err(message=f"Creating sensor '{sensor.name}' failed.")
 
         if result.modified_count == 0:
-            return Err(message=f"Creating sensor '{name}' modified zero entries.")
+            return Err(message=f"Creating sensor '{sensor.name}' modified zero entries.")
         return sensor.name
 
     except Exception as e:
@@ -66,20 +67,21 @@ async def create_temperature_sensor(username: str, sensor : schema.TemperatureSe
         if db_users is None:
             return Err(message=f"Cannot get DB collection.")
 
-        sensor_dict = TemperatureSensor(name=sensor.name,
-                                      max_temperature=sensor.max_temperature,
-                                      min_temperature=sensor.min_temperature).model_dump(exclude_none=True)
+        data = TemperatureSensor(max_temperature=sensor.max_temperature,
+                                min_temperature=sensor.min_temperature)
+
+        sensor_dict = Sensor(name=sensor.name, data=data).model_dump(exclude_none=True)
 
         if not isinstance(await get_sensor(username, sensor.name), Err):
-            return Err(message=f"Sensor name '{name}' already exists and cannot be created.", code=409)
+            return Err(message=f"Sensor name '{sensor.name}' already exists and cannot be created.", code=409)
 
         result = await db_users.update_one({"username": username},
                                            {"$push": {"sensors": sensor_dict}})
         if not result.acknowledged:
-            return Err(message=f"Creating sensor '{name}' failed.")
+            return Err(message=f"Creating sensor '{sensor.name}' failed.")
 
         if result.modified_count == 0:
-            return Err(message=f"Creating sensor '{name}' modified zero entries.")
+            return Err(message=f"Creating sensor '{sensor.name}' modified zero entries.")
         return sensor.name
 
     except Exception as e:
@@ -105,30 +107,29 @@ async def create_door_sensor(username: str, sensor : schema.DoorSensorCreate) ->
         if db_users is None:
             return Err(message=f"Cannot get DB collection.")
 
-        sensor_create = DoorSensor(name=sensor.name,
-                                 description=sensor.description)
+        data = DoorSensor(description=sensor.description)
         if sensor.open:
-            sensor_create.open = sensor.open
+            data.open = sensor.open
 
-        sensor_dict = sensor_create.model_dump(exclude_none=True)
+        sensor_dict = Sensor(name=sensor.name, data=data).model_dump(exclude_none=True)
 
         if not isinstance(await get_sensor(username, sensor.name), Err):
-            return Err(message=f"Sensor name '{name}' already exists and cannot be created.", code=409)
+            return Err(message=f"Sensor name '{sensor.name}' already exists and cannot be created.", code=409)
 
         result = await db_users.update_one({"username": username},
                                            {"$push": {"sensors": sensor_dict}})
         if not result.acknowledged:
-            return Err(message=f"Creating sensor '{name}' failed.")
+            return Err(message=f"Creating sensor '{sensor.name}' failed.")
 
         if result.modified_count == 0:
-            return Err(message=f"Creating sensor '{name}' modified zero entries.")
+            return Err(message=f"Creating sensor '{sensor.name}' modified zero entries.")
         return sensor.name
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
-async def get_sensor(username: str, name : str) -> Err | str:
+async def get_sensor(username: str, name : str) -> Err | dict:
     """
        Retrieve a sensor by its name for a specific user.
 
@@ -151,18 +152,23 @@ async def get_sensor(username: str, name : str) -> Err | str:
         # A cleaner way of finding all matchings and a sanity check that there are unique.
         pipeline = [
             {"$match": {"username": username}}, # Finds the user.
-            {"$unwind": "$storages"},  # Deconstruct the sensors array.
+            {"$unwind": "$sensors"},  # Deconstruct the sensors array.
             {"$match": {"sensors.name": name}}, # Match the specific sensor.
-            {"$replaceRoot": {"newRoot": "$storages"}}  # Replace the root document with the sensor object.
+            {"$replaceRoot": {"newRoot": "$sensors"}}  # Replace the root document with the sensor object.
         ]
 
         result = await db_users.aggregate(pipeline).to_list()
         if not result:
-            return Err(message=f"Getting sensor '{storage_name}' failed.")
+            return Err(message=f"Getting sensor '{name}' failed.")
 
         if len(result) > 1:
             return Err(message=f"Sensor '{name}' has more than one storage entry.")
-        return result[0]
+
+        result_dict = result[0]
+        if "name" not in result_dict or "data" not in result_dict:
+            return Err(message=f"Aquired sensor has no name or data.")
+
+        return schema.GetSensor(name=result_dict["name"], data=result_dict["data"]).model_dump()
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)

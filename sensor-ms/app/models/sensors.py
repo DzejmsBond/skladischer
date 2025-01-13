@@ -2,7 +2,7 @@
 # Date created: 13.01.2025
 
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Union
 from datetime import datetime
 
 class HumiditySensor(BaseModel):
@@ -11,7 +11,6 @@ class HumiditySensor(BaseModel):
     """
 
     type: str = "HUMIDITY"
-    name: str
     humidity_level: Optional[float] = None
     max_humidity: Optional[float] = None
     min_humidity: Optional[float] = None
@@ -22,7 +21,6 @@ class TemperatureSensor(BaseModel):
     """
 
     type: str = "TEMPERATURE"
-    name: str
     temperature: Optional[float] = None
     max_temperature: Optional[float] = None
     min_temperature: Optional[float] = None
@@ -33,7 +31,14 @@ class DoorSensor(BaseModel):
     """
 
     type: str = "DOOR"
-    name: str
     open: bool = False
     description: Optional[str] = None
     last_opened: Optional[datetime] = None
+
+class Sensor(BaseModel):
+    """
+    Represents a generic sensor.
+    """
+
+    name: str
+    data: Union[HumiditySensor, TemperatureSensor, DoorSensor]

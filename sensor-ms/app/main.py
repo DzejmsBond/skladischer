@@ -8,7 +8,8 @@ from fastapi import FastAPI
 
 # Internal dependencies.
 from .api import (
-    sensor_api)
+    sensor_api,
+    users_api)
 
 app = FastAPI(
     title="Sensor Managment Microservice",
@@ -19,6 +20,7 @@ app = FastAPI(
 
 # Include all routers and mounts.
 app.include_router(sensor_api.router)
+app.include_router(users_api.router)
 
 async def start_api():
     config = uvicorn.Config(app=app, host="0.0.0.0", port=8003)

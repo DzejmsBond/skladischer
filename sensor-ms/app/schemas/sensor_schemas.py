@@ -2,7 +2,8 @@
 # Date created: 08.01.2024
 
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Union
+from ..models import HumiditySensor, TemperatureSensor, DoorSensor
 
 class HumiditySensorCreate(BaseModel):
     """
@@ -10,8 +11,8 @@ class HumiditySensorCreate(BaseModel):
     """
 
     name: str
-    max_humidity: Optional[float]
-    min_humidity: Optional[float]
+    max_humidity: Optional[float] = None
+    min_humidity: Optional[float] = None
 
 class TemperatureSensorCreate(BaseModel):
     """
@@ -19,8 +20,8 @@ class TemperatureSensorCreate(BaseModel):
     """
 
     name: str
-    max_temperature: Optional[float]
-    min_temperature: Optional[float]
+    max_temperature: Optional[float] = None
+    min_temperature: Optional[float] = None
 
 class DoorSensorCreate(BaseModel):
     """
@@ -28,5 +29,10 @@ class DoorSensorCreate(BaseModel):
     """
 
     name: str
-    open: Optional[bool]
+    open: Optional[bool] = None
     description: Optional[str] = None
+
+class GetSensor(BaseModel):
+
+    name: str
+    data: Union[HumiditySensor, TemperatureSensor, DoorSensor]
