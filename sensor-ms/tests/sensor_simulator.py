@@ -11,7 +11,8 @@ import time
 def generate_sensor_data():
 
     return {
-        "token": "testuser",
+        "username": "testuser",
+        "name": "testsensor",
         "temperature": round(random.uniform(18, 30), 2),
         "timestamp": time.time(),
     }

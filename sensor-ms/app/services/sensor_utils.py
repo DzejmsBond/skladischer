@@ -109,9 +109,6 @@ async def create_door_sensor(username: str, sensor : schema.DoorSensorCreate) ->
             return Err(message=f"Cannot get DB collection.")
 
         data = DoorSensor(description=sensor.description)
-        if sensor.open:
-            data.open = sensor.open
-
         sensor_dict = Sensor(name=sensor.name, data=data).model_dump(exclude_none=True)
 
         if not isinstance(await get_sensor(username, sensor.name), Err):

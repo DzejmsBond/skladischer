@@ -29,7 +29,6 @@ class DoorSensorCreate(BaseModel):
     """
 
     name: str
-    open: Optional[bool] = None
     description: Optional[str] = None
 
 class GetSensor(BaseModel):

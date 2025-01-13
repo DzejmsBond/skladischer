@@ -14,3 +14,5 @@ import os
 MONGO_URL = os.getenv("DATABASE_URL")
 DATABASE_NAME = os.getenv("DATABASE_NAME")
 COLLECTION = os.getenv("COLLECTION")
+
+RABBITMQ_HOST = os.getenv("RABBITMQ_HOST")

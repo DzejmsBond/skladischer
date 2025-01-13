@@ -31,7 +31,6 @@ class DoorSensor(BaseModel):
     """
 
     type: str = "DOOR"
-    open: bool = False
     description: Optional[str] = None
     last_opened: Optional[datetime] = None
 
