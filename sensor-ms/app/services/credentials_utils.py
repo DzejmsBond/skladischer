@@ -3,7 +3,7 @@
 from typing import Any, Mapping
 
 from ..schemas import credentials_schemas as schema
-from ..models.credentials import Credentials
+from ..models.sensor import Credentials
 from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
 from ..googlerpc.grpc_client import create_user, delete_user

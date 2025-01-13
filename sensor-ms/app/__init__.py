@@ -1,5 +1,5 @@
 from .api import (
-    credentials_api)
+    sensor_api)
 
 from .helpers import (
     error,
@@ -9,7 +9,7 @@ from .services import (
     credentials_utils)
 
 from .models import (
-    credentials)
+    sensor)
 
 from .schemas import (
     credentials_schemas)
