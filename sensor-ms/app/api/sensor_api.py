@@ -7,6 +7,7 @@ from fastapi.responses import PlainTextResponse
 
 # Internal dependencies.
 from ..services import sensor_utils as utils
+from ..schemas import sensor_schemas as schema
 from ..helpers.error import ErrorResponse as Err
 
 router = APIRouter(
@@ -14,13 +15,13 @@ router = APIRouter(
     tags=["sensors"]
 )
 
-@router.post("/{username}/create-sensor", status_code=200, response_class=PlainTextResponse)
-async def create_sensor(sensor_name : str):
+@router.post("/{username}/create-temperature-sensor", status_code=200, response_class=PlainTextResponse)
+async def create_temperature_sensor(sensor_schema : schema.TemperatureSensorCreate):
     """
-    This endpoint allows creating new sensor for the user.
+    This endpoint allows creating new temperature sensor for the user.
 
     Args:
-        sensor_name (str): The name of the sensor.
+        sensor_schema (TemperatureSensorCreate): The details of the sensor.
 
     Raises:
         HTTPException: If an error occurs during creation.
@@ -29,7 +30,70 @@ async def create_sensor(sensor_name : str):
         PlainTextResponse: The sensor name if it is created successfully.
     """
 
-    result = await utils.create_sensor(username, sensor_name)
+    result = await utils.create_temperature_sensor(username, sensor_schema)
+    if isinstance(result, Err):
+        raise HTTPException(status_code=result.code, detail=result.message)
+
+    return result
+
+@router.post("/{username}/create-humidity-sensor", status_code=200, response_class=PlainTextResponse)
+async def create_humidity_sensor(sensor_schema : schema.HumiditySensorCreate):
+    """
+    This endpoint allows creating new humidity sensor for the user.
+
+    Args:
+        sensor_schema (HumiditySensorCreate): The details of the sensor.
+
+    Raises:
+        HTTPException: If an error occurs during creation.
+
+    Returns:
+        PlainTextResponse: The sensor name if it is created successfully.
+    """
+
+    result = await utils.create_humidity_sensor(username, sensor_schema)
+    if isinstance(result, Err):
+        raise HTTPException(status_code=result.code, detail=result.message)
+
+    return result
+
+@router.post("/{username}/create-door-sensor", status_code=200, response_class=PlainTextResponse)
+async def create_door_sensor(sensor_schema : schema.DoorSensorCreate):
+    """
+    This endpoint allows creating new door sensor for the user.
+
+    Args:
+        sensor_schema (DoorSensorCreate): The details of the sensor.
+
+    Raises:
+        HTTPException: If an error occurs during creation.
+
+    Returns:
+        PlainTextResponse: The sensor name if it is created successfully.
+    """
+
+    result = await utils.create_door_sensor(username, sensor_schema)
+    if isinstance(result, Err):
+        raise HTTPException(status_code=result.code, detail=result.message)
+
+    return result
+
+@router.delete("/{username}", status_code=200, response_class=PlainTextResponse)
+async def get_sensor(sensor_name: str):
+    """
+    This endpoint allows fetchinf of a sensor for the user.
+
+    Args:
+        sensor_name (str): The name of the sensor.
+
+    Raises:
+        HTTPException: If an error occurs during fetching.
+
+    Returns:
+        PlainTextResponse: The sensor details if it is fetched successfully.
+    """
+
+    result = await utils.get_sensor(username, sensor_name)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 
@@ -44,7 +108,7 @@ async def delete_sensor(sensor_name: str):
         sensor_name (str): The name of the sensor.
 
     Raises:
-        HTTPException: If an error occurs during creation.
+        HTTPException: If an error occurs during deletion.
 
     Returns:
         PlainTextResponse: The sensor name if it is deleted successfully.
@@ -66,35 +130,13 @@ async def update_sensor_name(sensor_name: str, new_name: str):
         new_name (str): The new name of the sensor.
 
     Raises:
-        HTTPException: If an error occurs during creation.
+        HTTPException: If an error occurs during name update.
 
     Returns:
         PlainTextResponse: The sensor name if it is updated successfully.
     """
 
-    result = await utils.update_sensor_name(username, sensor_name)
-    if isinstance(result, Err):
-        raise HTTPException(status_code=result.code, detail=result.message)
-
-    return result
-
-@router.post("/{username}/update-password", status_code=200, response_class=PlainTextResponse)
-async def update_password(username: str, credentials_schema : schema.UpdateCredentials):
-    """
-    This endpoint allows updating the display name of a user.
-
-    Args:
-        credentials_schema (UpdateCredentials): The credentials with new and old password.
-        username (str): The user's username.
-
-    Raises:
-        HTTPException: If an error occurs during password update.
-
-    Returns:
-        PlainTextResponse: The username if the password is updated successfully.
-    """
-
-    result = await utils.update_password(username, credentials_schema)
+    result = await utils.update_sensor_name(username, sensor_name, new_name)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 

@@ -1,4 +1,5 @@
 from .api import (
+    users_api,
     sensor_api)
 
 from .helpers import (
@@ -6,13 +7,13 @@ from .helpers import (
     database_helpers)
 
 from .services import (
-    credentials_utils)
+    user_utils,
+    sensor_utils)
 
 from .models import (
-    sensor)
+    user,
+    sensors)
 
 from .schemas import (
-    credentials_schemas)
-
-from .googlerpc import (
-    grpc_client)
+    user_schemas,
+    sensor_schemas)
