@@ -9,12 +9,12 @@ from ..services import user_utils as utils
 # GRPC Logic.
 import asyncio
 from concurrent import futures
-from proto import storage_ms_pb2_grpc as pb_grpc
-from proto import storage_ms_pb2 as pb
-from proto.config import PORT_STORAGE
+from proto import sensor_ms_pb2_grpc as pb_grpc
+from proto import sensor_ms_pb2 as pb
+from proto.config import PORT_SENSOR
 import grpc
 
-class StorageService(pb_grpc.StorageServiceServicer):
+class SensorService(pb_grpc.SensorServiceServicer):
     """
     Handles the GRPC request for creating a user.
 
@@ -68,14 +68,14 @@ class StorageService(pb_grpc.StorageServiceServicer):
 
 async def serve():
     """
-    Starts the GRPC server to handle storage microservice internal requests.
+    Starts the GRPC server to handle sensor microservice internal requests.
 
     The server listens for incoming requests on the configured ports
     and registers the `UserService` handler for GRPC calls.
     """
 
     server = grpc.aio.server(futures.ThreadPoolExecutor(max_workers=10))
-    pb_grpc.add_StorageServiceServicer_to_server(StorageService(), server)
-    server.add_insecure_port(f"[::]:{PORT_STORAGE}")
+    pb_grpc.add_SensorServiceServicer_to_server(SensorService(), server)
+    server.add_insecure_port(f"[::]:{PORT_SENSOR}")
     await server.start()
     await server.wait_for_termination()

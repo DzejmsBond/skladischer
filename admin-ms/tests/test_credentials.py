@@ -21,8 +21,10 @@ from .helpers import (
 
 @pytest.mark.anyio
 @patch("app.services.credentials_utils.get_collection", get_collection)
-@patch("app.services.credentials_utils.create_user", AsyncMock(return_value=USERNAME))
-@patch("app.services.credentials_utils.delete_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.create_storage_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.delete_storage_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.create_sensor_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.delete_sensor_user", AsyncMock(return_value=USERNAME))
 async def test_create_credentials(client, cleanup):
     """
     Test creating a new user credentials.
@@ -44,8 +46,10 @@ async def test_create_credentials(client, cleanup):
 
 @pytest.mark.anyio
 @patch("app.services.credentials_utils.get_collection", get_collection)
-@patch("app.services.credentials_utils.create_user", AsyncMock(return_value=USERNAME))
-@patch("app.services.credentials_utils.delete_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.create_storage_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.delete_storage_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.create_sensor_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.delete_sensor_user", AsyncMock(return_value=USERNAME))
 async def test_validate_credentials(client, cleanup):
     """
     Test validating a user by their credentials.
@@ -78,8 +82,10 @@ async def test_validate_credentials(client, cleanup):
 
 @pytest.mark.anyio
 @patch("app.services.credentials_utils.get_collection", get_collection)
-@patch("app.services.credentials_utils.create_user", AsyncMock(return_value=USERNAME))
-@patch("app.services.credentials_utils.delete_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.create_storage_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.delete_storage_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.create_sensor_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.delete_sensor_user", AsyncMock(return_value=USERNAME))
 async def test_delete_credentials(client, cleanup):
     """
     Test deleting user credentials by username.
@@ -112,8 +118,10 @@ async def test_delete_credentials(client, cleanup):
 
 @pytest.mark.anyio
 @patch("app.services.credentials_utils.get_collection", get_collection)
-@patch("app.services.credentials_utils.create_user", AsyncMock(return_value=USERNAME))
-@patch("app.services.credentials_utils.delete_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.create_storage_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.delete_storage_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.create_sensor_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.delete_sensor_user", AsyncMock(return_value=USERNAME))
 async def test_update_password(client, cleanup):
     """
     Test updating user password.

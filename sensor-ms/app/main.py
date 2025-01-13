@@ -5,11 +5,13 @@
 import asyncio
 import uvicorn
 from fastapi import FastAPI
+from .googlerpc.grpc_server import serve
 
 # Internal dependencies.
 from .api import (
     sensor_api,
-    users_api)
+    users_api,
+    sensor_data_api)
 
 app = FastAPI(
     title="Sensor Managment Microservice",
@@ -21,14 +23,18 @@ app = FastAPI(
 # Include all routers and mounts.
 app.include_router(sensor_api.router)
 app.include_router(users_api.router)
+app.include_router(sensor_data_api.router)
 
 async def start_api():
     config = uvicorn.Config(app=app, host="0.0.0.0", port=8003)
     server = uvicorn.Server(config)
     await server.serve()
 
+async def start_grpc():
+    await serve()
+
 async def main():
-    tasks = [start_api()]
+    tasks = [start_api(), start_grpc()]
     return await asyncio.gather(*tasks)
 
 # Run the application with asyncio.

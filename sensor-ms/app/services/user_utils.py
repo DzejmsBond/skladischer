@@ -1,8 +1,7 @@
-# Author: Jure
-# Date created: 4.12.2024
+# Author: Nina Mislej
+# Date created: 13.01.2025
 
 from typing import Any
-
 from ..schemas import user_schemas as schema
 from ..models.user import User
 from ..helpers.database_helpers import get_collection

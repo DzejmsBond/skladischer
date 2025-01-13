@@ -1,5 +1,6 @@
-# Author: Jure
-# Date created: 4.12.2024
+# Author: Nina Mislej
+# Date created: 13.01.2025
+
 from typing import Any, Mapping
 
 from ..schemas import sensor_schemas as schema

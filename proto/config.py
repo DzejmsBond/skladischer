@@ -11,6 +11,6 @@ import os
 #       load_dotenv(dotenv_path=ENV_PATH)
 
 # Port variables.
-CREATE_CODE_PORT = os.getenv("CREATE_CODE_PORT")
-CREATE_USER_PORT = os.getenv("CREATE_USER_PORT")
-DELETE_USER_PORT = os.getenv("DELETE_USER_PORT")
+PORT_CODE = os.getenv("PORT_CODE")
+PORT_SENSOR = os.getenv("PORT_SENSOR")
+PORT_STORAGE = os.getenv("PORT_STORAGE")
