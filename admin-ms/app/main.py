@@ -21,7 +21,7 @@ app = FastAPI(
 app.include_router(credentials_api.router)
 
 async def start_api():
-    config = uvicorn.Config(app=app, host="0.0.0.0", port=8000)
+    config = uvicorn.Config(app=app, host="0.0.0.0", port=8001)
     server = uvicorn.Server(config)
     await server.serve()
 

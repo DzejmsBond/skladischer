@@ -36,7 +36,6 @@ class CodeServiceStub(object):
 
 
 class CodeServiceServicer(object):
-
     def CreateCode(self, request, context):
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -56,8 +55,9 @@ def add_CodeServiceServicer_to_server(servicer, server):
     server.add_generic_rpc_handlers((generic_handler,))
     server.add_registered_method_handlers('codeservice.CodeService', rpc_method_handlers)
 
-class CodeService(object):
 
+ # This class is part of an EXPERIMENTAL API.
+class CodeService(object):
     @staticmethod
     def CreateCode(request,
             target,

@@ -11,6 +11,7 @@ Skladischer: Item Code Manager
    schemas-module
    helpers-module
    api-module
+   grpc-module
    tests-module
 
 Overview

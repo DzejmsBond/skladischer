@@ -3,7 +3,7 @@ schema {
 }
 
 type Query {
-    items(user_id: String!, storage_name: String!, filtering: Filter!): [Item]
+    items(username: String!, storage_name: String!, filtering: Filter!): [Item]
     reachable: String!
 }
 

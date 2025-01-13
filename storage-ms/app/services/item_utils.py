@@ -6,9 +6,8 @@ from ..models.item import Item
 from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
 from ..googlerpc.grpc_client import create_code
-from bson import ObjectId as Id
 
-async def create_item(user_id : str, storage_name : str, item : schema.ItemCreate) -> Err | str:
+async def create_item(username : str, storage_name : str, item : schema.ItemCreate) -> Err | str:
     """
     Create an item and associate it with a user and a specific storage.
 
@@ -23,7 +22,7 @@ async def create_item(user_id : str, storage_name : str, item : schema.ItemCreat
     create the 'base64' encoding of the item code image.
 
     Args:
-        user_id (str): The identifier of the user creating the item.
+        username (str): The username of the user creating the item.
         storage_name (str): The name of the storage where the item is being added.
         item (ItemCreate): The item details to be created, adhering to the schema.
 
@@ -45,7 +44,7 @@ async def create_item(user_id : str, storage_name : str, item : schema.ItemCreat
 
         item_dict = item_model.model_dump(by_alias=True)
         result = await db_users.update_one(
-            {"_id": Id(user_id), "storages.name": storage_name},
+            {"username": username, "storages.name": storage_name},
             {"$push": {"storages.$.content": item_dict}})
 
         if result.modified_count == 0:
@@ -55,7 +54,7 @@ async def create_item(user_id : str, storage_name : str, item : schema.ItemCreat
     except Exception as e:
         return Err(message=f"Unknown  exception: {e}", code=500)
 
-async def get_item(user_id : str, storage_name : str, item_code : str) -> Err | dict:
+async def get_item(username : str, storage_name : str, item_code : str) -> Err | dict:
     """
     Retrieve an item from a user's storage by its unique code.
 
@@ -64,7 +63,7 @@ async def get_item(user_id : str, storage_name : str, item_code : str) -> Err | 
     not found, or the operation fails for any reason, an error response is returned.
 
     Args:
-        user_id (str): The identifier of the user who owns the storage.
+        username (str): The username of the user who owns the storage.
         storage_name (str): The name of the storage where the item is located.
         item_code (str): The unique code of the item to retrieve.
 
@@ -80,7 +79,7 @@ async def get_item(user_id : str, storage_name : str, item_code : str) -> Err | 
         # A cleaner way of finding all matchings and a sanity check that there are unique.
         pipeline = [
             {"$match":
-                {"_id": Id(user_id),
+                {"username": username,
                 "storages.name": storage_name,
                 "storages.content.code_id": item_code}},
             {"$unwind": "$storages"},  # Deconstruct the storages array.
@@ -101,7 +100,7 @@ async def get_item(user_id : str, storage_name : str, item_code : str) -> Err | 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
 
-async def delete_item(user_id : str, storage_name : str, item_code : str) -> Err | str:
+async def delete_item(username : str, storage_name : str, item_code : str) -> Err | str:
     """
     Delete an item from a user's storage.
 
@@ -110,7 +109,7 @@ async def delete_item(user_id : str, storage_name : str, item_code : str) -> Err
     be deleted, an error response is returned.
 
     Args:
-        user_id (str): The identifier of the user who owns the storage.
+        username (str): The identifier of the user who owns the storage.
         storage_name (str): The name of the storage from which the item is to be deleted.
         item_code (str): The unique code of the item to delete.
 
@@ -123,7 +122,7 @@ async def delete_item(user_id : str, storage_name : str, item_code : str) -> Err
             return Err(message=f"Cannot get DB collection.")
 
         result = await db_users.update_one(
-            {"_id": Id(user_id), "storages.name": storage_name},
+            {"username": username, "storages.name": storage_name},
             {"$pull": {"storages.$.content": {"code_id": item_code}}})
 
         if not result.acknowledged or result.modified_count == 0:
@@ -133,7 +132,7 @@ async def delete_item(user_id : str, storage_name : str, item_code : str) -> Err
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
 
-async def update_item(user_id : str, storage_name : str, item_code : str, item : schema.ItemUpdate) -> Err | str:
+async def update_item(username : str, storage_name : str, item_code : str, item : schema.ItemUpdate) -> Err | str:
     """
        Update the details of an item in a user's storage.
 
@@ -142,7 +141,7 @@ async def update_item(user_id : str, storage_name : str, item_code : str, item :
        are provided for update or the operation fails, an error response is returned.
 
        Args:
-           user_id (str): The identifier of the user who owns the storage.
+           username (str): The username of the user who owns the storage.
            storage_name (str): The name of the storage containing the item.
            item_code (str): The unique code of the item to update.
            item (ItemUpdate): The new details to update the item with, adhering to the schema.
@@ -170,7 +169,7 @@ async def update_item(user_id : str, storage_name : str, item_code : str, item :
         # NOTE: This the way to loop through multiple positional arguments.
         # You cannot use multiple '$' such arguments, 'array_filters' is the correct way.
         result = await db_users.update_one(
-            {"_id": Id(user_id)},
+            {"username": username},
             {"$set": fields_to_update},
             array_filters = [
                 {"storage.name": storage_name},
@@ -184,12 +183,12 @@ async def update_item(user_id : str, storage_name : str, item_code : str, item :
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
 
-async def filter_items(user_id: str, storage_name: str, flt: schema.ItemFilter) -> list[Item] | Err:
+async def filter_items(username: str, storage_name: str, flt: schema.ItemFilter) -> list[Item] | Err:
     """
     Retrieve and filter items in a user's storage.
 
     Args:
-        user_id (str): The user ID owning the storage.
+        username (str): The storag owner's username.
         storage_name (str): The name of the storage.
         flt (dict): The filtering criteria.
 
@@ -213,7 +212,7 @@ async def filter_items(user_id: str, storage_name: str, flt: schema.ItemFilter) 
         # A cleaner way of finding all matchings and a sanity check that there are unique.
         pipeline = [
             {"$match":
-                {"_id": Id(user_id),
+                {"username": username,
                 "storages.name": storage_name}},
             {"$unwind": "$storages"},  # Deconstruct the storages array.
             {"$match": {"storages.name": storage_name}},  # Match the specific storage.

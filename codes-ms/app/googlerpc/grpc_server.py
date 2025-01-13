@@ -27,11 +27,24 @@ class CodeService(pb_grpc.CodeServiceServicer):
     """
 
     async def CreateCode(self, request, context):
+        """
+        Handles the gRPC request to create a QR code for a given item.
+
+        Args:
+            request: The gRPC request containing the `item_code` to generate the QR code for.
+            context: The gRPC context for managing request metadata and status.
+
+        Returns:
+            pb.CodeResponse: A response containing the generated QR code as a Base64 string.
+                             Returns an empty response with a 400 status if an error occurs.
+        """
+
         code_info = schema.CodeCreate(code_id=request.item_code)
         result = await utils.create_code(code_info)
         if isinstance(result, Err):
             context.set_code(400)
             context.set_details(result.message)
+            return pb.CodeResponse()
         return pb.CodeResponse(image_base64=result)
 
 async def serve():

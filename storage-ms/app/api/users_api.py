@@ -28,7 +28,7 @@ async def create_user(user_schema : schema.UserCreate):
         HTTPException: If an error occurs during user creation.
 
     Returns:
-        PlainTextResponse: The user id if the user is created successfully.
+        PlainTextResponse: The username if the user is created successfully.
     """
 
     result = await utils.create_user(user_schema)
@@ -37,13 +37,13 @@ async def create_user(user_schema : schema.UserCreate):
 
     return result
 
-@router.get("/{user_id}", response_model=User)
-async def get_user(user_id: str):
+@router.get("/{username}", response_model=User)
+async def get_user(username: str):
     """
     This endpoint fetches the details of a user from the system.
 
     Args:
-        user_id (str): The identifier of the user to retrieve.
+        username (str): The username of the user to retrieve.
 
     Raises:
         HTTPException: If an error occurs during user retrieval.
@@ -52,71 +52,71 @@ async def get_user(user_id: str):
         User: The retrieved user details.
     """
 
-    result = await utils.get_user(user_id)
+    result = await utils.get_user(username)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 
     return result
 
-@router.delete("/{user_id}", status_code=200, response_class=PlainTextResponse)
-async def delete_user(user_id: str):
+@router.delete("/{username}", status_code=200, response_class=PlainTextResponse)
+async def delete_user(username: str):
     """
-    This endpoint removes a user from the system by their identifier.
+    This endpoint removes a user from the system by their username.
 
     Args:
-        user_id (str): The identifier of the user to delete.
+        username (str): The username of the user to delete.
 
     Raises:
         HTTPException: If an error occurs during user deletion.
 
     Returns:
-        PlainTextResponse: The user id if the user is deleted successfully.
+        PlainTextResponse: The username if the user is deleted successfully.
     """
 
-    result = await utils.delete_user(user_id)
+    result = await utils.delete_user(username)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 
     return result
 
-@router.put("/{user_id}/update-name", status_code=200, response_class=PlainTextResponse)
-async def update_display_name(user_id: str, new_name : str):
+@router.put("/{username}/update-name", status_code=200, response_class=PlainTextResponse)
+async def update_display_name(username: str, new_name : str):
     """
     This endpoint allows updating the display name of a user.
 
     Args:
-        user_id (str): The identifier of the user to update.
+        username (str): The username of the user to update.
         new_name (str): The new display name for the user.
 
     Raises:
         HTTPException: If an error occurs during display name update.
 
     Returns:
-        PlainTextResponse: The user id if the users display name is updated successfully.
+        PlainTextResponse: The username if the users display name is updated successfully.
     """
 
-    result = await utils.update_display_name(user_id, new_name)
+    result = await utils.update_display_name(username, new_name)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 
     return result
 
-@router.put("/{user_id}/empty-storages", status_code=200, response_class=PlainTextResponse)
-async def empty_storages(user_id: str):
+@router.put("/{username}/empty-storages", status_code=200, response_class=PlainTextResponse)
+async def empty_storages(username: str):
     """
     This endpoint clears all storages in a user's account.
 
     Args:
-        user_id (str): The identifier of the user whose storages will be emptied.
+        username (str): The username of the user whose storages will be emptied.
 
     Raises:
         HTTPException: If an error occurs during storages clearing.
 
     Returns:
-        PlainTextResponse: The user id if the user storages are emptied successfully.
+        PlainTextResponse: The username if the user storages are emptied successfully.
     """
 
-    result = await utils.empty_storages(user_id)
+    result = await utils.empty_storages(username)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 

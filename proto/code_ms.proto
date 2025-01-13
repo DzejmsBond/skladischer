@@ -1,15 +1,23 @@
+
 syntax = "proto3";
+
+/* Implementation of all requests where the server is Code Microservice
+should be done here. and not on the client side of the exchange. */
 
 package codeservice;
 
+/* Defines all remote procedure calls. */
 service CodeService {
   rpc CreateCode (CodeRequest) returns (CodeResponse);
 }
 
+// TODO: There could be more parameters here like label and colour.
+/* Code request sent to the server. */
 message CodeRequest {
   string item_code = 1;
 }
 
+/* Code response sent to the client. */
 message CodeResponse {
   string image_base64 = 1;
 }

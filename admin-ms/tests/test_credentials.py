@@ -10,14 +10,19 @@ from app.services import credentials_utils as utils
 from app.schemas import credentials_schemas as schemas
 from app.helpers import ErrorResponse as Err
 from app.helpers import get_collection as gc
-from bson import ObjectId as Id
-from .helpers import get_collection, USERNAME, PASSWORD
+
+from .helpers import (
+    get_collection,
+    USERNAME,
+    PASSWORD)
 
 # NOTE: If the function passed to the patch should mimic an async one use:
 # CODE: AsyncMock(return_value=get_collection())
 
 @pytest.mark.anyio
 @patch("app.services.credentials_utils.get_collection", get_collection)
+@patch("app.services.credentials_utils.create_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.delete_user", AsyncMock(return_value=USERNAME))
 async def test_create_credentials(client, cleanup):
     """
     Test creating a new user credentials.
@@ -39,6 +44,8 @@ async def test_create_credentials(client, cleanup):
 
 @pytest.mark.anyio
 @patch("app.services.credentials_utils.get_collection", get_collection)
+@patch("app.services.credentials_utils.create_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.delete_user", AsyncMock(return_value=USERNAME))
 async def test_validate_credentials(client, cleanup):
     """
     Test validating a user by their credentials.
@@ -71,6 +78,8 @@ async def test_validate_credentials(client, cleanup):
 
 @pytest.mark.anyio
 @patch("app.services.credentials_utils.get_collection", get_collection)
+@patch("app.services.credentials_utils.create_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.delete_user", AsyncMock(return_value=USERNAME))
 async def test_delete_credentials(client, cleanup):
     """
     Test deleting user credentials by username.
@@ -103,6 +112,8 @@ async def test_delete_credentials(client, cleanup):
 
 @pytest.mark.anyio
 @patch("app.services.credentials_utils.get_collection", get_collection)
+@patch("app.services.credentials_utils.create_user", AsyncMock(return_value=USERNAME))
+@patch("app.services.credentials_utils.delete_user", AsyncMock(return_value=USERNAME))
 async def test_update_password(client, cleanup):
     """
     Test updating user password.

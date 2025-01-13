@@ -1,9 +1,10 @@
 .. Skladischer documentation for Api module.
 
-Api Module
+REST Api Module
 ===============
 
-This section documents the `api` module in the `app` package.
+This section documents the REST `api` module in the `app` package.
+This module is used for external communication between microservice and front end.
 
 .. toctree::
    :maxdepth: 1

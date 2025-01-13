@@ -27,4 +27,5 @@ from .graphql import (
     resolvers)
 
 from .googlerpc import (
-    grpc_client)
+    grpc_client,
+    grpc_server)
