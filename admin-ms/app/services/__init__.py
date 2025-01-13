@@ -1,5 +1,5 @@
 """
-The `services` module provides utility functions for managing items in storage.
+The `services` module provides utility functions for managing user credentials.
 It serves as communication between models and the database.
 """
 

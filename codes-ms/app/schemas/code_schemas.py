@@ -1,7 +1,6 @@
 # Author: Nina Mislej
 # Date created: 08.01.2024
 
-from pydantic import BaseModel
 from typing import Optional
 from pydantic import BaseModel, Field
 
