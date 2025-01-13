@@ -125,7 +125,7 @@ async def delete_sensor(username: str, sensor_name: str):
 
     return result
 
-@router.put("/{username}/{sensor_name}", status_code=200, response_class=PlainTextResponse)
+@router.put("/{username}/{sensor_name}/update-name", status_code=200, response_class=PlainTextResponse)
 async def update_sensor_name(username: str, sensor_name: str, new_name: str):
     """
     This endpoint allows updating sensor's name.

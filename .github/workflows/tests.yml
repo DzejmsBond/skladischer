@@ -25,6 +25,7 @@ jobs:
           pip install -r storage-ms/requirements.txt
           pip install -r codes-ms/requirements.txt
           pip install -r admin-ms/requirements.txt
+          pip install -r sensor-ms/requirements.txt
           pip install pytest
 
       - name: Generate Proto Files and Install Module.
@@ -56,3 +57,11 @@ jobs:
            COLLECTION: ${{ vars.COLLECTION_ADMIN }}
         run: |
             pytest admin-ms/tests
+
+      - name: Run Tests for Sensor MS.
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_NAME: ${{ vars.DATABASE_NAME }}
+          COLLECTION: ${{ vars.COLLECTION_SENSORS }}
+        run: |
+          pytest admin-ms/tests
