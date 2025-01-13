@@ -28,6 +28,10 @@ async def create_user(user : schema.UserCreate) -> Err | str:
         if db_users is None:
             return Err(message=f"Cannot get DB collection.")
 
+        result = await get_user(user.username)
+        if not isinstance(result, Err):
+            return Err(message=f"User with username {user.username} already exists.", code=402)
+
         user_dict = User(username=user.username,
                          display_name=user.display_name,
                          storages=[]).model_dump(by_alias=True)

@@ -39,7 +39,7 @@ async def create_credentials(credentials_schema : schema.CreateCredentials):
 
     return result
 
-@router.post("/{username}", response_class=PlainTextResponse)
+@router.put("/{username}", response_class=PlainTextResponse)
 async def validate_credentials(username: str, credentials_schema : schema.ValidateCredentials):
     """
     This endpoint validates the details of a user based on their username and password.

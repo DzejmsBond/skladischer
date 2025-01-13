@@ -23,6 +23,7 @@ async def test_create_user(client, cleanup):
 
     Asserts:
         - The user creation API responds with a 200 status code.
+        - The user creation API responds with 402 status code due to duplicated username.
     """
 
     # Test successful request.
@@ -30,6 +31,10 @@ async def test_create_user(client, cleanup):
     response = await client.post(url="/users/create-user", json=user_create)
     assert response.status_code == 200
     cleanup.append(response.text)
+
+    # Test unsuccessful request.
+    response = await client.post(url="/users/create-user", json=user_create)
+    assert response.status_code == 402
 
 @pytest.mark.anyio
 @patch("app.services.user_utils.get_collection", get_collection)

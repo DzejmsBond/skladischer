@@ -6,6 +6,7 @@ from ..schemas import credentials_schemas as schema
 from ..models.credentials import Credentials
 from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
+from ..googlerpc.grpc_client import create_user, delete_user
 from bcrypt import checkpw
 
 async def create_credentials(credentials : schema.CreateCredentials) -> Err | str:
@@ -30,6 +31,11 @@ async def create_credentials(credentials : schema.CreateCredentials) -> Err | st
         result = await db_admin.find_one({"username": credentials.username})
         if result:
             return Err(message=f"User with username {credentials.username} already exists.")
+
+        result = await create_user(credentials.username)
+        if result != credentials.username:
+            await delete_user(result)
+            return Err(message=f"Tried creating the wrong username '{result}'.")
 
         user_dict = Credentials(username=credentials.username,
                                 password=credentials.password).model_dump(by_alias=True)
@@ -101,6 +107,11 @@ async def delete_credentials(username: str, credentials : schema.ValidateCredent
         check = await validate_credentials(username, credentials)
         if isinstance(check, Err):
             return check
+
+        result = await delete_user(username)
+        if result != username:
+            await create_user(result)
+            return Err(message=f"Tried deleting the wrong username '{result}'.")
 
         result = await db_admin.delete_one({"username": username})
         if not result.acknowledged or result.deleted_count == 0:

@@ -11,7 +11,7 @@ from proto import code_ms_pb2 as pb
 from proto.config import CREATE_CODE_PORT
 import grpc
 
-async def create_code(item_code : str) -> None:
+async def create_code(item_code : str) -> str:
     """
     Sends a GRPC request to the CodeService to create a code for a given item.
 

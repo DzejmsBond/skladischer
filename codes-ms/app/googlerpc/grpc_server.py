@@ -32,6 +32,7 @@ class CodeService(pb_grpc.CodeServiceServicer):
         if isinstance(result, Err):
             context.set_code(400)
             context.set_details(result.message)
+            return pb.CodeResponse()
         return pb.CodeResponse(image_base64=result)
 
 async def serve():

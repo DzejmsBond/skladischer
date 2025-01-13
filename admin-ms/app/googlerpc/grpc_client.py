@@ -2,27 +2,43 @@
 # Date created: 5.12.2024
 
 # Internal dependencies.
-from ..config import CODES_MS_HOST
+from ..config import STORAGE_MS_HOST
 
 # GRPC Logic.
 import asyncio
-from proto import code_ms_pb2_grpc as pb_grpc
-from proto import code_ms_pb2 as pb
-from proto.config import CREATE_CODE_PORT
+from proto import storage_ms_pb2_grpc as pb_grpc
+from proto import storage_ms_pb2 as pb
+from proto.config import CREATE_USER_PORT, DELETE_USER_PORT
 import grpc
 
-async def create_code(item_code : str) -> None:
+async def create_user(username : str) -> str:
     """
-    Sends a GRPC request to the CodeService to create a code for a given item.
+    Sends a GRPC request to the UserService to create a user with the given username.
 
     Args:
-        item_code (str): The unique identifier of the item for which the code is created.
+        username (str): The unique username of the user created.
 
     Returns:
-        str: The generated code image in Base64 format.
+        str: The username of the created user.
     """
 
-    async with grpc.aio.insecure_channel(f"{CODES_MS_HOST}:{CREATE_CODE_PORT}") as channel:
-        stub = pb_grpc.CodeServiceStub(channel)
-        response = await stub.CreateCode(pb.CodeRequest(item_code=item_code))
-    return response.image_base64
+    async with grpc.aio.insecure_channel(f"{STORAGE_MS_HOST}:{CREATE_USER_PORT}") as channel:
+        stub = pb_grpc.StorageServiceStub(channel)
+        response = await stub.CreateUser(pb.UserRequest(username=username))
+    return response.username
+
+async def delete_user(username : str) -> str:
+    """
+    Sends a GRPC request to the UserService to delete a user with the given username.
+
+    Args:
+        username (str): The unique username of the user deleted.
+
+    Returns:
+        str: The username of the deleted user.
+    """
+
+    async with grpc.aio.insecure_channel(f"{STORAGE_MS_HOST}:{DELETE_USER_PORT}") as channel:
+        stub = pb_grpc.StorageServiceStub(channel)
+        response = await stub.DeleteUser(pb.UserRequest(username=username))
+    return response.username
