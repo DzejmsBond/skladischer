@@ -6,7 +6,11 @@ from ..schemas import credentials_schemas as schema
 from ..models.credentials import Credentials
 from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
-from ..googlerpc.grpc_client import create_user, delete_user
+from ..googlerpc.grpc_client import (
+    create_sensor_user,
+    create_storage_user,
+    delete_sensor_user,
+    delete_storage_user)
 from bcrypt import checkpw
 
 async def create_credentials(credentials : schema.CreateCredentials) -> Err | str:
@@ -32,10 +36,28 @@ async def create_credentials(credentials : schema.CreateCredentials) -> Err | st
         if result:
             return Err(message=f"User with username {credentials.username} already exists.")
 
-        result = await create_user(credentials.username)
+        # TODO: Improve this rollback.
+        result = await create_storage_user(credentials.username)
+        if isinstance(result, Err):
+            await delete_storage_user(credentials.username)
+            await delete_sensor_user(credentials.username)
+            return result
+
         if result != credentials.username:
-            await delete_user(result)
-            return Err(message=f"Tried creating the wrong username '{result}'.")
+            await delete_storage_user(result)
+            await delete_sensor_user(result)
+            return Err(message=f"Storage and Login username missmatch.")
+
+        result = await create_sensor_user(credentials.username)
+        if isinstance(result, Err):
+            await delete_storage_user(credentials.username)
+            await delete_sensor_user(credentials.username)
+            return result
+
+        if result != credentials.username:
+            await delete_storage_user(result)
+            await delete_sensor_user(result)
+            return Err(message=f"Sensor and Login username missmatch.")
 
         user_dict = Credentials(username=credentials.username,
                                 password=credentials.password).model_dump(by_alias=True)
@@ -108,10 +130,28 @@ async def delete_credentials(username: str, credentials : schema.ValidateCredent
         if isinstance(check, Err):
             return check
 
-        result = await delete_user(username)
+        # TODO: Improve this rollback.
+        result = await delete_storage_user(username)
+        if isinstance(result, Err):
+            await create_storage_user(credentials.username)
+            await create_sensor_user(credentials.username)
+            return result
+
         if result != username:
-            await create_user(result)
-            return Err(message=f"Tried deleting the wrong username '{result}'.")
+            await create_storage_user(result)
+            await create_sensor_user(result)
+            return Err(message=f"Storage and Login username missmatch.")
+
+        result = await delete_sensor_user(username)
+        if isinstance(result, Err):
+            await create_storage_user(credentials.username)
+            await create_sensor_user(credentials.username)
+            return result
+
+        if result != username:
+            await create_storage_user(result)
+            await create_sensor_user(result)
+            return Err(message=f"Sensor and Login username missmatch.")
 
         result = await db_admin.delete_one({"username": username})
         if not result.acknowledged or result.deleted_count == 0:

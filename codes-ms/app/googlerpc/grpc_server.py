@@ -11,7 +11,7 @@ import asyncio
 from concurrent import futures
 from proto import code_ms_pb2_grpc as pb_grpc
 from proto import code_ms_pb2 as pb
-from proto.config import CREATE_CODE_PORT
+from proto.config import PORT_CODE
 import grpc
 
 class CodeService(pb_grpc.CodeServiceServicer):
@@ -57,6 +57,6 @@ async def serve():
 
     server = grpc.aio.server(futures.ThreadPoolExecutor(max_workers=10))
     pb_grpc.add_CodeServiceServicer_to_server(CodeService(), server)
-    server.add_insecure_port(f"[::]:{CREATE_CODE_PORT}")
+    server.add_insecure_port(f"[::]:{PORT_CODE}")
     await server.start()
     await server.wait_for_termination()

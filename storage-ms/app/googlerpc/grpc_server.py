@@ -11,7 +11,7 @@ import asyncio
 from concurrent import futures
 from proto import storage_ms_pb2_grpc as pb_grpc
 from proto import storage_ms_pb2 as pb
-from proto.config import CREATE_USER_PORT, DELETE_USER_PORT
+from proto.config import PORT_STORAGE
 import grpc
 
 class StorageService(pb_grpc.StorageServiceServicer):
@@ -76,7 +76,6 @@ async def serve():
 
     server = grpc.aio.server(futures.ThreadPoolExecutor(max_workers=10))
     pb_grpc.add_StorageServiceServicer_to_server(StorageService(), server)
-    server.add_insecure_port(f"[::]:{CREATE_USER_PORT}")
-    server.add_insecure_port(f"[::]:{DELETE_USER_PORT}")
+    server.add_insecure_port(f"[::]:{PORT_STORAGE}")
     await server.start()
     await server.wait_for_termination()
