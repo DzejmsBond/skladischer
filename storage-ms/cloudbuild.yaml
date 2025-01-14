@@ -4,7 +4,7 @@ steps:
     args:
       - build
       - '-t'
-      - '$_IMAGE_NAME:$COMMIT_SHA'
+      - '$_IMAGE_NAME'
       - .
       - '-f'
       - $_DOCKERFILE_NAME
@@ -15,7 +15,7 @@ steps:
   - name: gcr.io/cloud-builders/docker
     args:
       - push
-      - '$_IMAGE_NAME:$COMMIT_SHA'
+      - '$_IMAGE_NAME'
     id: Push
 
   # 3: Set up Google Cloud project
@@ -50,7 +50,7 @@ steps:
       - '--set'
       - 'image.repository=$_IMAGE_NAME'
       - '--set'
-      - 'image.tag=$COMMIT_SHA'
+      - 'image.tag=latest'
       - '--history-max'
       - '5'
     env:
@@ -67,7 +67,7 @@ steps:
   #     - 'notifyFunction'
 
 images:
-  - '$_IMAGE_NAME:$COMMIT_SHA'
+  - '$_IMAGE_NAME'
 
 options:
   substitutionOption: ALLOW_LOOSE
@@ -83,7 +83,7 @@ substitutions:
   _DOCKERFILE_DIR: .
   _DOCKERFILE_NAME: storage-ms/Dockerfile
   _OUTPUT_BUCKET_PATH: first-hearth-447116-s1_cloudbuild/deploy
-  _IMAGE_NAME: gcr.io/first-hearth-447116-s1/github.com/dzejmsbond/storage-ms
+  _IMAGE_NAME: gcr.io/first-hearth-447116-s1/storage-ms
   _GCP_PROJECT: first-hearth-447116-s1
   _CLUSTER_NAME: skladischer-cluster-1
   _CLUSTER_REGION: europe-west3

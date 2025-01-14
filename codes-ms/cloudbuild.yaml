@@ -69,7 +69,7 @@ steps:
   #     - 'notifyFunction'
 
 images:
-  - '$_IMAGE_NAME'#:$COMMIT_SHA'
+  - '$_IMAGE_NAME'
 
 options:
   substitutionOption: ALLOW_LOOSE

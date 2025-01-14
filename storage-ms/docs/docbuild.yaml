@@ -24,7 +24,7 @@ steps:
     args:
       - build
       - '-t'
-      - '$_DOCS_IMAGE_NAME:$COMMIT_SHA'
+      - '$_DOCS_IMAGE_NAME'
       - .
       - '-f'
       - $_DOCS_DOCKERFILE_NAME
@@ -35,7 +35,7 @@ steps:
   - name: gcr.io/cloud-builders/docker
     args:
       - push
-      - '$_DOCS_IMAGE_NAME:$COMMIT_SHA'
+      - '$_DOCS_IMAGE_NAME'
     id: Push
 
   # 4: Set up Google Cloud project
@@ -70,7 +70,7 @@ steps:
       - '--set'
       - 'image.repository=$_DOCS_IMAGE_NAME'
       - '--set'
-      - 'image.tag=$COMMIT_SHA'
+      - 'image.tag=latest'
       - '--history-max'
       - '5'
     env:
@@ -79,7 +79,7 @@ steps:
     id: Helm Deploy
 
 images:
-  - '$_DOCS_IMAGE_NAME:$COMMIT_SHA'
+  - '$_DOCS_IMAGE_NAME'
 
 options:
   substitutionOption: ALLOW_LOOSE
@@ -90,7 +90,7 @@ timeout: 1200s  # Adjust timeout as necessary
 substitutions:
   _DOCS_DOCKERFILE_NAME: Dockerfile
   _DOCS_DOCKERFILE_DIR: storage-ms/docs
-  _DOCS_IMAGE_NAME: gcr.io/first-hearth-447116-s1/github.com/dzejmsbond/storage-ms-docs
+  _DOCS_IMAGE_NAME: gcr.io/first-hearth-447116-s1/storage-ms-docs
   _GCP_PROJECT: first-hearth-447116-s1
   _CLUSTER_NAME: skladischer-cluster-1
   _CLUSTER_REGION: europe-west3
