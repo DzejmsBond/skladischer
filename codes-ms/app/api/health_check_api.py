@@ -1,7 +1,7 @@
 # Author: Nina Mislej
 # Date created: 5.12.2024
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import PlainTextResponse
 from ..services.code_utils import check_reachable
 

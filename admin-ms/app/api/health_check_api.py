@@ -2,7 +2,7 @@
 # Date created: 5.12.2024
 
 # REST FastAPI dependencies.
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import PlainTextResponse
 
 # Internal dependencies.
