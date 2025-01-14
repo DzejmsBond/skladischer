@@ -8,7 +8,8 @@ from fastapi import FastAPI
 
 # Internal dependencies.
 from .api import (
-    credentials_api)
+    credentials_api,
+    health_check_api)
 
 app = FastAPI(
     title="Admin Managment Microservice",
@@ -19,6 +20,7 @@ app = FastAPI(
 
 # Include all routers and mounts.
 app.include_router(credentials_api.router)
+app.include_router(health_check_api.router)
 
 async def start_api():
     config = uvicorn.Config(app=app, host="0.0.0.0", port=8001)

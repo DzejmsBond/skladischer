@@ -1,0 +1,92 @@
+steps:
+  # 1: Build Docker image
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - '-t'
+      - '$_IMAGE_NAME:$COMMIT_SHA'
+      - .
+      - '-f'
+      - $_DOCKERFILE_NAME
+    dir: $_DOCKERFILE_DIR
+    id: Build
+
+  # 2: Push the image
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - '$_IMAGE_NAME:$COMMIT_SHA'
+    id: Push
+
+  # 3: Set up Google Cloud project
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'config'
+      - 'set'
+      - 'project'
+      - '${_GCP_PROJECT}'
+    id: Set Project
+
+  # 4: Authenticate kubectl
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'container'
+      - 'clusters'
+      - 'get-credentials'
+      - '${_CLUSTER_NAME}'
+      - '--region'
+      - '${_CLUSTER_REGION}'
+    id: Authenticate Kubernetes
+
+  # 5: Run helm chart for app and deploy
+  - name: 'gcr.io/$_GCP_PROJECT/helm'
+    args:
+      - 'upgrade'
+      - '--install'
+      - '${_RELEASE_NAME}'
+      - './sensor-ms/helm'
+      - '-f'
+      - './sensor-ms/helm/values.yaml'
+      - '--set'
+      - 'image.repository=$_IMAGE_NAME'
+      - '--set'
+      - 'image.tag=$COMMIT_SHA'
+      - '--history-max'
+      - '5'
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=${_CLUSTER_REGION}'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER_NAME}'
+    id: Helm
+
+
+
+  # Optional: Notify success or failure
+  # Uncomment and customize if required
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   args:
+  #     - 'functions'
+  #     - 'call'
+  #     - 'notifyFunction'
+
+images:
+  - '$_IMAGE_NAME:$COMMIT_SHA'
+
+options:
+  substitutionOption: ALLOW_LOOSE
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 1200s  # Adjust timeout as necessary
+
+substitutions:
+  _GKE_CLUSTER: skladischer-cluster-1
+  _K8S_APP_NAME: sensor-ms
+  _GKE_LOCATION: europe-west3
+  _K8S_NAMESPACE: default
+  _DOCKERFILE_DIR: .
+  _DOCKERFILE_NAME: sensor-ms/Dockerfile
+  _OUTPUT_BUCKET_PATH: first-hearth-447116-s1_cloudbuild/deploy
+  _IMAGE_NAME: gcr.io/first-hearth-447116-s1/sensor-ms
+  _GCP_PROJECT: first-hearth-447116-s1
+  _CLUSTER_NAME: skladischer-cluster-1
+  _CLUSTER_REGION: europe-west3
+  _RELEASE_NAME: sensor-ms

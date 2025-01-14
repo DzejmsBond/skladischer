@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helm.fullname" . }}
+  labels:
+    {{- include "helm.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "helm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "helm.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "helm.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+# This image might need adjustmnet.
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  key: {{ .Values.env.databaseUrl.secretKey }}
+                  name: {{ .Values.env.databaseUrl.secretName }}
+            - name: DATABASE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: {{ .Values.env.databaseName.configMapKey }}
+                  name: {{ .Values.env.databaseName.configMapName }}
+            - name: COLLECTION
+              valueFrom:
+                configMapKeyRef:
+                  key: {{ .Values.env.collection.configMapKey }}
+                  name: {{ .Values.env.collection.configMapName }}
+            - name: PORT_CODE
+              valueFrom:
+                configMapKeyRef:
+                  key: {{ .Values.env.portCode.configMapKey }}
+                  name: {{ .Values.env.portCode.configMapName}}
+            - name: PORT_SENSOR
+              valueFrom:
+                configMapKeyRef:
+                  key: {{ .Values.env.portSensor.configMapKey }}
+                  name: {{ .Values.env.portSensor.configMapName}}
+            - name: PORT_STORAGE
+              valueFrom:
+                configMapKeyRef:
+                  key: {{ .Values.env.portStorage.configMapKey }}
+                  name: {{ .Values.env.portStorage.configMapName}}
+
+
+
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

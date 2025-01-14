@@ -85,7 +85,7 @@ substitutions:
   _DOCKERFILE_DIR: .
   _DOCKERFILE_NAME: codes-ms/Dockerfile
   _OUTPUT_BUCKET_PATH: first-hearth-447116-s1_cloudbuild/deploy
-  _IMAGE_NAME: gcr.io/first-hearth-447116-s1/github.com/dzejmsbond/codes-ms #TODO: make these names a bit prettier
+  _IMAGE_NAME: gcr.io/first-hearth-447116-s1/codes-ms
   _GCP_PROJECT: first-hearth-447116-s1
   _CLUSTER_NAME: skladischer-cluster-1
   _CLUSTER_REGION: europe-west3

@@ -2,9 +2,9 @@
 # Date created: 5.12.2024
 
 # REST FastAPI dependencies.
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import PlainTextResponse
-
+from fastapi.exceptions import HTTPException
 # Internal dependencies.
 from ..helpers.database_helpers import get_collection
 

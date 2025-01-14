@@ -11,7 +11,8 @@ from .googlerpc.grpc_server import serve
 from .api import (
     sensor_api,
     users_api,
-    sensor_data_api)
+    sensor_data_api,
+    health_check_api)
 
 app = FastAPI(
     title="Sensor Managment Microservice",
@@ -24,6 +25,7 @@ app = FastAPI(
 app.include_router(sensor_api.router)
 app.include_router(users_api.router)
 app.include_router(sensor_data_api.router)
+app.include_router(health_check_api.router)
 
 async def start_api():
     config = uvicorn.Config(app=app, host="0.0.0.0", port=8003)

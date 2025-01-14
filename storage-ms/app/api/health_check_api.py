@@ -4,6 +4,7 @@
 # REST FastAPI dependencies.
 from fastapi import APIRouter
 from fastapi.responses import PlainTextResponse
+from fastapi.exceptions import HTTPException
 
 # Internal dependencies.
 from ..helpers.database_helpers import get_collection

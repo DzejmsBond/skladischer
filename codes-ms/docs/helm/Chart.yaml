@@ -1,6 +1,6 @@
 apiVersion: v2
 name: codes-ms-docs
-description: A Helm chart for storage-ms Docs
+description: A Helm chart for admin-ms Docs
 
 # A chart can be either an 'application' or a 'library' chart.
 #
