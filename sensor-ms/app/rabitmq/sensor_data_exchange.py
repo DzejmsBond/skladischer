@@ -20,6 +20,16 @@ EXCHANGE_TYPE = "topic"
 QUEUE_LENGTH = 100
 
 async def send_to_channel(data: dict) -> str | Err:
+    """
+    Sends sensor data to the RabbitMQ exchange for processing. The username is parsed from the raw data dictionary.
+
+    Args:
+        data (dict): The raw sensor data to send.
+
+    Returns:
+        str | ErrorResponse: Confirmation message if successful, or an error if failure occurs while sending data.
+    """
+
     try:
         if "username" not in data:
             return Err(message="No username provided in sensor data.")
@@ -47,6 +57,16 @@ async def send_to_channel(data: dict) -> str | Err:
         return Err(message=f"Error while sending data to channel: {e}")
 
 async def receive_from_channel(username: str) -> GetSensorData | Err:
+    """
+    Retrieves sensor data for a specific user from RabbitMQ and processes it.
+
+    Args:
+        username (str): The username for which sensor data is retrieved.
+
+    Returns:
+        schema.GetSensorData: The processed sensor data for the user or an error response if an error occurs while receiving or processing data.
+    """
+
     try:
         connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST))
         channel = connection.channel()

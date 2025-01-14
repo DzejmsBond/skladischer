@@ -8,4 +8,5 @@ from .user import (
 from .sensors import (
     HumiditySensor,
     TemperatureSensor,
-    DoorSensor)
+    DoorSensor,
+    Sensor)

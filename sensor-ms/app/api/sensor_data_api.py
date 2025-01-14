@@ -19,6 +19,19 @@ router = APIRouter(
 
 @router.post("/sensor-data", response_class=PlainTextResponse)
 async def receive_sensor_data(data: dict):
+    """
+    API endpoint to receive sensor data and send it to RabbitMQ for processing.
+    All user sensors should be sending data to this endpoint.
+
+    Args:
+        data (dict): The raw sensor data sent via HTTP POST.
+
+    Returns:
+        str: Confirmation message if successful.
+
+    Raises:
+        HTTPException: If an error occurs while sending data to RabbitMQ.
+    """
 
     result = await send_to_channel(data)
     if isinstance(result, Err):
@@ -26,8 +39,20 @@ async def receive_sensor_data(data: dict):
 
     return result
 
-@router.post("/{username}/sensor-data", response_model=user_schemas.GetSensorData)
+@router.get("/{username}/sensor-data", response_model=user_schemas.GetSensorData)
 async def get_sensor_data(username: str):
+    """
+    API endpoint to retrieve processed sensor data for a user from RabbitMQ.
+
+    Args:
+        username (str): The username for which sensor data is retrieved.
+
+    Returns:
+        user_schemas.GetSensorData: The aggregated and processed sensor data.
+
+    Raises:
+        HTTPException: If an error occurs while retrieving or processing data.
+    """
 
     result = await receive_from_channel(username)
     if isinstance(result, Err):

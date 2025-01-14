@@ -15,3 +15,7 @@ from .users_api import (
     delete_user,
     get_user,
     delete_sensors)
+
+from .sensor_data_api import (
+    receive_sensor_data,
+    get_sensor_data)
