@@ -19,18 +19,30 @@ EXCHANGE_NAME = "sensor-data-exchange"
 EXCHANGE_TYPE = "topic"
 QUEUE_LENGTH = 100
 
-async def send_to_channel(routing_username: str, data: dict) -> None | Err:
+async def send_to_channel(data: dict) -> str | Err:
     try:
+        if "username" not in data:
+            return Err(message="No username provided in sensor data.")
+
+        username = data["username"]
+        processed_data = await utils.pre_process_data(data)
+        if isinstance(processed_data, Err):
+            return processed_data
+        if not processed_data:
+            return Err(message="Sensor processed.")
+
         connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST))
         channel = connection.channel()
         channel.exchange_declare(exchange=EXCHANGE_NAME, exchange_type=EXCHANGE_TYPE)
 
         channel.basic_publish(
             exchange=EXCHANGE_NAME,
-            routing_key=routing_username,
+            routing_key=username,
             body=json.dumps(data)
         )
         connection.close()
+        return "Sensor processed."
+
     except Exception as e:
         return Err(message=f"Error while sending data to channel: {e}")
 
@@ -40,8 +52,8 @@ async def receive_from_channel(username: str) -> Sensor | Err:
         channel = connection.channel()
         channel.exchange_declare(exchange=EXCHANGE_NAME, exchange_type=EXCHANGE_TYPE)
 
-        queue_name = channel.queue_declare(queue=username, arguments={"x-max-length": QUEUE_LENGTH})
-        channel.queue_bind(exchange="sensor-data-exchange", queue=queue_name)
+        queue_info = channel.queue_declare(queue=username, arguments={"x-max-length": QUEUE_LENGTH})
+        channel.queue_bind(exchange="sensor-data-exchange", queue=username)
 
         message_count = 0
         queue = []
@@ -52,15 +64,19 @@ async def receive_from_channel(username: str) -> Sensor | Err:
             queue.append(data)
             message_count += 1
 
-            # Acknowledge the message.
-            ch.basic_ack(delivery_tag=method.delivery_tag)
+            queue_state = ch.queue_declare(queue=username, passive=True)
+            remaining_messages = queue_state.method.message_count
 
             # Stop consuming after reaching max_messages.
-            if message_count >= max_messages:
+            if message_count >= QUEUE_LENGTH or remaining_messages == 0:
                 channel.stop_consuming()
 
-        channel.basic_consume(queue=queue_name, on_message_callback=limited_callback, auto_ack=True)
+        if queue_info.method.message_count == 0:
+            return Err(message="No sensor data recieved in the channel.")
+
+        channel.basic_consume(queue=username, on_message_callback=limited_callback, auto_ack=True)
         channel.start_consuming()
+        connection.close()
         return await utils.process_queue(username, queue)
 
     except Exception as e:

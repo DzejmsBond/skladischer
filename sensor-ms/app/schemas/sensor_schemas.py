@@ -2,7 +2,7 @@
 # Date created: 08.01.2024
 
 from pydantic import BaseModel
-from typing import Optional, Union
+from typing import Optional, Union, List
 from ..models import HumiditySensor, TemperatureSensor, DoorSensor
 
 class HumiditySensorCreate(BaseModel):
@@ -35,3 +35,5 @@ class GetSensor(BaseModel):
 
     name: str
     data: Union[HumiditySensor, TemperatureSensor, DoorSensor]
+    details: Optional[List[str]] = None
+    count: int = 0

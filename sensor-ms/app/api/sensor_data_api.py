@@ -6,10 +6,11 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import PlainTextResponse
 
 # Internal dependencies.
-from ..services import sensor_data_utils as utils
-from ..schemas import sensor_schemas as schema
+from ..schemas import sensor_schemas, user_schemas
 from ..helpers.error import ErrorResponse as Err
-from ..rabitmq.sensor_data_exchange import send_to_channel
+from ..rabitmq.sensor_data_exchange import (
+    send_to_channel,
+    receive_from_channel)
 
 router = APIRouter(
     prefix="/sensors",
@@ -19,11 +20,17 @@ router = APIRouter(
 @router.post("/sensor-data", response_class=PlainTextResponse)
 async def receive_sensor_data(data: dict):
 
-    processed_data = await utils.process_data(data)
-    if isinstance(processed_data, Err):
-        raise HTTPException(status_code=processed_data.code, detail=processed_data.message)
-    if not processed_data:
-        return "Data recieved and processed."
+    result = await send_to_channel(data)
+    if isinstance(result, Err):
+        raise HTTPException(status_code=result.code, detail=result.message)
 
-    await send_to_channel(processed_data.get("username"), processed_data)
-    return "Data received and forwarded."
+    return result
+
+@router.post("/{username}/sensor-data", response_model=user_schemas.GetSensorData)
+async def get_sensor_data(username: str):
+
+    result = await receive_from_channel(username)
+    if isinstance(result, Err):
+        raise HTTPException(status_code=result.code, detail=result.message)
+
+    return result

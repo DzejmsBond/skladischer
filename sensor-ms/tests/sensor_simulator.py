@@ -32,10 +32,10 @@ def sensor_simulator():
             data = generate_sensor_data()
             response = send_sensor_data(client, sensor_url, data)
             print(f"{response.status_code}: Sent sensor data at {data.get('timestamp')}: {response.text}")
-            time.sleep(1)
+            time.sleep(60) # Send sensor reports per minute.
         except httpx.RequestError as e:
             print(f"Error {e}: Data could not be sent. Trying again in 10 seconds.")
-            time.sleep(10)  # Retry after a delay for exceptions.
+            time.sleep(180)  # Retry after a delay of 3 minutes for exceptions.
             continue
         except KeyboardInterrupt:
             print("Sensor stopped.")
