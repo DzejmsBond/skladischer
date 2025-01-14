@@ -145,7 +145,9 @@ async def process_humidity(data: dict, sensor: Sensor, response: user_schemas.Ge
             humidity = data.get("humidity_level")
 
             if sensor.name not in response.sensors:
-                response.sensors[sensor.name] = sensor_schemas.GetSensor(name=sensor.name, data=sensor.data)
+                response.sensors[sensor.name] = sensor_schemas.GetSensor(name=sensor.name,
+                                                                         data=sensor.data,
+                                                                         details=[])
                 sensor.data.humidity_level = 0
 
             response_sensor = response.sensors[sensor.name]

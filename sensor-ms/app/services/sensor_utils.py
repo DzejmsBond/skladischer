@@ -237,4 +237,3 @@ async def update_sensor_name(username : str, name : str, new_name : str) -> Err 
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
-

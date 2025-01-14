@@ -32,5 +32,5 @@ async def get_sensor_data(username: str):
     result = await receive_from_channel(username)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
-
+    
     return result

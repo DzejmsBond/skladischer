@@ -6,6 +6,7 @@ from ..schemas import user_schemas as schema
 from ..models.user import User
 from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
+from ..models.sensors import DOOR
 
 async def create_user(user : schema.UserCreate) -> Err | str:
     """
@@ -128,6 +129,42 @@ async def delete_sensors(username : str) -> Err | str:
         if result.matched_count == 0:
             return Err(message=f"Couldnt match to any record in datbabase.")
         return username
+
+    except Exception as e:
+        return Err(message=f"Unknown exception: {e}", code=500)
+
+async def get_all_door_sensors(username : str) -> Err | list:
+    """
+    Fetches all door sensors for a specific user.
+
+    This function fetches a list of door sensor objects from a user's list of sensors.
+    If the operation fails, an error response is returned.
+
+    Args:
+        username (str): The username of the user who owns the sensors.
+
+    Returns:
+        ErrorResponse | str: The error response if an error occurred, or the list of door sensors was successfully retrieved.
+    """
+
+    try:
+        db_users = await get_collection()
+        if db_users is None:
+            return Err(message=f"Cannot get DB collection.")
+
+        # A cleaner way of finding all matchings and a sanity check that there are unique.
+        pipeline = [
+            {"$match": {"username": username}},
+            {"$unwind": "$sensors"},  # Deconstruct the sensors array.
+            {"$match": {"sensors.data.type": DOOR}}, # Match all sensors of type door.
+            {"$replaceRoot": {"newRoot": "$sensors"}}  # Replace the root document with the sensors object.
+        ]
+
+        result = await db_users.aggregate(pipeline).to_list()
+        if not result:
+            return []
+
+        return result
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)

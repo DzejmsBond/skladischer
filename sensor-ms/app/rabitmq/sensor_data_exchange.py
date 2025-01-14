@@ -8,8 +8,8 @@ import json
 # Internal dependencies.
 from ..config import RABBITMQ_HOST
 from ..helpers.error import ErrorResponse as Err
-from ..services import sensor_data_utils as utils
-from ..models.sensors import Sensor
+from ..services import sensor_data_utils, user_utils
+from ..schemas.user_schemas import GetSensorData
 
 # TODO: This is not the best usecase because all users sensors
 #       output on the same queue so if one sensor is publishing information per second and the
@@ -25,7 +25,7 @@ async def send_to_channel(data: dict) -> str | Err:
             return Err(message="No username provided in sensor data.")
 
         username = data["username"]
-        processed_data = await utils.pre_process_data(data)
+        processed_data = await sensor_data_utils.pre_process_data(data)
         if isinstance(processed_data, Err):
             return processed_data
         if not processed_data:
@@ -46,7 +46,7 @@ async def send_to_channel(data: dict) -> str | Err:
     except Exception as e:
         return Err(message=f"Error while sending data to channel: {e}")
 
-async def receive_from_channel(username: str) -> Sensor | Err:
+async def receive_from_channel(username: str) -> GetSensorData | Err:
     try:
         connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST))
         channel = connection.channel()
@@ -75,7 +75,19 @@ async def receive_from_channel(username: str) -> Sensor | Err:
         channel.basic_consume(queue=username, on_message_callback=limited_callback, auto_ack=True)
         channel.start_consuming()
         connection.close()
-        return await utils.process_queue(username, queue)
+
+        processed_queue = await sensor_data_utils.process_queue(username, queue)
+        if isinstance(processed_queue, Err):
+            return processed_queue
+
+        door_sensors = await user_utils.get_all_door_sensors(username)
+        if isinstance(door_sensors, Err):
+            return door_sensors
+
+        for door_sensor in door_sensors:
+            if "name" in door_sensor:
+                processed_queue.sensors[door_sensor["name"]] = door_sensor
+        return processed_queue
 
     except Exception as e:
         return Err(message=f"Error while recieving data from channel: {e}")
