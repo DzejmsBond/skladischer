@@ -4,7 +4,7 @@ steps:
     args:
       - build
       - '-t'
-      - '$_IMAGE_NAME'
+      - '$_IMAGE_NAME:$COMMIT_SHA'
       - .
       - '-f'
       - $_DOCKERFILE_NAME
@@ -15,7 +15,7 @@ steps:
   - name: gcr.io/cloud-builders/docker
     args:
       - push
-      - '$_IMAGE_NAME'
+      - '$_IMAGE_NAME:$COMMIT_SHA'
     id: Push
 
   # 3: Set up Google Cloud project
@@ -50,7 +50,7 @@ steps:
       - '--set'
       - 'image.repository=$_IMAGE_NAME'
       - '--set'
-      - 'image.tag=latest'
+      - 'image.tag=:$COMMIT_SHA'
       - '--history-max'
       - '5'
     env:
@@ -67,7 +67,7 @@ steps:
   #     - 'notifyFunction'
 
 images:
-  - '$_IMAGE_NAME'
+  - '$_IMAGE_NAME:$COMMIT_SHA'
 
 options:
   substitutionOption: ALLOW_LOOSE

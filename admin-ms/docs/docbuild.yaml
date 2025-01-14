@@ -23,7 +23,7 @@ steps:
     args:
       - build
       - '-t'
-      - '$_DOCS_IMAGE_NAME'
+      - '$_DOCS_IMAGE_NAME:$COMMIT_SHA'
       - .
       - '-f'
       - $_DOCS_DOCKERFILE_NAME
@@ -34,7 +34,7 @@ steps:
   - name: gcr.io/cloud-builders/docker
     args:
       - push
-      - '$_DOCS_IMAGE_NAME'
+      - '$_DOCS_IMAGE_NAME:$COMMIT_SHA'
     id: Push
 
   # 4: Set up Google Cloud project
@@ -69,7 +69,7 @@ steps:
       - '--set'
       - 'image.repository=$_DOCS_IMAGE_NAME'
       - '--set'
-      - 'image.tag=latest'
+      - 'image.tag=$COMMIT_SHA'
       - '--history-max'
       - '5'
     env:
@@ -78,7 +78,7 @@ steps:
     id: Helm Deploy
 
 images:
-  - '$_DOCS_IMAGE_NAME'
+  - '$_DOCS_IMAGE_NAME:$COMMIT_SHA'
 
 options:
   substitutionOption: ALLOW_LOOSE
