@@ -7,13 +7,14 @@ steps:
       - "-c"
       - |
         export PYTHONPATH=$(pwd)
+        pip install -r sensor-ms/requirements.txt
+        make clean-proto-files && make generate-proto-files
         pip install -e ./proto
         pip install sphinx
-        cd sensor-ms
-        pip install -r requirements.txt
+        cd codes-ms
         pip install pydata-sphinx-theme
         cd docs
-        make html
+        make clean && make html
 
     id: Make Docs
         # pip install -r requirements.txt
@@ -89,7 +90,7 @@ timeout: 1200s  # Adjust timeout as necessary
 substitutions:
   _DOCS_DOCKERFILE_NAME: Dockerfile
   _DOCS_DOCKERFILE_DIR: sensor-ms/docs
-  _DOCS_IMAGE_NAME: gcr.io/first-hearth-447116-s1/github.com/dzejmsbond/sensor-ms-docs
+  _DOCS_IMAGE_NAME: gcr.io/first-hearth-447116-s1/sensor-ms-docs
   _GCP_PROJECT: first-hearth-447116-s1
   _CLUSTER_NAME: skladischer-cluster-1
   _CLUSTER_REGION: europe-west3
