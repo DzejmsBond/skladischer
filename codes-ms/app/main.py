@@ -15,9 +15,9 @@ from .api import code_api, health_check_api
 
 app = FastAPI(
     title="Code Generation Microservice",
-    docs_url="/docs",             # Swagger UI
-    redoc_url="/redoc",           # Redoc UI
-    openapi_url="/openapi.json"   # OpenAPI schema URL
+    docs_url="/codes/docs-api",             # Swagger UI
+    redoc_url="/codes/redoc",           # Redoc UI
+    openapi_url="/codes/openapi.json"   # OpenAPI schema URL
 )
 
 # Include all routers and mounts.

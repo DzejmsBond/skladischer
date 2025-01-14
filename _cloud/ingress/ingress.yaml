@@ -1,0 +1,70 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: ingress-static-ip
+spec:
+  rules:
+    - http:
+        paths:
+          # Base paths to 4 microservices
+          - path: /credentials
+            pathType: Prefix
+            backend:
+              service:
+                name: admin-ms
+                port:
+                  number: 8001
+          - path: /codes
+            pathType: Prefix
+            backend:
+              service:
+                name: codes-ms
+                port:
+                  number: 8002
+          - path: /sensors
+            pathType: Prefix
+            backend:
+              service:
+                name: sensor-ms
+                port:
+                  number: 8003
+          - path: /storage
+            pathType: Prefix
+            backend:
+              service:
+                name: storage-ms
+                port:
+                  number: 8000
+
+          # Paths to Sphinx documentation
+          - path: /credentials/docs
+            pathType: Prefix
+            backend:
+              service:
+                name: admin-ms-docs
+                port:
+                  number: 80
+          - path: /codes/docs
+            pathType: Prefix
+            backend:
+              service:
+                name: codes-ms-docs
+                port:
+                  number: 80
+          - path: /sensors/docs
+            pathType: Prefix
+            backend:
+              service:
+                name: sensor-ms-docs
+                port:
+                  number: 80
+          - path: /storage/docs
+            pathType: Prefix
+            backend:
+              service:
+                name: storage-ms-docs
+                port:
+                  number: 80
+          # Capture paths to Swagger documentation and route to internal ingress controller for routing later.
