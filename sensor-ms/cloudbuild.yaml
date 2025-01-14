@@ -50,7 +50,7 @@ steps:
       - '--set'
       - 'image.repository=$_IMAGE_NAME'
       - '--set'
-      - 'image.tag=:$COMMIT_SHA'
+      - 'image.tag=$COMMIT_SHA'
       - '--history-max'
       - '5'
     env:
