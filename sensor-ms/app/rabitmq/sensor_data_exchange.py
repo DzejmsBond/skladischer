@@ -56,6 +56,7 @@ async def receive_from_channel(username: str) -> Sensor | Err:
         channel.queue_bind(exchange="sensor-data-exchange", queue=username)
 
         message_count = 0
+        messages_queued = queue_info.method.message_count
         queue = []
         def limited_callback(ch, method, properties, body):
             nonlocal message_count
@@ -64,11 +65,8 @@ async def receive_from_channel(username: str) -> Sensor | Err:
             queue.append(data)
             message_count += 1
 
-            queue_state = ch.queue_declare(queue=username, passive=True)
-            remaining_messages = queue_state.method.message_count
-
             # Stop consuming after reaching max_messages.
-            if message_count >= QUEUE_LENGTH or remaining_messages == 0:
+            if message_count >= QUEUE_LENGTH or messages_queued == message_count:
                 channel.stop_consuming()
 
         if queue_info.method.message_count == 0:

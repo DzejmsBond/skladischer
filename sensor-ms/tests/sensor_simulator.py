@@ -3,8 +3,8 @@
 import httpx
 from httpx import Client
 import random
+from datetime import datetime, timezone
 import time
-
 
 # TODO: This is a hack.
 #       Implement token when implementing authorization.
@@ -14,7 +14,7 @@ def generate_sensor_data():
         "username": "testuser",
         "name": "testsensor",
         "temperature": round(random.uniform(18, 30), 2),
-        "timestamp": time.time(),
+        "timestamp": str(datetime.now(tz=timezone.utc)),
     }
 
 def send_sensor_data(client, url, data):
@@ -31,11 +31,11 @@ def sensor_simulator():
         try:
             data = generate_sensor_data()
             response = send_sensor_data(client, sensor_url, data)
-            print(f"{response.status_code}: Sent sensor data at {data.get('timestamp')}: {response.text}")
-            time.sleep(60) # Send sensor reports per minute.
+            print(f"{response.status_code}: Sent temperature {data.get("temperature")} at {data.get('timestamp')}: {response.text}")
+            time.sleep(5) # Send sensor reports per some value.
         except httpx.RequestError as e:
             print(f"Error {e}: Data could not be sent. Trying again in 10 seconds.")
-            time.sleep(180)  # Retry after a delay of 3 minutes for exceptions.
+            time.sleep(60)  # Retry after a delay of 1 minute for exceptions.
             continue
         except KeyboardInterrupt:
             print("Sensor stopped.")

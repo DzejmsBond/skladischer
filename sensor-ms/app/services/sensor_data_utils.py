@@ -2,12 +2,18 @@
 # Date created: 13.01.2025
 
 from ..schemas import sensor_schemas, user_schemas
-from ..models.sensors import HumiditySensor, DoorSensor, TemperatureSensor, Sensor
 from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
 from ..services import sensor_utils as utils
 from typing import Tuple
 
+from ..models.sensors import (
+    HumiditySensor,
+    DoorSensor,
+    TemperatureSensor,
+    Sensor)
+
+from ..models.sensors import TEMPERATURE, HUMIDITY, DOOR
 from datetime import datetime, timezone
 
 async def process_queue(username: str, queue: list) -> Err | user_schemas.GetSensorData:
@@ -16,11 +22,11 @@ async def process_queue(username: str, queue: list) -> Err | user_schemas.GetSen
         for entry in queue:
             await post_process_data(entry, response)
 
-        for sensor in response.sensors:
-            if sensor.type == "TEMPERATURE":
-                sensor.data.temperature = sensor.data.temperature / sensor.count
-            if sensor.type == "HUMIDITY":
-                sensor.data.humidity = sensor.data.humidity / sensor.count
+        for sensor in response.sensors.values():
+            if sensor.data.type == TEMPERATURE:
+                sensor.data.temperature = round(sensor.data.temperature / sensor.count, 2)
+            if sensor.data.type == HUMIDITY:
+                sensor.data.humidity = round(sensor.data.humidity / sensor.count, 2)
         return response
 
     except Exception as e:
@@ -29,23 +35,23 @@ async def process_queue(username: str, queue: list) -> Err | user_schemas.GetSen
 async def pre_process_data(data: dict) -> Err | dict | None:
     try:
         sensor_type, sensor = await get_valid_sensor(data)
-        if sensor_type == "TEMPERATURE":
+        if sensor_type == TEMPERATURE:
             return data
-        elif sensor_type == "HUMIDITY":
+        elif sensor_type == HUMIDITY:
             return data
-        elif sensor_type == "DOOR":
+        elif sensor_type == DOOR:
             return await process_door(data.get("name"), sensor)
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
 
-async def post_process_data(data: dict, response: dict) -> None | Err:
+async def post_process_data(data: dict, response: user_schemas.GetSensorData) -> None | Err:
     try:
         sensor_type, sensor = await get_valid_sensor(data)
-        if sensor_type == "TEMPERATURE":
-            return await process_temperature_sensor(data, response)
-        elif sensor_type == "HUMIDITY":
-            return process_humidity_sensor(data, response)
+        if sensor_type == TEMPERATURE:
+            return await process_temperature(data, sensor, response)
+        elif sensor_type == HUMIDITY:
+            return await process_humidity(data, sensor, response)
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
@@ -107,15 +113,15 @@ async def process_temperature(data: dict, sensor: Sensor, response: user_schemas
             temperature = data.get("temperature")
 
             if sensor.name not in response.sensors:
-                response.sensors[sensor.name] = schema.GetSensor(name=sensor.name, data=sensor.data)
+                response.sensors[sensor.name] = sensor_schemas.GetSensor(name=sensor.name, data=sensor.data)
                 response.sensors[sensor.name].data.temperature = 0
 
             response_sensor = response.sensors[sensor.name]
             response_sensor.count += 1
             response_sensor.data.temperature += temperature
-            if temperature > sensor.data.max_temperature:
+            if sensor.data.max_temperature and temperature > sensor.data.max_temperature:
                 response[sensor.name].details.append(f"Temperature over limit: {temperature}")
-            if temperature < sensor.data.min_temperature:
+            if sensor.data.min_temperature and temperature < sensor.data.min_temperature:
                 response[sensor.name].details.append(f"Temperature under limit: {temperature}")
             return None
 
@@ -131,15 +137,15 @@ async def process_humidity(data: dict, sensor: Sensor, response: user_schemas.Ge
             humidity = data.get("humidity_level")
 
             if sensor.name not in response.sensors:
-                response.sensors[sensor.name] = schema.GetSensor(name=sensor.name, data=sensor.data)
+                response.sensors[sensor.name] = sensor_schemas.GetSensor(name=sensor.name, data=sensor.data)
                 sensor.data.temperature = 0
 
             response_sensor = response.sensors[sensor.name]
             response_sensor.count += 1
             response_sensor.data.temperature += humidity
-            if humidity > sensor.data.max_humidity:
+            if sensor.data.max_humidity and humidity > sensor.data.max_humidity:
                 response[sensor.name].details.append(f"Humidity over limit: {humidity}")
-            if humidity < sensor.data.min_humidity:
+            if sensor.data.min_humidity and humidity < sensor.data.min_humidity:
                 response[sensor.name].details.append(f"Humidity under limit: {humidity}")
             return None
 
