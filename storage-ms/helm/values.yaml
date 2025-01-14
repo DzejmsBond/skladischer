@@ -4,17 +4,27 @@ env:
     secretName: "database-url"
     secretKey: "DATABASE_URL"
   databaseName:
-    configMapName: "storage-ms-config"
+    configMapName: "skladischer-config"
     configMapKey: "DATABASE_NAME"
   collection:
-    configMapName: "storage-ms-config"
+    configMapName: "skladischer-config"
     configMapKey: "COLLECTION"
   codesmsHost:
-    configMapName: "storage-ms-config"
+    configMapName: "skladischer-config"
     configMapKey: "CODES_MS_HOST"
   codesmsPort:
-    configMapName: "codes-ms-config"
+    configMapName: "skladischer-config" #this one is probably obsolete
     configMapKey: "CREATE_CODE_PORT"
+  portCode:
+    configMapName: "skladischer-config"
+    configMapKey: "PORT_CODE"
+  portSensor:
+    configMapName: "skladischer-config"
+    configMapKey: "PORT_SENSOR"
+  portStorage:
+    configMapName: "skladischer-config"
+    configMapKey: "PORT_STORAGE"
+
 
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 replicaCount: 2

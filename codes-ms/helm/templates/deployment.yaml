@@ -72,6 +72,21 @@ spec:
                 configMapKeyRef:
                   key: {{ .Values.env.codesmsPort.configMapKey }}
                   name: {{ .Values.env.codesmsPort.configMapName }}
+            - name: PORT_CODE
+              valueFrom:
+                configMapKeyRef:
+                  key: {{ .Values.env.portCode.configMapKey }}
+                  name: {{ .Values.env.portCode.configMapName}}
+            - name: PORT_SENSOR
+              valueFrom:
+                configMapKeyRef:
+                  key: {{ .Values.env.portSensor.configMapKey }}
+                  name: {{ .Values.env.portSensor.configMapName}}
+            - name: PORT_STORAGE
+              valueFrom:
+                configMapKeyRef:
+                  key: {{ .Values.env.portStorage.configMapKey }}
+                  name: {{ .Values.env.portStorage.configMapName}}
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}

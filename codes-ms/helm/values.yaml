@@ -4,14 +4,23 @@ env:
     secretName: "rapidapi-key"
     secretKey: "RAPIDAPI_KEY"
   rapidapiHost:
-    configMapName: "codes-ms-config"
+    configMapName: "skladischer-config"
     configMapKey: "RAPIDAPI_HOST"
   rapidapiUrl:
-    configMapName: "codes-ms-config"
+    configMapName: "skladischer-config"
     configMapKey: "RAPIDAPI_URL"
   codesmsPort:
-    configMapName: "codes-ms-config"
+    configMapName: "skladischer-config"
     configMapKey: "CREATE_CODE_PORT"
+  portCode:
+    configMapName: "skladischer-config"
+    configMapKey: "PORT_CODE"
+  portSensor:
+    configMapName: "skladischer-config"
+    configMapKey: "PORT_SENSOR"
+  portStorage:
+    configMapName: "skladischer-config"
+    configMapKey: "PORT_STORAGE"
 
 replicaCount: 2
 
