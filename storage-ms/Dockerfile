@@ -6,10 +6,11 @@ WORKDIR /app
 
 COPY storage-ms /app
 COPY proto /app/proto
+copy Makefile /app/
 
-RUN export PYTHONPATH=. && pip install --no-cache-dir -e ./proto
+RUN export PYTHONPATH=. && pip install --no-cache-dir -r requirements.txt
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN make clean-proto-files && make generate-proto-files && pip install --no-cache-dir -e ./proto
 
 EXPOSE 8000
 
