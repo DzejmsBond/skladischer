@@ -11,7 +11,7 @@ steps:
         make clean-proto-files && make generate-proto-files
         pip install -e ./proto
         pip install sphinx
-        cd codes-ms
+        cd sensor-ms
         pip install pydata-sphinx-theme
         cd docs
         make clean && make html
