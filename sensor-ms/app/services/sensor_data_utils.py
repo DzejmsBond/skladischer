@@ -26,7 +26,7 @@ async def process_queue(username: str, queue: list) -> Err | user_schemas.GetSen
             if sensor.data.type == TEMPERATURE:
                 sensor.data.temperature = round(sensor.data.temperature / sensor.count, 2)
             if sensor.data.type == HUMIDITY:
-                sensor.data.humidity = round(sensor.data.humidity / sensor.count, 2)
+                sensor.data.humidity_level = round(sensor.data.humidity_level / sensor.count, 2)
         return response
 
     except Exception as e:
@@ -34,13 +34,17 @@ async def process_queue(username: str, queue: list) -> Err | user_schemas.GetSen
 
 async def pre_process_data(data: dict) -> Err | dict | None:
     try:
-        sensor_type, sensor = await get_valid_sensor(data)
+        result = await get_valid_sensor(data)
+        if isinstance(result, Err):
+            return result
+
+        sensor_type, sensor = result
         if sensor_type == TEMPERATURE:
             return data
         elif sensor_type == HUMIDITY:
             return data
         elif sensor_type == DOOR:
-            return await process_door(data.get("name"), sensor)
+            return await process_door(data.get("username"), sensor)
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
@@ -86,20 +90,22 @@ async def get_valid_sensor(data: dict) -> Tuple[str, Sensor] | Err:
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
 
-async def process_door(username: str, sensor: Sensor) -> Err | dict | None:
+async def process_door(username: str, sensor: Sensor) -> Err | str :
 
     try:
         db_users = await get_collection()
         if db_users is None:
             return Err(message=f"Cannot get DB collection.")
 
+
         result = await db_users.update_one(
-            {"username": username, "sensors.name": sensor.name},
-            {"$set": {f"sensors.$.last_opened": datetime.now(tz=timezone.utc)}})
+            {"username": username,
+             "sensors.name": sensor.name},
+            {"$set": {f"sensors.$.data.last_opened": datetime.now(tz=timezone.utc)}})
 
         if not result.acknowledged or result.modified_count == 0:
-            return Err(message=f"Door Sensor {data.get('name')} not updated.", code=404)
-        return name
+            return Err(message=f"Door Sensor {sensor.name} not updated.", code=404)
+        return sensor.name
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)
@@ -140,11 +146,11 @@ async def process_humidity(data: dict, sensor: Sensor, response: user_schemas.Ge
 
             if sensor.name not in response.sensors:
                 response.sensors[sensor.name] = sensor_schemas.GetSensor(name=sensor.name, data=sensor.data)
-                sensor.data.temperature = 0
+                sensor.data.humidity_level = 0
 
             response_sensor = response.sensors[sensor.name]
             response_sensor.count += 1
-            response_sensor.data.temperature += humidity
+            response_sensor.data.humidity_level += humidity
             if sensor.data.max_humidity and humidity > sensor.data.max_humidity:
                 response[sensor.name].details.append(f"Humidity over limit: {humidity}")
             if sensor.data.min_humidity and humidity < sensor.data.min_humidity:

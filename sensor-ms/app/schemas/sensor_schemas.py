@@ -32,6 +32,9 @@ class DoorSensorCreate(BaseModel):
     description: Optional[str] = None
 
 class GetSensor(BaseModel):
+    """
+    Retrieving the sensor data from the sensor services.
+    """
 
     name: str
     data: Union[HumiditySensor, TemperatureSensor, DoorSensor]
