@@ -8,13 +8,7 @@ env:
     configMapKey: "DATABASE_NAME"
   collection:
     configMapName: "skladischer-config"
-    configMapKey: "COLLECTION_USERS"
-  codesmsHost:
-    configMapName: "skladischer-config"
-    configMapKey: "CODES_MS_HOST"
-  codesmsPort:
-    configMapName: "skladischer-config" #this one is probably obsolete
-    configMapKey: "CREATE_CODE_PORT"
+    configMapKey: "COLLECTION_ADMIN" #!
   portCode:
     configMapName: "skladischer-config"
     configMapKey: "PORT_CODE"
@@ -24,6 +18,13 @@ env:
   portStorage:
     configMapName: "skladischer-config"
     configMapKey: "PORT_STORAGE"
+  storagemsHost:
+    configMapName: "skladischer-config" #!
+    configMapKey: "STORAGE_MS_HOST"
+  sensormsHost:
+    configMapName: "skladischer-config" #!
+    configMapKey: "SENSOR_MS_HOST"
+
 
 
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
@@ -77,7 +78,7 @@ service:
   # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
   type: LoadBalancer
   # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-  port: 8000
+  port: 8001
 
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:
