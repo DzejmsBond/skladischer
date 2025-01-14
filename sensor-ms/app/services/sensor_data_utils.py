@@ -113,16 +113,18 @@ async def process_temperature(data: dict, sensor: Sensor, response: user_schemas
             temperature = data.get("temperature")
 
             if sensor.name not in response.sensors:
-                response.sensors[sensor.name] = sensor_schemas.GetSensor(name=sensor.name, data=sensor.data)
+                response.sensors[sensor.name] = sensor_schemas.GetSensor(name=sensor.name,
+                                                                         data=sensor.data,
+                                                                         details=[])
                 response.sensors[sensor.name].data.temperature = 0
 
             response_sensor = response.sensors[sensor.name]
             response_sensor.count += 1
             response_sensor.data.temperature += temperature
             if sensor.data.max_temperature and temperature > sensor.data.max_temperature:
-                response[sensor.name].details.append(f"Temperature over limit: {temperature}")
+                response_sensor.details.append(f"Temperature over limit: {temperature}")
             if sensor.data.min_temperature and temperature < sensor.data.min_temperature:
-                response[sensor.name].details.append(f"Temperature under limit: {temperature}")
+                response_sensor.details.append(f"Temperature under limit: {temperature}")
             return None
 
     except Exception as e:
