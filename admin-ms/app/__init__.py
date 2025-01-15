@@ -11,8 +11,5 @@ from .services import (
 from .models import (
     credentials)
 
-from .schemas import (
-    credentials_schemas)
-
 from .googlerpc import (
     grpc_client)

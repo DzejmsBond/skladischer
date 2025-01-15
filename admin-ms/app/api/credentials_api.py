@@ -2,14 +2,20 @@
 # Date created: 5.12.2024
 
 # REST FastAPI dependencies.
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends, Path, Form
 from fastapi.responses import PlainTextResponse
 
+# OAuth2 authentication dependencies.
+from typing import Annotated
+from fastapi.security import (
+    OAuth2PasswordBearer,
+    OAuth2PasswordRequestForm)
+
 # Internal dependencies.
-from ..schemas import credentials_schemas as schema
 from ..services import credentials_utils as utils
 from ..models.credentials import Credentials
 from ..helpers.error import ErrorResponse as Err
+from ..helpers.token_parser import validate_token
 from ..models.token import Token
 
 router = APIRouter(
@@ -17,15 +23,17 @@ router = APIRouter(
     tags=["credentials"]
 )
 
+auth_schema = OAuth2PasswordBearer(tokenUrl="login")
+
 # NOTE: High-risk security data is not sent by GET requests, best option is POST.
 
 @router.post("/create-credentials", status_code=200, response_class=PlainTextResponse)
-async def create_credentials(credentials_schema : schema.CreateCredentials):
+async def create_credentials(credentials: Annotated[OAuth2PasswordRequestForm, Depends()]):
     """
     This endpoint allows creating new user credentials in the system.
 
     Args:
-        credentials_schema (CreateCredentials): The details of the user to create.
+        credentials (OAuth2PasswordRequestForm): The details of the user to create.
 
     Raises:
         HTTPException: If an error occurs during user creation.
@@ -34,20 +42,19 @@ async def create_credentials(credentials_schema : schema.CreateCredentials):
         PlainTextResponse: The username if the user is created successfully.
     """
 
-    result = await utils.create_credentials(credentials_schema)
+    result = await utils.create_credentials(credentials)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 
     return result
 
-@router.put("/{username}", response_model=Token)
-async def validate_credentials(username: str, credentials_schema : schema.ValidateCredentials):
+@router.post("/login", response_model=Token)
+async def validate_credentials(credentials: Annotated[OAuth2PasswordRequestForm, Depends()]):
     """
     This endpoint validates the details of a user based on their username and password.
 
     Args:
-        credentials_schema (ValidateCredentials): The users credentials.
-        username (str): The user's username.
+        credentials (OAuth2PasswordRequestForm): The users credentials.
 
     Raises:
         HTTPException: If an error occurs during user validation.
@@ -56,19 +63,20 @@ async def validate_credentials(username: str, credentials_schema : schema.Valida
         Token: The retrieved username.
     """
 
-    result = await utils.validate_credentials(username, credentials_schema)
+    result = await utils.validate_credentials(credentials)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 
     return result
 
-@router.post("/{username}", status_code=200, response_class=PlainTextResponse)
-async def delete_credentials(username: str, credentials_schema : schema.ValidateCredentials):
+@router.post("/{username}/delete-user", status_code=200, response_class=PlainTextResponse)
+async def delete_credentials(username: Annotated[str, Path(title="Username of the user.")],
+                             token: Annotated[str, Depends(auth_schema)]):
     """
     This endpoint removes a user from the system by their credentials.
 
     Args:
-        credentials_schema (ValidateCredentials): The users credentials.
+        token (OAuth2PasswordRequestForm): The users credentials.
         username (str): The user's username.
 
     Raises:
@@ -78,19 +86,26 @@ async def delete_credentials(username: str, credentials_schema : schema.Validate
         PlainTextResponse: The username if the user is deleted successfully.
     """
 
-    result = await utils.delete_credentials(username, credentials_schema)
+    validation = await validate_token(token, username)
+    if isinstance(validation, Err):
+        raise HTTPException(status_code=validation.code, detail=validation.message)
+
+    result = await utils.delete_credentials(username)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 
     return result
 
 @router.post("/{username}/update-password", status_code=200, response_class=PlainTextResponse)
-async def update_password(username: str, credentials_schema : schema.UpdateCredentials):
+async def update_password(username: Annotated[str, Path(title="Username of the user.")],
+                          token: Annotated[str, Depends(auth_schema)],
+                          password: Annotated[str, Form()]):
     """
     This endpoint allows updating the display name of a user.
 
     Args:
-        credentials_schema (UpdateCredentials): The credentials with new and old password.
+        password (OAuth2PasswordRequestForm): The credentials with new password.
+        token (OAuth2PasswordRequestForm): The users credentials.
         username (str): The user's username.
 
     Raises:
@@ -100,7 +115,11 @@ async def update_password(username: str, credentials_schema : schema.UpdateCrede
         PlainTextResponse: The username if the password is updated successfully.
     """
 
-    result = await utils.update_password(username, credentials_schema)
+    validation = await validate_token(token, username)
+    if isinstance(validation, Err):
+        raise HTTPException(status_code=validation.code, detail=validation.message)
+
+    result = await utils.update_password(username, password)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
 

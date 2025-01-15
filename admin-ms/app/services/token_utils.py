@@ -1,5 +1,5 @@
-# Author: Jure
-# Date created: 4.12.2024
+# Author: Nina Mislej
+# Date created: 15.01.2025
 
 from datetime import datetime, timedelta, timezone
 import jwt

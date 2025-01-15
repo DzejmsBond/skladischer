@@ -68,12 +68,12 @@ async def test_validate_credentials(client, cleanup):
     # Test unsuccessful request due to wrong password.
     credentials_validate = schemas.ValidateCredentials(password="WrongPassword").model_dump()
     response = await client.post(url=f"/credentials/{USERNAME}", json=credentials_validate)
-    assert response.status_code == 403
+    assert response.status_code == 401
 
     # Test unsuccessful request due to wrong username.
     credentials_validate = schemas.ValidateCredentials(password=PASSWORD).model_dump()
     response = await client.post(url=f"/credentials/WrongUsername", json=credentials_validate)
-    assert response.status_code == 403
+    assert response.status_code == 401
 
     # Test successful request.
     credentials_validate = schemas.ValidateCredentials(password=PASSWORD).model_dump()
@@ -104,12 +104,12 @@ async def test_delete_credentials(client, cleanup):
     # Test unsuccessful request due to wrong password.
     credentials_validate = schemas.ValidateCredentials(password="WrongPassword").model_dump()
     response = await client.post(url=f"/credentials/{USERNAME}", json=credentials_validate)
-    assert response.status_code == 403
+    assert response.status_code == 401
 
     # Test unsuccessful request due to wrong username.
     credentials_validate = schemas.ValidateCredentials(password=PASSWORD).model_dump()
     response = await client.post(url=f"/credentials/WrongUsername", json=credentials_validate)
-    assert response.status_code == 403
+    assert response.status_code == 401
 
     # Test successful request.
     credentials_validate = schemas.ValidateCredentials(password=PASSWORD).model_dump()
@@ -140,12 +140,12 @@ async def test_update_password(client, cleanup):
     # Test unsuccessful request due to wrong password.
     credentials_update = schemas.UpdateCredentials(password="WrongPassword", new_password="NewPassword").model_dump()
     response = await client.post(url=f"/credentials/{USERNAME}/update-password", json=credentials_update)
-    assert response.status_code == 403
+    assert response.status_code == 401
 
     # Test unsuccessful request due to wrong username.
     credentials_update = schemas.UpdateCredentials(password=PASSWORD, new_password="NewPassword").model_dump()
     response = await client.post(url=f"/credentials/WrongUsername/update-password", json=credentials_update)
-    assert response.status_code == 403
+    assert response.status_code == 401
 
     # Test successful request.
     credentials_update = schemas.UpdateCredentials(password=PASSWORD, new_password="NewPassword").model_dump()

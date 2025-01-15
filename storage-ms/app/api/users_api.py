@@ -2,19 +2,28 @@
 # Date created: 5.12.2024
 
 # REST FastAPI dependencies.
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import PlainTextResponse
+
+# OAuth2 authentication dependencies.
+from typing import Annotated
+from fastapi.security import (
+    OAuth2PasswordBearer)
 
 # Internal dependencies.
 from ..schemas import user_schemas as schema
 from ..services import user_utils as utils
 from ..models.user import User
 from ..helpers.error import ErrorResponse as Err
+from ..helpers.token_parser import validate_token
+from ..config import ADMIN_MS_HOST
 
 router = APIRouter(
     prefix="/users",
     tags=["users"]
 )
+
+auth_schema = OAuth2PasswordBearer(tokenUrl=f"{ADMIN_MS_HOST}/validate-credentials")
 
 @router.post("/create-user", status_code=200, response_class=PlainTextResponse)
 async def create_user(user_schema : schema.UserCreate):
@@ -38,12 +47,13 @@ async def create_user(user_schema : schema.UserCreate):
     return result
 
 @router.get("/{username}", response_model=User)
-async def get_user(username: str):
+async def get_user(username: str, token: Annotated[str, Depends(auth_schema)]):
     """
     This endpoint fetches the details of a user from the system.
 
     Args:
         username (str): The username of the user to retrieve.
+        token (str): Access bearer token.
 
     Raises:
         HTTPException: If an error occurs during user retrieval.
@@ -51,7 +61,9 @@ async def get_user(username: str):
     Returns:
         User: The retrieved user details.
     """
-
+    validation = await validate_token(token, username)
+    if isinstance(validation, Err):
+        raise HTTPException(status_code=validation.code, detail=validation.message)
     result = await utils.get_user(username)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)

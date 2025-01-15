@@ -17,3 +17,8 @@ COLLECTION = os.getenv("COLLECTION")
 
 # Other microservices.
 CODES_MS_HOST = os.getenv("CODES_MS_HOST")
+ADMIN_MS_HOST = os.getenv("CODES_MS_HOST")
+
+# Authorization.
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")

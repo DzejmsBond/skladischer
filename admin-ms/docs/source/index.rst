@@ -8,7 +8,6 @@ Skladischer: Credentials Manager
    :caption: Module Documentation:
 
    services-module
-   schemas-module
    helpers-module
    models-module
    api-module
