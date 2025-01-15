@@ -86,7 +86,7 @@ async def receive_from_channel(username: str) -> GetSensorData | Err:
             message_count += 1
 
             # Stop consuming after reaching max_messages.
-            if message_count >= QUEUE_LENGTH or messages_queued == message_count:
+            if message_count >= messages_queued:
                 channel.stop_consuming()
 
         if queue_info.method.message_count == 0:

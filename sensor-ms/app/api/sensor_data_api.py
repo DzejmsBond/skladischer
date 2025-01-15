@@ -39,7 +39,7 @@ async def receive_sensor_data(data: dict):
 
     return result
 
-@router.get("/{username}/sensor-data", response_model=user_schemas.GetSensorData)
+@router.post("/{username}/sensor-data", response_model=user_schemas.GetSensorData)
 async def get_sensor_data(username: str):
     """
     API endpoint to retrieve processed sensor data for a user from RabbitMQ.
