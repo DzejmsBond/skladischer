@@ -11,5 +11,10 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    # TODO: templatize
+    - port: 51003
+      targetPort: 51003
+      protocol: TCP
+      name: grpc
   selector:
     {{- include "helm.selectorLabels" . | nindent 4 }}
