@@ -10,6 +10,7 @@ from ..schemas import credentials_schemas as schema
 from ..services import credentials_utils as utils
 from ..models.credentials import Credentials
 from ..helpers.error import ErrorResponse as Err
+from ..models.token import Token
 
 router = APIRouter(
     prefix="/credentials",
@@ -39,7 +40,7 @@ async def create_credentials(credentials_schema : schema.CreateCredentials):
 
     return result
 
-@router.put("/{username}", response_class=PlainTextResponse)
+@router.put("/{username}", response_model=Token)
 async def validate_credentials(username: str, credentials_schema : schema.ValidateCredentials):
     """
     This endpoint validates the details of a user based on their username and password.
@@ -52,7 +53,7 @@ async def validate_credentials(username: str, credentials_schema : schema.Valida
         HTTPException: If an error occurs during user validation.
 
     Returns:
-        User: The retrieved username.
+        Token: The retrieved username.
     """
 
     result = await utils.validate_credentials(username, credentials_schema)

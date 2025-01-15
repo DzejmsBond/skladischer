@@ -10,3 +10,9 @@ generate-proto-files:
 clean-proto-files:
 	find ./proto -name "*_pb2.py" -delete
 	find ./proto -name "*_pb2_grpc.py" -delete
+
+generate-documentation:
+	sphinx-build ./storage-ms/docs/source storage-ms/build
+	sphinx-build ./admin-ms/docs/source admin-ms/build
+	sphinx-build ./sensor-ms/docs/source sensor-ms/build
+	sphinx-build ./codes-ms/docs/source codes-ms/build
