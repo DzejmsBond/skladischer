@@ -5,6 +5,10 @@ metadata:
   annotations:
     kubernetes.io/ingress.global-static-ip-name: ingress-static-ip
 spec:
+  tls:
+    - hosts:
+        - ingress-static-ip
+      secretName: selfsigned-cert
   rules:
     - http:
         paths:
