@@ -11,5 +11,9 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: 51002
+      targetPort: 51002
+      protocol: TCP
+      name: grpc
   selector:
     {{- include "helm.selectorLabels" . | nindent 4 }}
