@@ -8,4 +8,13 @@ Please take care not to commit any API keys or other sensitive information.
 ### Useful commands
 
 To apply ingress:
+
 `kubectl apply -f ingress.yaml`
+
+To apply rabbitMQ:
+
+`helm repo add bitnami https://charts.bitnami.com/bitnami` \
+`helm install my-release bitnami/rabbitmq-cluster-operator`
+
+To see his status:
+`kubectl get deploy -w --namespace default -l app.kubernetes.io/name=rabbitmq-cluster-operator,app.kubernetes.io/instance=rabbit-release`

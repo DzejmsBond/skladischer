@@ -82,6 +82,12 @@ spec:
                 configMapKeyRef:
                   key: {{ .Values.env.portStorage.configMapKey }}
                   name: {{ .Values.env.portStorage.configMapName}}
+            - name: RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: {{ .Values.env.rabbitHost.configMapKey }}
+                  name: {{ .Values.env.rabbitHost.configMapName}}
+
 
 
 
