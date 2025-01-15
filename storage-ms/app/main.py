@@ -22,9 +22,9 @@ from .api import (
 
 app = FastAPI(
     title="Storage Managment Microservice",
-    docs_url="/storage/docs-api",             # Swagger UI
-    redoc_url="/storage/redoc",           # Redoc UI
-    openapi_url="/storage/openapi.json"   # OpenAPI schema URL
+    docs_url="/users/docs-api",             # Swagger UI
+    redoc_url="/users/redoc",           # Redoc UI
+    openapi_url="/users/openapi.json"   # OpenAPI schema URL
 )
 
 # Used by graphQL to create schemas.

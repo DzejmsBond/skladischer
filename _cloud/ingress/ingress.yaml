@@ -30,7 +30,7 @@ spec:
                 name: sensor-ms
                 port:
                   number: 8003
-          - path: /storage
+          - path: /users
             pathType: Prefix
             backend:
               service:
@@ -60,7 +60,7 @@ spec:
                 name: sensor-ms-docs
                 port:
                   number: 80
-          - path: /storage/docs
+          - path: /users/docs
             pathType: Prefix
             backend:
               service:
