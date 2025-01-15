@@ -3,9 +3,11 @@ The `schemas` module serves as a model transfering JSON information from request
 """
 
 from .user_schemas import (
-    UserCreate)
+    UserCreate,
+    GetSensorData)
 
 from .sensor_schemas import (
     HumiditySensorCreate,
     TemperatureSensorCreate,
-    DoorSensorCreate)
+    DoorSensorCreate,
+    GetSensor)

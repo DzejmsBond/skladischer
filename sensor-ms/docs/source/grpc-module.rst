@@ -12,6 +12,3 @@ This module is used for internal communication between microservices.
 
 .. automodule:: app.googlerpc
    :members:
-
-.. automodule:: app.graphql
-   :members:

@@ -1,16 +1,20 @@
 # Author: Nina Mislej
 # Date created: 13.01.2025
 
-from pydantic import BaseModel
-from typing import Optional, List, Union
+from pydantic import BaseModel, Field
+from typing import Optional, List, Union, Literal
 from datetime import datetime
+
+TEMPERATURE = "TEMPERATURE"
+HUMIDITY = "HUMIDITY"
+DOOR = "DOOR"
 
 class HumiditySensor(BaseModel):
     """
     Represents a humidity sensor.
     """
 
-    type: str = "HUMIDITY"
+    type: Literal[HUMIDITY] = HUMIDITY
     humidity_level: Optional[float] = None
     max_humidity: Optional[float] = None
     min_humidity: Optional[float] = None
@@ -20,7 +24,7 @@ class TemperatureSensor(BaseModel):
     Represents a temperature sensor.
     """
 
-    type: str = "TEMPERATURE"
+    type: Literal[TEMPERATURE] = TEMPERATURE
     temperature: Optional[float] = None
     max_temperature: Optional[float] = None
     min_temperature: Optional[float] = None
@@ -30,8 +34,7 @@ class DoorSensor(BaseModel):
     Represents a door sensor.
     """
 
-    type: str = "DOOR"
-    open: bool = False
+    type: Literal[DOOR] = DOOR
     description: Optional[str] = None
     last_opened: Optional[datetime] = None
 
@@ -41,4 +44,4 @@ class Sensor(BaseModel):
     """
 
     name: str
-    data: Union[HumiditySensor, TemperatureSensor, DoorSensor]
+    data: Union[HumiditySensor, TemperatureSensor, DoorSensor] = Field(discriminator="type")

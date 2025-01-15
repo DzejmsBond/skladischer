@@ -12,6 +12,8 @@ Skladischer: Sensor Manager
    helpers-module
    models-module
    api-module
+   grpc-module
+   rabbitmq-module
    tests-module
 
 Overview
@@ -70,6 +72,12 @@ API Endpoints
    * - :func:`~app.api.update_sensor_name`
      - PUT
      - Update the name of a specific sensor.
+   * - :func:`~app.api.get_sensor_data`
+     - POST
+     - Endpoint available for all sensors.
+   * - :func:`~app.api.receive_sensor_data`
+     - GET
+     - User specific endpoint for aquiring sensor data.
 
 Technologies Used
 -----------------
