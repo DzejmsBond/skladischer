@@ -4,7 +4,12 @@ metadata:
   name: ingress
   annotations:
     kubernetes.io/ingress.global-static-ip-name: ingress-static-ip
+    ingress.gcp.kubernetes.io/ssl-redirect: "true"
 spec:
+  tls:
+    - hosts:
+        - ingress-static-ip
+      secretName: selfsigned-cert
   rules:
     - http:
         paths:
@@ -43,28 +48,27 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: admin-ms-docs
+                name: docs
                 port:
                   number: 80
           - path: /codes/docs
             pathType: Prefix
             backend:
               service:
-                name: codes-ms-docs
+                name: docs
                 port:
                   number: 80
           - path: /sensors/docs
             pathType: Prefix
             backend:
               service:
-                name: sensor-ms-docs
+                name: docs
                 port:
                   number: 80
           - path: /users/docs
             pathType: Prefix
             backend:
               service:
-                name: storage-ms-docs
+                name: docs
                 port:
                   number: 80
-          # Capture paths to Swagger documentation and route to internal ingress controller for routing later.

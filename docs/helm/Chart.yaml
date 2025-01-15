@@ -1,6 +1,6 @@
 apiVersion: v2
-name: storage-ms-docs
-description: A Helm chart for storage-ms Docs
+name: docs
+description: A Helm chart for Docs
 
 # A chart can be either an 'application' or a 'library' chart.
 #
