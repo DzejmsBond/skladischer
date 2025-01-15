@@ -1,9 +1,10 @@
 # Author: Jure
 # Date created: 4.12.2024
-from typing import Any, Mapping
 
+from ..services.token_utils import create_access_token
 from ..schemas import credentials_schemas as schema
 from ..models.credentials import Credentials
+from ..models.token import Token
 from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
 from ..googlerpc.grpc_client import (
@@ -11,6 +12,7 @@ from ..googlerpc.grpc_client import (
     create_storage_user,
     delete_sensor_user,
     delete_storage_user)
+
 from bcrypt import checkpw
 
 async def create_credentials(credentials : schema.CreateCredentials) -> Err | str:
@@ -59,7 +61,7 @@ async def create_credentials(credentials : schema.CreateCredentials) -> Err | st
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
-async def validate_credentials(username: str, credentials : schema.ValidateCredentials) -> Err | str:
+async def validate_credentials(username: str, credentials : schema.ValidateCredentials) -> Err | Token:
     """
     Validate a user by their password and username.
 
@@ -71,7 +73,7 @@ async def validate_credentials(username: str, credentials : schema.ValidateCrede
         username (str): The user's username.
 
     Returns:
-        ErrorResponse | str: The error response if an error occurred, or the user's username otherwise.
+        ErrorResponse | Token: The error response if an error occurred, or the user's token otherwise.
     """
 
     try:
@@ -86,7 +88,9 @@ async def validate_credentials(username: str, credentials : schema.ValidateCrede
         check = checkpw(credentials.password.encode('utf8'), result["password"].encode('utf8'))
         if not check:
             return Err(message=f"Password for '{username}' is wrong.", code=403)
-        return result["username"]
+
+        token = await create_access_token(data={"username" : username})
+        return Token(access_token=token, token_type="bearer")
 
     except Exception as e:
         return Err(message=f"Unknown exception: {e}", code=500)

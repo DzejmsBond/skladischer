@@ -17,3 +17,6 @@ COLLECTION = os.getenv("COLLECTION")
 
 STORAGE_MS_HOST = os.getenv("STORAGE_MS_HOST")
 SENSOR_MS_HOST = os.getenv("SENSOR_MS_HOST")
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")

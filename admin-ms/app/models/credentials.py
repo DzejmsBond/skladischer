@@ -4,7 +4,6 @@
 from pydantic import BaseModel, Field, field_serializer
 from typing import Optional, List
 
-
 class Credentials(BaseModel):
     """
     Represents a user model in admin environment.
@@ -13,3 +12,4 @@ class Credentials(BaseModel):
 
     username: str
     password: str
+
