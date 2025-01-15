@@ -13,9 +13,9 @@ from .api import (
 
 app = FastAPI(
     title="Admin Managment Microservice",
-    docs_url="/docs",             # Swagger UI
-    redoc_url="/redoc",           # Redoc UI
-    openapi_url="/openapi.json"   # OpenAPI schema URL
+    docs_url="/credentials/docs-api",             # Swagger UI
+    redoc_url="/credentials/redoc",           # Redoc UI
+    openapi_url="/credentials/openapi.json"   # OpenAPI schema URL
 )
 
 # Include all routers and mounts.

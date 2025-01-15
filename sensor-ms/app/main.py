@@ -16,9 +16,9 @@ from .api import (
 
 app = FastAPI(
     title="Sensor Managment Microservice",
-    docs_url="/docs",             # Swagger UI
-    redoc_url="/redoc",           # Redoc UI
-    openapi_url="/openapi.json"   # OpenAPI schema URL
+    docs_url="/sensors/docs-api",             # Swagger UI
+    redoc_url="/sensors/redoc",           # Redoc UI
+    openapi_url="/sensors/openapi.json"   # OpenAPI schema URL
 )
 
 # Include all routers and mounts.

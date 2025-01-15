@@ -37,7 +37,7 @@ steps:
       - '$_DOCS_IMAGE_NAME:$COMMIT_SHA'
     id: Push
 
-  # 4: Set up Google Cloud project
+  # 4: Set up Google Cloud project :)
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'config'
