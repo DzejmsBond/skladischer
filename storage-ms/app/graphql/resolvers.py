@@ -10,6 +10,10 @@ from ..helpers.error import ErrorResponse as Err
 from ..services import item_utils as utils
 from ..schemas import item_schemas
 
+# logger default library.
+from ..logger_setup import get_logger
+logger = get_logger("storage-ms.graphql")
+
 query = QueryType()
 items = ObjectType("Item")
 
@@ -42,6 +46,7 @@ async def resolve_items(_, info, username: str, storage_name: str, filtering: di
     try:
         flt = item_schemas.ItemFilter(**filtering)
     except Exception as e:
+        logger.warning(f"Failed to resolve GraphQL schema: {e}")
         raise Exception(f"This filter does not adhere to the filtering possibilities.")
 
     result = await utils.filter_items(username, storage_name, flt)

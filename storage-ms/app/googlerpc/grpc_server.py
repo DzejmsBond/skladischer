@@ -14,6 +14,10 @@ from skladischer_proto import storage_ms_pb2 as pb
 from skladischer_proto.config import PORT_STORAGE
 import grpc
 
+# logger default library.
+from ..logger_setup import get_logger
+logger = get_logger("storage-ms.googlerpc")
+
 class StorageService(pb_grpc.StorageServiceServicer):
     """
     Handles the GRPC request for creating a user.
@@ -43,6 +47,7 @@ class StorageService(pb_grpc.StorageServiceServicer):
         if isinstance(result, Err):
             context.set_code(400)
             context.set_details(result.message)
+            logger.warning(f"RPC Server failure: {result.message}")
             return pb.UserResponse()
         return pb.UserResponse(username=result)
 
@@ -63,6 +68,7 @@ class StorageService(pb_grpc.StorageServiceServicer):
         if isinstance(result, Err):
             context.set_code(400)
             context.set_details(result.message)
+            logger.warning(f"RPC Server failure: {result.message}")
             return pb.UserResponse()
         return pb.UserResponse(username=result)
 

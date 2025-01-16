@@ -14,6 +14,10 @@ from skladischer_proto import code_ms_pb2 as pb
 from skladischer_proto.config import PORT_CODE
 import grpc
 
+# logger default library.
+from ..logger_setup import get_logger
+logger = get_logger("codes-ms.googlerpc")
+
 class CodeService(pb_grpc.CodeServiceServicer):
     """
     Handles the GRPC request for creating a code.
@@ -44,6 +48,7 @@ class CodeService(pb_grpc.CodeServiceServicer):
         if isinstance(result, Err):
             context.set_code(400)
             context.set_details(result.message)
+            logger.warning(f"RPC Server failure: {result.message}")
             return pb.CodeResponse()
         return pb.CodeResponse(image_base64=result)
 

@@ -6,6 +6,10 @@ from ..models.storage import Storage
 from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
 
+# logger default library.
+from ..logger_setup import get_logger
+logger = get_logger("storage-ms.services")
+
 async def create_storage(username : str, storage : schema.StorageCreate) -> Err | str:
     """
     Create a new storage for a specific user.
@@ -46,9 +50,12 @@ async def create_storage(username : str, storage : schema.StorageCreate) -> Err 
 
         if result.modified_count == 0:
             return Err(message=f"Creating storage '{name}' modified zero entries.")
+
+        logger.debug(f"New storage '{name}' created.")
         return name
 
     except Exception as e:
+        logger.warning(f"Could not create storage: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
@@ -89,6 +96,7 @@ async def get_storage(username : str, storage_name : str) -> Err | dict:
         return result[0]
 
     except Exception as e:
+        logger.warning(f"Could not get storage: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
@@ -121,6 +129,7 @@ async def delete_storage(username : str, storage_name : str) -> Err | str:
         return storage_name
 
     except Exception as e:
+        logger.warning(f"Could not delete storage: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
@@ -156,6 +165,7 @@ async def update_storage_name(username : str, storage_name : str, new_name : str
         return new_name
 
     except Exception as e:
+        logger.warning(f"Could not update storage: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def empty_storage(username : str, storage_name : str) -> Err | str:
@@ -186,8 +196,11 @@ async def empty_storage(username : str, storage_name : str) -> Err | str:
 
         if result.matched_count == 0:
             return Err(message=f"Couldnt match to any record in datbabase.")
+
+        logger.debug(f"Deleted storage '{storage_name}'.")
         return storage_name
 
     except Exception as e:
+        logger.warning(f"Could not empty storage: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 

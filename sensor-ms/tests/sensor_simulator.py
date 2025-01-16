@@ -1,14 +1,18 @@
 # Author: Nina Mislej
 # Date created: 13.01.2025
-import httpx
+
 from httpx import Client
-import random
 from datetime import datetime, timezone
+from skladischer_auth.token_utils import create_access_token
+
+import httpx
 import time
+import random
+import asyncio
 
 # TODO: This is a hack.
 #       Implement token when implementing authorization.
-def generate_temperature_data():
+async def generate_temperature_data():
 
     return {
         "username": "testuser",
@@ -17,7 +21,7 @@ def generate_temperature_data():
         "timestamp": str(datetime.now(tz=timezone.utc))
     }
 
-def generate_humidity_data():
+async def generate_humidity_data():
 
     return {
         "username": "testuser",
@@ -26,7 +30,7 @@ def generate_humidity_data():
         "timestamp": str(datetime.now(tz=timezone.utc))
     }
 
-def generate_door_data():
+async def generate_door_data():
 
     return {
         "username": "testuser",
@@ -34,12 +38,16 @@ def generate_door_data():
         "timestamp": str(datetime.now(tz=timezone.utc))
     }
 
-def send_sensor_data(client, url, data):
+async def send_sensor_data(client, url, data):
 
-    response = client.post(url, json=data, timeout=10.0)
+    token = await create_access_token({"username": "testuser"})
+    response = client.post(url=url,
+                           headers={"Authorization": f"Bearer {token}"},
+                           json=data,
+                           timeout=10.0)
     return response
 
-def sensor_simulator():
+async def sensor_simulator():
 
     # TODO: This probably shouldn't be hardcoded.
     sensor_url = f"http://localhost:8003/sensors/sensor-data"
@@ -47,27 +55,27 @@ def sensor_simulator():
     while True:
         try:
             # Generate test data.
-            temperature_data = generate_temperature_data()
-            humidity_data = generate_humidity_data()
-            door_data = generate_door_data()
+            temperature_data = await generate_temperature_data()
+            humidity_data = await generate_humidity_data()
+            door_data = await generate_door_data()
 
             # Send temperature simulation.
-            response = send_sensor_data(client, sensor_url, temperature_data)
+            response = await send_sensor_data(client, sensor_url, temperature_data)
             print(f"{response.status_code}: Sent temperature {temperature_data.get("temperature")} at {temperature_data.get('timestamp')}: {response.text}")
 
             # Send humidity simulation.
-            response = send_sensor_data(client, sensor_url, humidity_data)
+            response = await send_sensor_data(client, sensor_url, humidity_data)
             print(f"{response.status_code}: Sent humidity level {humidity_data.get("humidity_level")} at {humidity_data.get('timestamp')}: {response.text}")
 
             # Send door simulation.
-            response = send_sensor_data(client, sensor_url, door_data)
+            response = await send_sensor_data(client, sensor_url, door_data)
             print(f"{response.status_code}: Sent door opened at {door_data.get('timestamp')}: {response.text}")
 
-            time.sleep(5) # Send sensor reports per some value.
+            time.sleep(10) # Send sensor reports per some value.
 
         except httpx.RequestError as e:
             print(f"Error {e}: Data could not be sent. Trying again in 10 seconds.")
-            time.sleep(10)  # Retry after a delay of 1 minute for exceptions.
+            time.sleep(20)  # Retry after a delay of 1 minute for exceptions.
             continue
 
         except KeyboardInterrupt:
@@ -75,4 +83,6 @@ def sensor_simulator():
             break
 
 if __name__ == "__main__":
-    sensor_simulator()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    asyncio.run(sensor_simulator())

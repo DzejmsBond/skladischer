@@ -27,6 +27,10 @@ app = FastAPI(
     openapi_url="/users/openapi.json"   # OpenAPI schema URL
 )
 
+# Logging default library.
+from .logger_setup import get_logger
+logger = get_logger("storage-ms.main")
+
 # Used by graphQL to create schemas.
 path = Path(__file__).resolve().parent / 'graphql' / 'schemas.graphql'
 type_defs = load_schema_from_path(path)
@@ -56,6 +60,7 @@ async def main():
 
 # Run the application with asyncio.
 if __name__ == "__main__":
+    logger.info("Starting Storage Microservice.")
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     asyncio.run(main())

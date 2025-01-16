@@ -7,6 +7,10 @@ from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
 from ..googlerpc.grpc_client import create_code
 
+# logger default library.
+from ..logger_setup import get_logger
+logger = get_logger("storage-ms.services")
+
 async def create_item(username : str, storage_name : str, item : schema.ItemCreate) -> Err | str:
     """
     Create an item and associate it with a user and a specific storage.
@@ -49,9 +53,12 @@ async def create_item(username : str, storage_name : str, item : schema.ItemCrea
 
         if result.modified_count == 0:
             return Err(message=f"Creating item failed.")
+
+        logger.debug(f"New item {item.name} created.")
         return item_model.code_id
 
     except Exception as e:
+        logger.warning(f"Could not create item: {e}")
         return Err(message=f"Unknown  exception: {e}", code=500)
 
 async def get_item(username : str, storage_name : str, item_code : str) -> Err | dict:
@@ -98,6 +105,7 @@ async def get_item(username : str, storage_name : str, item_code : str) -> Err |
         return result[0]
 
     except Exception as e:
+        logger.warning(f"Could not get item: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def delete_item(username : str, storage_name : str, item_code : str) -> Err | str:
@@ -127,9 +135,12 @@ async def delete_item(username : str, storage_name : str, item_code : str) -> Er
 
         if not result.acknowledged or result.modified_count == 0:
             return Err(message=f"Deleting item '{item_code}' from '{storage_name}' failed.")
+
+        logger.debug(f"Item {item_code} deleted.")
         return item_code
 
     except Exception as e:
+        logger.warning(f"Could not delete item: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def update_item(username : str, storage_name : str, item_code : str, item : schema.ItemUpdate) -> Err | str:
@@ -181,6 +192,7 @@ async def update_item(username : str, storage_name : str, item_code : str, item 
         return item_code
 
     except Exception as e:
+        logger.warning(f"Could not update item: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def filter_items(username: str, storage_name: str, flt: schema.ItemFilter) -> list[Item] | Err:
@@ -228,5 +240,6 @@ async def filter_items(username: str, storage_name: str, flt: schema.ItemFilter)
         return result
 
     except Exception as e:
+        logger.warning(f"Could not filetr items: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 

@@ -40,3 +40,4 @@ ariadne==0.24.0
 grpcio==1.69.0
 grpcio-tools==1.69.0
 pyjwt==2.10.1
+google-cloud-logging==3.11.3

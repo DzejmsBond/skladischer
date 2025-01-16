@@ -10,6 +10,10 @@ from ..config import RAPIDAPI_HOST, RAPIDAPI_KEY, RAPIDAPI_URL, SIZE
 # used in a similar manner as curl commands that can process async functions.
 from httpx import AsyncClient
 
+# logger default library.
+from ..logger_setup import get_logger
+logger = get_logger("codes-ms.services")
+
 async def check_reachable():
     response = await AsyncClient().get(RAPIDAPI_URL)
     if response.status_code == 401:
@@ -31,6 +35,8 @@ async def generate_code(headers: dict, params: dict) -> Err | str:
     response = await AsyncClient().get(RAPIDAPI_URL, headers=headers, params=params)
     if response.status_code == 200:
         return response.text
+
+    logger.debug(f"Item code generation failure: {response.text}")
     return Err(message=f"Could not generate code: {response.text}", code=response.status_code)
 
 # TODO: Should colors be represented in HEX?
@@ -70,4 +76,5 @@ async def create_code(code : schema.CodeCreate) -> Err | str:
         return response
 
     except Exception as e:
+        logger.warning(f"Generating item code failure: {e}")
         return Err(message=f"Unknown  exception: {e}", code=500)

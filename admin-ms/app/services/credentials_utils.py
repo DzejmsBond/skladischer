@@ -20,6 +20,10 @@ from ..googlerpc.grpc_client import (
 
 from bcrypt import checkpw
 
+# Logging default library.
+from ..logger_setup import get_logger
+logger = get_logger("admin-ms.main")
+
 async def create_credentials(credentials: OAuth2PasswordRequestForm) -> Err | str:
     """
     Create a new user in the database.
@@ -46,10 +50,12 @@ async def create_credentials(credentials: OAuth2PasswordRequestForm) -> Err | st
         # TODO: Improve this rollback.
         result = await create_storage_user(credentials.username)
         if isinstance(result, Err):
+            logger.debug(f"Creating user failed {credentials.username} - rollback needed.")
             return result
 
         result = await create_sensor_user(credentials.username)
         if isinstance(result, Err):
+            logger.debug(f"Creating user failed {credentials.username} - rollback needed.")
             return result
 
         user_dict = Credentials(username=credentials.username,
@@ -58,11 +64,12 @@ async def create_credentials(credentials: OAuth2PasswordRequestForm) -> Err | st
         if not result.acknowledged:
             return Err(message=f"Creating user failed.")
 
-        # NOTE: We could use 'await get_user(result.inserted_id)' to get / check success.
+        logger.debug(f"New user created: {credentials.username} - {result.inserted_id}")
         return credentials.username
 
     # TODO: Should the end user know what error happened internally?
     except Exception as e:
+        logger.warning(f"Creating credentials failure: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
@@ -94,9 +101,12 @@ async def validate_credentials(credentials: OAuth2PasswordRequestForm) -> Err | 
             return Err(message=f"Password for '{credentials.username}' is wrong.", code=401)
 
         token = await create_access_token(data={"username" : credentials.username})
+
+        logger.debug(f"Access token created for user: {credentials.username}.")
         return Token(access_token=token, token_type="bearer")
 
     except Exception as e:
+        logger.warning(f"Validating credentials failure: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
@@ -122,18 +132,23 @@ async def delete_credentials(username: str) -> Err | str:
         # TODO: Improve this rollback.
         result = await delete_storage_user(username)
         if isinstance(result, Err):
+            logger.debug(f"Deleting user failed {username} - rollback needed.")
             return result
 
         result = await delete_sensor_user(username)
         if isinstance(result, Err):
+            logger.debug(f"Deleting user failed {username} - rollback needed.")
             return result
 
         result = await db_admin.delete_one({"username": username})
         if not result.acknowledged or result.deleted_count == 0:
             return Err(message=f"Deleting user '{username}' failed.")
+
+        logger.debug(f"User deleted: {username}.")
         return username
 
     except Exception as e:
+        logger.warning(f"Deleting credentials failure: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def update_password(username: str, password: str) -> Err | str:
@@ -164,7 +179,10 @@ async def update_password(username: str, password: str) -> Err | str:
 
         if not result.acknowledged or result.modified_count == 0:
             return Err(message=f"Updating the password failed.")
+
+        logger.debug(f"Password updated: {credentials.username}.")
         return username
 
     except Exception as e:
+        logger.warning(f"Updating credentials failure: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)

@@ -14,6 +14,10 @@ from skladischer_proto import sensor_ms_pb2 as pb
 from skladischer_proto.config import PORT_SENSOR
 import grpc
 
+# logger default library.
+from ..logger_setup import get_logger
+logger = get_logger("sensor-ms.googlerpc")
+
 class SensorService(pb_grpc.SensorServiceServicer):
     """
     Handles the GRPC request for creating a user.
@@ -43,6 +47,7 @@ class SensorService(pb_grpc.SensorServiceServicer):
         if isinstance(result, Err):
             context.set_code(400)
             context.set_details(result.message)
+            logger.warning(f"RPC Server failure: {result.message}")
             return pb.UserResponse()
         return pb.UserResponse(username=result)
 
@@ -63,6 +68,7 @@ class SensorService(pb_grpc.SensorServiceServicer):
         if isinstance(result, Err):
             context.set_code(400)
             context.set_details(result.message)
+            logger.warning(f"RPC Server failure: {result.message}")
             return pb.UserResponse()
         return pb.UserResponse(username=result)
 

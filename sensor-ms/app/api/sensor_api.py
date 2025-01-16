@@ -14,6 +14,10 @@ from ..services import sensor_utils as utils
 from ..schemas import sensor_schemas as schema
 from ..helpers.error import ErrorResponse as Err
 
+# Logging default library.
+from ..logger_setup import get_logger
+logger = get_logger("sensor-ms.api")
+
 token_bearer = JWTBearer()
 
 router = APIRouter(
@@ -38,6 +42,7 @@ async def create_temperature_sensor(username: str, sensor_schema: schema.Tempera
         PlainTextResponse: The sensor name if it is created successfully.
     """
 
+    logger.debug("Create temperature sensor endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
@@ -64,6 +69,7 @@ async def create_humidity_sensor(username: str, sensor_schema: schema.HumiditySe
         PlainTextResponse: The sensor name if it is created successfully.
     """
 
+    logger.debug("Create humidity sensor endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
@@ -90,6 +96,7 @@ async def create_door_sensor(username: str, sensor_schema: schema.DoorSensorCrea
         PlainTextResponse: The sensor name if it is created successfully.
     """
 
+    logger.debug("Create door sensor endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
@@ -116,6 +123,7 @@ async def get_sensor(username: str, sensor_name: str, token : str = Depends(toke
         PlainTextResponse: The sensor details if it is fetched successfully.
     """
 
+    logger.debug("Get sensor endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
@@ -142,6 +150,7 @@ async def delete_sensor(username: str, sensor_name: str, token : str = Depends(t
         PlainTextResponse: The sensor name if it is deleted successfully.
     """
 
+    logger.debug("Delete sensor endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
@@ -169,6 +178,7 @@ async def update_sensor_name(username: str, sensor_name: str, new_name: str, tok
         PlainTextResponse: The sensor name if it is updated successfully.
     """
 
+    logger.debug("Update sensor endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 

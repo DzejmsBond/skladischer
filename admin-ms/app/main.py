@@ -11,9 +11,13 @@ from .api import (
     credentials_api,
     health_check_api)
 
+# Logging default library.
+from .logger_setup import get_logger
+logger = get_logger("admin-ms.main")
+
 app = FastAPI(
     title="Admin Managment Microservice",
-    docs_url="/credentials/docs-api",             # Swagger UI
+    docs_url="/credentials/docs-api",         # Swagger UI
     redoc_url="/credentials/redoc",           # Redoc UI
     openapi_url="/credentials/openapi.json"   # OpenAPI schema URL
 )
@@ -33,6 +37,7 @@ async def main():
 
 # Run the application with asyncio.
 if __name__ == "__main__":
+    logger.info("Starting Admin Microservice.")
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     asyncio.run(main())

@@ -21,6 +21,10 @@ app = FastAPI(
     openapi_url="/sensors/openapi.json"   # OpenAPI schema URL
 )
 
+# Logging default library.
+from .logger_setup import get_logger
+logger = get_logger("sensor-ms.main")
+
 # Include all routers and mounts.
 app.include_router(users_api.router)
 app.include_router(sensor_data_api.router)
@@ -41,6 +45,7 @@ async def main():
 
 # Run the application with asyncio.
 if __name__ == "__main__":
+    logger.info("Starting Sensor Microservice.")
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     asyncio.run(main())

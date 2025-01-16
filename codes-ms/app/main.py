@@ -20,6 +20,10 @@ app = FastAPI(
     openapi_url="/codes/openapi.json"   # OpenAPI schema URL
 )
 
+# Logging default library.
+from .logger_setup import get_logger
+logger = get_logger("codes-ms.main")
+
 # Include all routers and mounts.
 app.include_router(code_api.router)
 app.include_router(health_check_api.router)
@@ -38,6 +42,7 @@ async def main():
 
 # Run the application with asyncio.
 if __name__ == "__main__":
+    logger.info("Starting Item Code Microservice.")
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     asyncio.run(main())

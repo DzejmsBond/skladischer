@@ -15,6 +15,10 @@ from skladischer_proto.config import PORT_SENSOR, PORT_STORAGE
 
 import grpc
 
+# Logging default library.
+from ..logger_setup import get_logger
+logger = get_logger("admin-ms.googlerpc")
+
 async def create_storage_user(username : str) -> Err | str:
     """
     Sends a GRPC request to the UserService from Storage server to create a user with the given username.
@@ -31,7 +35,9 @@ async def create_storage_user(username : str) -> Err | str:
             stub = storage_pb_grpc.StorageServiceStub(channel)
             response = await stub.CreateUser(storage_pb.UserRequest(username=username))
         return response.username
+
     except Exception as e:
+        logger.warning(f"RPC Client failure: {e}")
         return Err(message=f"RPC Error: {e}", code=400)
 
 async def create_sensor_user(username : str) -> Err | str:
@@ -49,8 +55,10 @@ async def create_sensor_user(username : str) -> Err | str:
             stub = sensor_pb_grpc.SensorServiceStub(channel)
             response = await stub.CreateUser(sensor_pb.UserRequest(username=username))
         return response.username
+
     except Exception as e:
-        return Err(message=f"RPC Error: {e}", code=400)
+        logger.warning(f"RPC failure: {e}")
+        return Err(message=f"RPC Client Error: {e}", code=400)
 
 async def delete_storage_user(username : str) -> Err | str:
     """
@@ -67,8 +75,10 @@ async def delete_storage_user(username : str) -> Err | str:
             stub = storage_pb_grpc.StorageServiceStub(channel)
             response = await stub.DeleteUser(storage_pb.UserRequest(username=username))
         return response.username
+
     except Exception as e:
-        return Err(message=f"RPC Error: {e}", code=400)
+        logger.warning(f"RPC failure: {e}")
+        return Err(message=f"RPC Client Error: {e}", code=400)
 
 async def delete_sensor_user(username : str) -> Err | str:
     """
@@ -86,5 +96,7 @@ async def delete_sensor_user(username : str) -> Err | str:
             stub = sensor_pb_grpc.SensorServiceStub(channel)
             response = await stub.DeleteUser(sensor_pb.UserRequest(username=username))
         return response.username
+
     except Exception as e:
-        return Err(message=f"RPC Error: {e}", code=400)
+        logger.warning(f"RPC failure: {e}")
+        return Err(message=f"RPC Client Error: {e}", code=400)

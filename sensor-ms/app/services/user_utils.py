@@ -8,6 +8,10 @@ from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
 from ..models.sensors import DOOR
 
+# logger default library.
+from ..logger_setup import get_logger
+logger = get_logger("sensor-ms.services")
+
 async def create_user(user : schema.UserCreate) -> Err | str:
     """
     Create a new user in the database.
@@ -37,11 +41,11 @@ async def create_user(user : schema.UserCreate) -> Err | str:
         if not result.acknowledged:
             return Err(message=f"Creating user failed.")
 
-        # NOTE: We could use the following code to retrieve ID of the new record.
-        # CODE: await get_user(result.inserted_id).
+        logger.info(f"Created user: {user.username}")
         return str(user.username)
 
     except Exception as e:
+        logger.warning(f"Failed creating user: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
@@ -70,6 +74,7 @@ async def get_user(username : str) -> Err | dict:
         return result
 
     except Exception as e:
+        logger.warning(f"Failed getting user: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
@@ -95,9 +100,12 @@ async def delete_user(username : str) -> Err | str:
         result = await db_users.delete_one({"username": username})
         if not result.acknowledged:
             return Err(message=f"Deleting user '{username}' failed.")
+
+        logger.info(f"Deleted user: {username}")
         return username
 
     except Exception as e:
+        logger.warning(f"Failed deleting user: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def delete_sensors(username : str) -> Err | str:
@@ -131,6 +139,7 @@ async def delete_sensors(username : str) -> Err | str:
         return username
 
     except Exception as e:
+        logger.warning(f"Failed deleting all user sensors: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def get_all_door_sensors(username : str) -> Err | list:
@@ -167,4 +176,5 @@ async def get_all_door_sensors(username : str) -> Err | list:
         return result
 
     except Exception as e:
+        logger.warning(f"Failed getting all door sensors: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
