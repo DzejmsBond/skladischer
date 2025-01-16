@@ -1,0 +1,83 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Back Button -->
+        <ImageButton
+            android:id="@+id/backButtonDets"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_back_black_24"
+            android:contentDescription="Back Button"
+            android:background="?attr/selectableItemBackground"
+            android:layout_weight="1"
+            android:layout_marginBottom="16dp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="8" />
+
+        <!-- Delete button -->
+        <TextView
+            android:id="@+id/tvDelItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete item"
+            android:textSize="14sp"
+            android:padding="8dp"
+            android:layout_weight="1"
+            android:textColor="?attr/colorAccent" />
+
+    </LinearLayout>
+    <!-- Item Name -->
+    <TextView
+        android:id="@+id/detailItemName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:text="Item Name"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Item Amount -->
+    <TextView
+        android:id="@+id/detailItemAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Amount: 0"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Date Added -->
+    <TextView
+        android:id="@+id/detailItemDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date Added: --"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Description -->
+    <TextView
+        android:id="@+id/detailItemDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Description: --"
+        android:layout_marginBottom="16dp" />
+
+    <!-- QR Code -->
+    <ImageView
+        android:id="@+id/qrCodeImageView"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:contentDescription="QR Code"
+        android:layout_gravity="center_horizontal" />
+</LinearLayout>
