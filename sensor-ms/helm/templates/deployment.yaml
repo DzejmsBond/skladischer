@@ -97,6 +97,16 @@ spec:
                 secretKeyRef:
                   key: {{ .Values.env.aSecretKey.secretKey }}
                   name: {{ .Values.env.aSecretKey.secretName }}
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  key: {{ .Values.env.rabbitUser.secretKey }}
+                  name: {{ .Values.env.rabbitUser.secretName }}
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: {{ .Values.env.rabbitPass.secretKey }}
+                  name: {{ .Values.env.rabbitPass.secretName }}
 
 
 

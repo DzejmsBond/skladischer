@@ -27,6 +27,12 @@ env:
   aSecretKey:
     secretName: "secret-key"
     secretKey: "SECRET_KEY"
+  rabbitUser:
+    secretName: "rabbit-user"
+    secretKey: "RABBITMQ_USER"
+  rabbitPass:
+    secretName: "rabbit-pass"
+    secretKey: "RABBITMQ_PASSWORD"
 
 
 
