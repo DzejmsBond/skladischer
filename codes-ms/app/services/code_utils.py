@@ -1,6 +1,9 @@
 # Author: Jure
 # Date created: 4.12.2024
 
+# Logging default library.
+import logging
+
 from ..schemas import code_schemas as schema
 from ..helpers.error import ErrorResponse as Err
 from ..config import RAPIDAPI_HOST, RAPIDAPI_KEY, RAPIDAPI_URL, SIZE
@@ -31,6 +34,8 @@ async def generate_code(headers: dict, params: dict) -> Err | str:
     response = await AsyncClient().get(RAPIDAPI_URL, headers=headers, params=params)
     if response.status_code == 200:
         return response.text
+
+    logging.debug(f"Item code generation failure: {response.text}")
     return Err(message=f"Could not generate code: {response.text}", code=response.status_code)
 
 # TODO: Should colors be represented in HEX?
@@ -70,4 +75,5 @@ async def create_code(code : schema.CodeCreate) -> Err | str:
         return response
 
     except Exception as e:
+        logging.warning(f"Generating item code failure: {e}")
         return Err(message=f"Unknown  exception: {e}", code=500)

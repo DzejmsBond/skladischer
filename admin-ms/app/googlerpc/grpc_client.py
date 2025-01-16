@@ -1,6 +1,9 @@
 # Author: Nina Mislej
 # Date created: 5.12.2024
 
+# Logging default library.
+import logging
+
 # Internal dependencies.
 from ..config import STORAGE_MS_HOST, SENSOR_MS_HOST
 from ..helpers.error import ErrorResponse as Err
@@ -31,7 +34,9 @@ async def create_storage_user(username : str) -> Err | str:
             stub = storage_pb_grpc.StorageServiceStub(channel)
             response = await stub.CreateUser(storage_pb.UserRequest(username=username))
         return response.username
+
     except Exception as e:
+        logging.warning(f"RPC Client failure: {e}")
         return Err(message=f"RPC Error: {e}", code=400)
 
 async def create_sensor_user(username : str) -> Err | str:
@@ -49,8 +54,10 @@ async def create_sensor_user(username : str) -> Err | str:
             stub = sensor_pb_grpc.SensorServiceStub(channel)
             response = await stub.CreateUser(sensor_pb.UserRequest(username=username))
         return response.username
+
     except Exception as e:
-        return Err(message=f"RPC Error: {e}", code=400)
+        logging.warning(f"RPC failure: {e}")
+        return Err(message=f"RPC Client Error: {e}", code=400)
 
 async def delete_storage_user(username : str) -> Err | str:
     """
@@ -67,8 +74,10 @@ async def delete_storage_user(username : str) -> Err | str:
             stub = storage_pb_grpc.StorageServiceStub(channel)
             response = await stub.DeleteUser(storage_pb.UserRequest(username=username))
         return response.username
+
     except Exception as e:
-        return Err(message=f"RPC Error: {e}", code=400)
+        logging.warning(f"RPC failure: {e}")
+        return Err(message=f"RPC Client Error: {e}", code=400)
 
 async def delete_sensor_user(username : str) -> Err | str:
     """
@@ -86,5 +95,7 @@ async def delete_sensor_user(username : str) -> Err | str:
             stub = sensor_pb_grpc.SensorServiceStub(channel)
             response = await stub.DeleteUser(sensor_pb.UserRequest(username=username))
         return response.username
+
     except Exception as e:
-        return Err(message=f"RPC Error: {e}", code=400)
+        logging.warning(f"RPC failure: {e}")
+        return Err(message=f"RPC Client Error: {e}", code=400)

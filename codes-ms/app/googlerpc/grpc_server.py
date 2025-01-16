@@ -1,6 +1,9 @@
 # Author: Nina Mislej
 # Date created: 5.12.2024
 
+# Logging default library.
+import logging
+
 # Internal dependencies.
 from ..schemas import code_schemas as schema
 from ..helpers.error import ErrorResponse as Err
@@ -44,6 +47,7 @@ class CodeService(pb_grpc.CodeServiceServicer):
         if isinstance(result, Err):
             context.set_code(400)
             context.set_details(result.message)
+            logging.warning(f"RPC Server failure: {e}")
             return pb.CodeResponse()
         return pb.CodeResponse(image_base64=result)
 
