@@ -125,13 +125,13 @@ testFramework:
     tag: "v1.4.1"
   imagePullPolicy: IfNotPresent
   securityContext: {}
-  resources: {}
-  #  limits:
-  #    cpu: 100m
-  #    memory: 128Mi
-  #  requests:
-  #    cpu: 100m
-  #    memory: 128Mi
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
 
 # dns configuration for pod
 dnsPolicy: ~
@@ -247,7 +247,7 @@ service:
   appProtocol: ""
   sessionAffinity: ""
 
-serviceMonitor:
+serviceMonitor: #TODO - a way?
   ## If true, a ServiceMonitor CR is created for a prometheus operator
   ## https://github.com/coreos/prometheus-operator
   ##
@@ -349,13 +349,13 @@ route:
     ## Additional custom rules that can be added to the route
     additionalRules: []
 
-resources: {}
-#  limits:
-#    cpu: 100m
-#    memory: 128Mi
-#  requests:
-#    cpu: 100m
-#    memory: 128Mi
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
 
 ## Node labels for pod assignment
 ## ref: https://kubernetes.io/docs/user-guide/node-selection/
@@ -466,8 +466,8 @@ initChownData:
   ##
   resources:
     limits:
-      cpu: 200m
-      memory: 256Mi
+      cpu: 100m
+      memory: 128Mi
     requests:
       cpu: 100m
       memory: 128Mi
