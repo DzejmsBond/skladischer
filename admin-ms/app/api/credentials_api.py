@@ -9,11 +9,11 @@ from fastapi.responses import PlainTextResponse, JSONResponse
 from fastapi.security import (
     OAuth2PasswordBearer,
     OAuth2PasswordRequestForm)
+from auth.token_parser import validate_token_with_username
 
 # Internal dependencies.
 from ..services import credentials_utils as utils
 from ..helpers.error import ErrorResponse as Err
-from ..helpers.token_parser import validate_token
 from ..models.token import Token
 
 router = APIRouter(
@@ -84,7 +84,7 @@ async def delete_credentials(username: str, token: str = Depends(auth_schema)):
         PlainTextResponse: The username if the user is deleted successfully.
     """
 
-    validation = await validate_token(token, username)
+    validation = await validate_token_with_username(username, token)
     if isinstance(validation, Err):
         raise HTTPException(status_code=validation.code, detail=validation.message)
 
@@ -111,7 +111,7 @@ async def update_password(username: str, password: str, token: str = Depends(aut
         PlainTextResponse: The username if the password is updated successfully.
     """
 
-    validation = await validate_token(token, username)
+    validation = await validate_token_with_username(username, token)
     if isinstance(validation, Err):
         raise HTTPException(status_code=validation.code, detail=validation.message)
 
