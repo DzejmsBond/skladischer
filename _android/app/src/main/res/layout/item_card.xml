@@ -1,0 +1,61 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <!-- Item image -->
+    <ImageView
+        android:id="@+id/itemImage"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        />
+
+    <!-- Text Content -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- Main Title -->
+        <TextView
+            android:id="@+id/itemTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="placeholderName"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black" />
+
+
+        <!-- Amount -->
+        <TextView
+            android:id="@+id/itemAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="placeholderAmount"
+            android:textSize="14sp"
+            android:textColor="@android:color/black" />
+
+        <!-- Date -->
+        <TextView
+            android:id="@+id/itemDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="placeholderDate"
+            android:textSize="12sp"
+            android:textColor="@android:color/darker_gray" />
+    </LinearLayout>
+
+    <!-- Three Dots Menu -->
+    <ImageView
+        android:id="@+id/itemMenu"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_arrow_back_black_24"
+        android:contentDescription="Menu"
+        android:layout_gravity="center_vertical" />
+</LinearLayout>

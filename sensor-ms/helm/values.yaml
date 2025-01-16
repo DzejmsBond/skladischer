@@ -18,6 +18,9 @@ env:
   portStorage:
     configMapName: "skladischer-config"
     configMapKey: "PORT_STORAGE"
+  rabbitHost:
+    configMapName: "skladischer-config"
+    configMapKey: "RABBITMQ_HOST"
 
 
 

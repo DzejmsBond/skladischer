@@ -164,3 +164,4 @@ cython_debug/
 
 # Juretov powershell history
 *.ps
+/android/.idea/

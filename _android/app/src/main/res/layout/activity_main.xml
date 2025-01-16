@@ -1,0 +1,165 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp"
+    android:orientation="vertical">
+
+    <!-- Back arrow, other icons -->
+<!--
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+    </LinearLayout>
+-->
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/welcomeDisplayName"
+        android:text="Logged in as: (user)"
+        />
+
+    <!-- Storages ... Add Storage -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/tvStorages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Storages"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvAddStorage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add storage"
+            android:textSize="14sp"
+            android:padding="8dp"
+            android:textColor="?attr/colorAccent" />
+    </LinearLayout>
+
+    <!-- RecyclerView for Storages -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/storageRecView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:layout_weight="1"/>
+
+    <!-- Text "Items in <storage>" and "Add item" -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:id="@+id/tvItemsInStorage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="No storage selected."
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvAddItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add item"
+            android:textSize="14sp"
+            android:padding="8dp"
+            android:textColor="?attr/colorAccent" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2">
+
+        <!-- RecyclerView of Items in storage -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/itemsRecView"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"/>
+
+        <!-- Detailed Item Card -->
+        <include
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:id="@+id/detailedItemCard"
+            layout="@layout/item_detailed"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/addItemLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:visibility="gone">
+            <EditText
+                android:id="@+id/etItemName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Item Name" />
+
+            <EditText
+                android:id="@+id/etItemAmount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Amount"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/etItemDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Description" />
+
+            <Button
+                android:id="@+id/btnSubmitItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add Item" />
+        </LinearLayout>
+
+        <!-- To add storage -->
+        <LinearLayout
+            android:id="@+id/addStorageLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@color/white"
+            android:visibility="gone"
+            android:padding="16dp">
+
+            <EditText
+                android:id="@+id/etStorageName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Storage Name"
+                android:inputType="text" />
+
+            <Button
+                android:id="@+id/btnAddStorage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add Storage" />
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>
