@@ -9,7 +9,7 @@ steps:
         export PYTHONPATH=$(pwd)
         pip install -r codes-ms/requirements.txt -r admin-ms/requirements.txt -r sensor-ms/requirements.txt -r storage-ms/requirements.txt
         make clean-proto-files && make generate-proto-files
-        pip install -e ./proto
+        pip install -e ./skladischer_proto
         pip install sphinx
         pip install pydata-sphinx-theme
         cd docs

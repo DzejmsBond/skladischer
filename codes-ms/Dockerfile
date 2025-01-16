@@ -5,13 +5,13 @@ LABEL authors="Jure"
 WORKDIR /app
 
 COPY codes-ms /app
-COPY proto /app/proto
-COPY auth /app/auth
+COPY skladischer_proto /app/skladischer_proto
+COPY skladischer_auth /app/skladischer_auth
 copy Makefile /app/
 
 RUN export PYTHONPATH=. && pip install --no-cache-dir -r requirements.txt
 
-RUN make clean-proto-files && make generate-proto-files && pip install --no-cache-dir -e ./proto && pip install --no-cache-dir -e ./auth
+RUN make clean-proto-files && make generate-proto-files && pip install --no-cache-dir -e ./skladischer_proto && pip install --no-cache-dir -e ./skladischer_auth
 
 EXPOSE 8002
 
