@@ -9,6 +9,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
@@ -32,8 +33,8 @@ class LoginActivity : AppCompatActivity() {
         val username = binding.username
         val password = binding.password
         val login = binding.login
-        // TODO: setup
         val register = binding.register
+        // TODO: setup
         val loading = binding.loading
 
         loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
@@ -44,6 +45,7 @@ class LoginActivity : AppCompatActivity() {
 
             // disable login button unless both username / password is valid
             login.isEnabled = loginState.isDataValid
+            register!!.isEnabled = loginState.isDataValid
 
             if (loginState.usernameError != null) {
                 username.error = getString(loginState.usernameError)
@@ -62,11 +64,11 @@ class LoginActivity : AppCompatActivity() {
             }
             if (loginResult.success != null) {
                 updateUiWithUser(loginResult.success)
+                setResult(Activity.RESULT_OK)
+                finish()
             }
-            setResult(Activity.RESULT_OK)
 
             //Complete and destroy login activity once successful
-            finish()
         })
 
         username.afterTextChanged {
@@ -83,7 +85,7 @@ class LoginActivity : AppCompatActivity() {
                     password.text.toString()
                 )
             }
-
+/*
             setOnEditorActionListener { _, actionId, _ ->
                 when (actionId) {
                     EditorInfo.IME_ACTION_DONE ->
@@ -94,26 +96,32 @@ class LoginActivity : AppCompatActivity() {
                 }
                 false
             }
+* */
 
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
                 loginViewModel.login(username.text.toString(), password.text.toString())
+            }
+
+            register!!.setOnClickListener {
+                loading.visibility = View.VISIBLE
+                loginViewModel.register(username.text.toString(), password.text.toString(), applicationContext)
             }
         }
     }
 
     private fun updateUiWithUser(model: LoggedInUserView) {
         val welcome = getString(R.string.welcome)
-        val displayName = model.displayName
-        // TODO : initiate successful logged in experience
+        val username = model.username
         Toast.makeText(
             applicationContext,
-            "$welcome $displayName",
+            "$welcome ${username}",
             Toast.LENGTH_LONG
         ).show()
-        val authToken = "SuperSecretToken"
+        val authToken = model.token
         val activitySwitchingIntent = Intent(this, MainActivity::class.java).apply {
             putExtra("AUTH_TOKEN", authToken)
+            putExtra("USERNAME", username)
         }
         startActivity(activitySwitchingIntent)
     }
