@@ -87,6 +87,16 @@ spec:
                 configMapKeyRef:
                   key: {{ .Values.env.rabbitHost.configMapKey }}
                   name: {{ .Values.env.rabbitHost.configMapName}}
+            - name: ALGORITHM
+              valueFrom:
+                configMapKeyRef:
+                  key: {{ .Values.env.algorithm.configMapKey }}
+                  name: {{ .Values.env.algorithm.configMapName}}
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: {{ .Values.env.aSecretKey.secretKey }}
+                  name: {{ .Values.env.aSecretKey.secretName }}
 
 
 

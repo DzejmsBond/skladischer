@@ -24,6 +24,12 @@ env:
   portStorage:
     configMapName: "skladischer-config"
     configMapKey: "PORT_STORAGE"
+  algorithm:
+    configMapName: "skladischer-config"
+    configMapKey: "ALGORITHM"
+  aSecretKey:
+    secretName: "secret-key"
+    secretKey: "SECRET_KEY"
 
 
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/

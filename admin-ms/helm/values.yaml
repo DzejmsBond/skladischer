@@ -24,6 +24,12 @@ env:
   sensormsHost:
     configMapName: "skladischer-config" #!
     configMapKey: "SENSOR_MS_HOST"
+  algorithm:
+    configMapName: "skladischer-config"
+    configMapKey: "ALGORITHM"
+  aSecretKey:
+    secretName: "secret-key"
+    secretKey: "SECRET_KEY"
 
 
 

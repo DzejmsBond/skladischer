@@ -92,6 +92,17 @@ spec:
                 configMapKeyRef:
                   key: {{ .Values.env.sensormsHost.configMapKey }}
                   name: {{ .Values.env.sensormsHost.configMapName}}
+            - name: ALGORITHM
+              valueFrom:
+                configMapKeyRef:
+                  key: {{ .Values.env.algorithm.configMapKey }}
+                  name: {{ .Values.env.algorithm.configMapName}}
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: {{ .Values.env.aSecretKey.secretKey }}
+                  name: {{ .Values.env.aSecretKey.secretName }}
+
 
 
 

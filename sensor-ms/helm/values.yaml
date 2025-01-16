@@ -21,6 +21,12 @@ env:
   rabbitHost:
     configMapName: "skladischer-config"
     configMapKey: "RABBITMQ_HOST"
+  algorithm:
+    configMapName: "skladischer-config"
+    configMapKey: "ALGORITHM"
+  aSecretKey:
+    secretName: "secret-key"
+    secretKey: "SECRET_KEY""
 
 
 

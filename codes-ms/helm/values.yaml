@@ -21,6 +21,12 @@ env:
   portStorage:
     configMapName: "skladischer-config"
     configMapKey: "PORT_STORAGE"
+  algorithm:
+    configMapName: "skladischer-config"
+    configMapKey: "ALGORITHM"
+  aSecretKey:
+    secretName: "secret-key"
+    secretKey: "SECRET_KEY"
 
 replicaCount: 1
 
