@@ -9,9 +9,9 @@ from ..services import user_utils as utils
 # GRPC Logic.
 import asyncio
 from concurrent import futures
-from proto import sensor_ms_pb2_grpc as pb_grpc
-from proto import sensor_ms_pb2 as pb
-from proto.config import PORT_SENSOR
+from skladischer_proto import sensor_ms_pb2_grpc as pb_grpc
+from skladischer_proto import sensor_ms_pb2 as pb
+from skladischer_proto.config import PORT_SENSOR
 import grpc
 
 class SensorService(pb_grpc.SensorServiceServicer):

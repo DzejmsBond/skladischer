@@ -9,7 +9,7 @@ from fastapi.responses import PlainTextResponse, JSONResponse
 from fastapi.security import (
     OAuth2PasswordBearer,
     OAuth2PasswordRequestForm)
-from auth.token_utils import validate_token_with_username
+from skladischer_auth.token_utils import validate_token_with_username
 
 # Internal dependencies.
 from ..services import credentials_utils as utils

@@ -7,11 +7,11 @@ from ..helpers.error import ErrorResponse as Err
 
 # GRPC Logic.
 import asyncio
-from proto import storage_ms_pb2_grpc as storage_pb_grpc
-from proto import storage_ms_pb2 as storage_pb
-from proto import sensor_ms_pb2_grpc as sensor_pb_grpc
-from proto import sensor_ms_pb2 as sensor_pb
-from proto.config import PORT_SENSOR, PORT_STORAGE
+from skladischer_proto import storage_ms_pb2_grpc as storage_pb_grpc
+from skladischer_proto import storage_ms_pb2 as storage_pb
+from skladischer_proto import sensor_ms_pb2_grpc as sensor_pb_grpc
+from skladischer_proto import sensor_ms_pb2 as sensor_pb
+from skladischer_proto.config import PORT_SENSOR, PORT_STORAGE
 
 import grpc
 

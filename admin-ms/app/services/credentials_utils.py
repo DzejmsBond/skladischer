@@ -5,7 +5,7 @@
 from fastapi.security import (
     OAuth2PasswordRequestForm)
 
-from auth.token_utils import create_access_token
+from skladischer_auth.token_utils import create_access_token
 
 from ..models.credentials import Credentials
 from ..models.token import Token

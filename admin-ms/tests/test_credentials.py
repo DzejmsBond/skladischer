@@ -14,7 +14,7 @@ from fastapi.security import (
 from app.services import credentials_utils as utils
 from app.helpers import ErrorResponse as Err
 from app.helpers import get_collection as gc
-from auth.token_utils import create_access_token
+from skladischer_auth.token_utils import create_access_token
 
 from .helpers import (
     get_collection,
