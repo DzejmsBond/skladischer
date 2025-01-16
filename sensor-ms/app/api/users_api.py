@@ -5,11 +5,17 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import PlainTextResponse
 
+# OAuth2 authentication dependencies.
+from auth.token_bearer import JWTBearer
+from auth.token_utils import validate_token_with_username
+
 # Internal dependencies.
 from ..schemas import user_schemas as schema
 from ..services import user_utils as utils
 from ..models.user import User
 from ..helpers.error import ErrorResponse as Err
+
+token_bearer = JWTBearer()
 
 router = APIRouter(
     prefix="/sensors",

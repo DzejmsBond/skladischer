@@ -53,7 +53,7 @@ async def create_credentials(credentials: OAuth2PasswordRequestForm) -> Err | st
             return result
 
         user_dict = Credentials(username=credentials.username,
-                                password=credentials.password)
+                                password=credentials.password).model_dump()
         result = await db_admin.insert_one(user_dict)
         if not result.acknowledged:
             return Err(message=f"Creating user failed.")
