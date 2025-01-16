@@ -18,3 +18,5 @@ COLLECTION = os.getenv("COLLECTION")
 # Other microservices.
 STORAGE_MS_HOST = os.getenv("STORAGE_MS_HOST")
 SENSOR_MS_HOST = os.getenv("SENSOR_MS_HOST")
+
+GOOGLE_CLOUD_LOGGING = os.getenv("GOOGLE_CLOUD_LOGGING")

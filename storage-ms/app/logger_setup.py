@@ -7,6 +7,7 @@ import logging
 # Imports the Cloud Logging client library.
 import google.cloud.logging
 from google.cloud.logging_v2.handlers import CloudLoggingHandler
+from .config import GOOGLE_CLOUD_LOGGING
 
 def get_logger(logger_name: str):
 
@@ -15,8 +16,6 @@ def get_logger(logger_name: str):
     # you're running in and integrates the handler with the
     # Python logging module. By default, this captures all logs
     # at INFO level and higher.
-    client = google.cloud.logging.Client()
-    client.setup_logging(log_level=logging.DEBUG)
 
     # Settup logger.
     logger = logging.getLogger(logger_name)
@@ -26,11 +25,13 @@ def get_logger(logger_name: str):
     # Settup logging handlers and formatting.
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
-
-    cloud_handler = CloudLoggingHandler(client)
-    cloud_handler.setFormatter(formatter)
-
-    # Add logging handlers.
     logger.addHandler(stream_handler)
-    logger.addHandler(cloud_handler)
+
+    if GOOGLE_CLOUD_LOGGING == "true":
+        client = google.cloud.logging.Client()
+        client.setup_logging(log_level=logging.DEBUG)
+        cloud_handler = CloudLoggingHandler(client)
+        cloud_handler.setFormatter(formatter)
+        logger.addHandler(cloud_handler)
+
     return logger
