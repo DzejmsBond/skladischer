@@ -12,18 +12,18 @@ from ..helpers.database_helpers import get_collection
 router = APIRouter()
 
 @router.get("/liveness", status_code=200, response_class=PlainTextResponse)
-def health():
+async def health():
     """
     This endpoint allows liveness check for Kubernetes clusters.
     """
 
-    if get_collection() is None:
+    if await get_collection() is None:
         raise HTTPException(status_code=400, detail="Database not found.")
     return "Status OK."
 
 # NOTE: Currently no special init conditions.
 @router.get("/readiness", status_code=200, response_class=PlainTextResponse)
-def readiness():
+async def readiness():
     """
     This endpoint allows readiness check for Kubernetes clusters.
     """
