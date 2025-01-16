@@ -12,6 +12,8 @@ from app.helpers import ErrorResponse as Err
 from app.helpers import get_collection as gc
 from .helpers import get_collection, USERNAME
 
+from auth.token_utils import create_access_token
+
 # NOTE: If the function passed to the patch should mimic an async one use:
 # CODE: AsyncMock(return_value=get_collection())
 
@@ -33,22 +35,32 @@ async def test_create_sensor(client, cleanup):
     username = await user_utils.create_user(user_schemas.UserCreate(username=USERNAME))
     assert not isinstance(username, Err)
     cleanup.append(username)
+
+    token = await create_access_token({"username": username})
     sensor_create = sensor_schemas.HumiditySensorCreate(name="MerilecVlage").model_dump()
-    response = await client.post(url=f"/sensors/{username}/create-humidity-sensor", json=sensor_create)
+    response = await client.post(url=f"/sensors/{username}/create-humidity-sensor",
+                                 headers={"Authorization": f"Bearer {token}"},
+                                 json=sensor_create)
     assert response.status_code == 200
 
     # Test successful request for temperature sensor.
     sensor_create = sensor_schemas.TemperatureSensorCreate(name="Termometer").model_dump()
-    response = await client.post(url=f"/sensors/{username}/create-temperature-sensor", json=sensor_create)
+    response = await client.post(url=f"/sensors/{username}/create-temperature-sensor",
+                                 headers={"Authorization": f"Bearer {token}"},
+                                 json=sensor_create)
     assert response.status_code == 200
 
     # Test successful request for door sensor.
     sensor_create = sensor_schemas.DoorSensorCreate(name="VhodnaVrata").model_dump()
-    response = await client.post(url=f"/sensors/{username}/create-door-sensor", json=sensor_create)
+    response = await client.post(url=f"/sensors/{username}/create-door-sensor",
+                                 headers={"Authorization": f"Bearer {token}"},
+                                 json=sensor_create)
     assert response.status_code == 200
 
     # Test duplicated name unsuccessful request.
-    response = await client.post(url=f"/sensors/{username}/create-door-sensor", json=sensor_create)
+    response = await client.post(url=f"/sensors/{username}/create-door-sensor",
+                                 headers={"Authorization": f"Bearer {token}"},
+                                 json=sensor_create)
     assert response.status_code == 409
 
 @pytest.mark.anyio
@@ -68,24 +80,30 @@ async def test_get_sensor(client, cleanup):
     username = await user_utils.create_user(user_schemas.UserCreate(username=USERNAME))
     assert not isinstance(username, Err)
     cleanup.append(username)
+    token = await create_access_token({"username": username})
+
     sensor = sensor_schemas.HumiditySensorCreate(name="MerilecVlage")
     sensor_name = await sensor_utils.create_humidity_sensor(username, sensor)
     assert not isinstance(sensor_name, Err)
-    response = await client.get(url=f"/sensors/{username}/{sensor_name}")
+
+    response = await client.get(url=f"/sensors/{username}/{sensor_name}",
+                                headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
 
     # Test successful request for a temperature sensor.
     sensor = sensor_schemas.TemperatureSensorCreate(name="Termoemeter")
     sensor_name = await sensor_utils.create_temperature_sensor(username, sensor)
     assert not isinstance(sensor_name, Err)
-    response = await client.get(url=f"/sensors/{username}/{sensor_name}")
+    response = await client.get(url=f"/sensors/{username}/{sensor_name}",
+                                headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
 
     # Test successful request for the door sensor.
     sensor = sensor_schemas.DoorSensorCreate(name="VhodnaVrata")
     sensor_name = await sensor_utils.create_door_sensor(username, sensor)
     assert not isinstance(sensor_name, Err)
-    response = await client.get(url=f"/sensors/{username}/{sensor_name}")
+    response = await client.get(url=f"/sensors/{username}/{sensor_name}",
+                                headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
 
 @pytest.mark.anyio
@@ -103,10 +121,13 @@ async def test_delete_sensor(client, cleanup):
     username = await user_utils.create_user(user_schemas.UserCreate(username=USERNAME))
     assert not isinstance(username, Err)
     cleanup.append(username)
+    token = await create_access_token({"username": username})
+
     sensor = sensor_schemas.DoorSensorCreate(name="VhodnaVrata")
     sensor_name = await sensor_utils.create_door_sensor(username, sensor)
     assert not isinstance(sensor_name, Err)
-    response = await client.delete(url=f"/sensors/{username}/{sensor_name}")
+    response = await client.delete(url=f"/sensors/{username}/{sensor_name}",
+                                   headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
 
 @pytest.mark.anyio
@@ -125,11 +146,14 @@ async def test_update_sensor_name(client, cleanup):
     username = await user_utils.create_user(user_schemas.UserCreate(username=USERNAME))
     assert not isinstance(username, Err)
     cleanup.append(username)
+    token = await create_access_token({"username": username})
+
     sensor = sensor_schemas.DoorSensorCreate(name="VhodnaVrata")
     sensor_name = await sensor_utils.create_door_sensor(username, sensor)
     assert not isinstance(sensor_name, Err)
     new_name = "BalkonskaVrata"
     response = await client.put(url=f"/sensors/{username}/{sensor_name}/update-name",
+                                headers={"Authorization": f"Bearer {token}"},
                                 params={"new_name": new_name})
     assert response.status_code == 200
 
@@ -138,5 +162,6 @@ async def test_update_sensor_name(client, cleanup):
     duplicated_name = await sensor_utils.create_door_sensor(username, sensor)
     assert not isinstance(new_name, Err)
     response = await client.put(url=f"/sensors/{username}/{new_name}/update-name",
+                                headers={"Authorization": f"Bearer {token}"},
                                 params={"new_name": duplicated_name})
     assert response.status_code == 409

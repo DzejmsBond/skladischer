@@ -15,5 +15,6 @@ MONGO_URL = os.getenv("DATABASE_URL")
 DATABASE_NAME = os.getenv("DATABASE_NAME")
 COLLECTION = os.getenv("COLLECTION")
 
+# Other microservices.
 STORAGE_MS_HOST = os.getenv("STORAGE_MS_HOST")
 SENSOR_MS_HOST = os.getenv("SENSOR_MS_HOST")

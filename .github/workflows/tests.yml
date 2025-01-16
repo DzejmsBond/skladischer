@@ -33,12 +33,18 @@ jobs:
           pip install -e ./proto
           make generate-proto-files
           echo "PYTHONPATH=$(pwd)">>$GITHUB_ENV
+          
+      - name: Install Auth Module.
+        run: |
+          pip install -e ./auth
 
       - name: Run Tests for Storage MS.
         env:
            DATABASE_URL: ${{ secrets.DATABASE_URL }}
            DATABASE_NAME: ${{ vars.DATABASE_NAME }}
            COLLECTION: ${{ vars.COLLECTION_USERS }}
+           SECRET_KEY: ${{ secrets.SECRET_KEY }}
+           ALGORITHM: ${{ secrets.ALGORITHM }}
         run: |
             pytest storage-ms/tests
 
@@ -47,6 +53,8 @@ jobs:
            RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
            RAPIDAPI_URL: ${{ vars.RAPIDAPI_URL }}
            RAPIDAPI_HOST: ${{ vars.RAPIDAPI_HOST }}
+           SECRET_KEY: ${{ secrets.SECRET_KEY }}
+           ALGORITHM: ${{ secrets.ALGORITHM }}
         run: |
             pytest codes-ms/tests
 
@@ -55,6 +63,8 @@ jobs:
            DATABASE_URL: ${{ secrets.DATABASE_URL }}
            DATABASE_NAME: ${{ vars.DATABASE_NAME }}
            COLLECTION: ${{ vars.COLLECTION_ADMIN }}
+           SECRET_KEY: ${{ secrets.SECRET_KEY }}
+           ALGORITHM: ${{ secrets.ALGORITHM }}
         run: |
             pytest admin-ms/tests
 
@@ -63,5 +73,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DATABASE_NAME: ${{ vars.DATABASE_NAME }}
           COLLECTION: ${{ vars.COLLECTION_SENSORS }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          ALGORITHM: ${{ secrets.ALGORITHM }}
         run: |
-          pytest admin-ms/tests
+          pytest sensor-ms/tests

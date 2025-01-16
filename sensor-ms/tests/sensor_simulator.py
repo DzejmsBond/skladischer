@@ -42,7 +42,7 @@ def send_sensor_data(client, url, data):
 def sensor_simulator():
 
     # TODO: This probably shouldn't be hardcoded.
-    sensor_url = f"http://localhost:8003/sensors/sensor-data"
+    sensor_url = f"http://34.144.195.148/sensors/sensor-data"
     client = httpx.Client(base_url=sensor_url)
     while True:
         try:

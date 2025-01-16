@@ -5,11 +5,16 @@
 import pytest
 from unittest.mock import AsyncMock, patch
 
+# OAuth2 dependencies.
+from fastapi.security import (
+    OAuth2PasswordBearer,
+    OAuth2PasswordRequestForm)
+
 # Internal app dependencies.
 from app.services import credentials_utils as utils
-from app.schemas import credentials_schemas as schemas
 from app.helpers import ErrorResponse as Err
 from app.helpers import get_collection as gc
+from auth.token_utils import create_access_token
 
 from .helpers import (
     get_collection,
@@ -35,13 +40,16 @@ async def test_create_credentials(client, cleanup):
     """
 
     # Test successful request.
-    credentials_create = schemas.CreateCredentials(username=USERNAME, password=PASSWORD).model_dump()
-    response = await client.post(url="/credentials/create-credentials", json=credentials_create)
+    response = await client.post(url=f"/credentials/create-credentials",
+                                 data={"username": USERNAME, "password": PASSWORD},
+                                 headers={"Content-Type": "application/x-www-form-urlencoded"})
     assert response.status_code == 200
     cleanup.append(response.text)
 
     # Test unsuccessful request due to taken username.
-    response = await client.post(url="/credentials/create-credentials", json=credentials_create)
+    response = await client.post(url=f"/credentials/create-credentials",
+                                 data={"username": USERNAME, "password": PASSWORD},
+                                 headers={"Content-Type": "application/x-www-form-urlencoded"})
     assert response.status_code == 400
 
 @pytest.mark.anyio
@@ -60,24 +68,27 @@ async def test_validate_credentials(client, cleanup):
         - The user retrieval API responds with a 400 status code due to wrong username.
     """
 
-    credentials_create = schemas.CreateCredentials(username=USERNAME, password=PASSWORD)
-    username = await utils.create_credentials(credentials_create)
-    assert not isinstance(username, Err)
-    cleanup.append(username)
+    credentials_create = OAuth2PasswordRequestForm(username=USERNAME, password=PASSWORD)
+    token = await utils.create_credentials(credentials_create)
+    assert not isinstance(token, Err)
+    cleanup.append(USERNAME)
 
     # Test unsuccessful request due to wrong password.
-    credentials_validate = schemas.ValidateCredentials(password="WrongPassword").model_dump()
-    response = await client.post(url=f"/credentials/{USERNAME}", json=credentials_validate)
-    assert response.status_code == 403
+    response = await client.post(url=f"/credentials/login",
+                                 data={"username": USERNAME, "password": "Wrong"},
+                                 headers={"Content-Type": "application/x-www-form-urlencoded"})
+    assert response.status_code == 401
 
     # Test unsuccessful request due to wrong username.
-    credentials_validate = schemas.ValidateCredentials(password=PASSWORD).model_dump()
-    response = await client.post(url=f"/credentials/WrongUsername", json=credentials_validate)
-    assert response.status_code == 403
+    response = await client.post(url=f"/credentials/login",
+                                 data={"username": "Wrong", "password": PASSWORD},
+                                 headers={"Content-Type": "application/x-www-form-urlencoded"})
+    assert response.status_code == 401
 
     # Test successful request.
-    credentials_validate = schemas.ValidateCredentials(password=PASSWORD).model_dump()
-    response = await client.post(url=f"/credentials/{USERNAME}", json=credentials_validate)
+    response = await client.post(url=f"/credentials/login",
+                                 data={"username": USERNAME, "password": PASSWORD},
+                                 headers={"Content-Type": "application/x-www-form-urlencoded"})
     assert response.status_code == 200
 
 @pytest.mark.anyio
@@ -96,24 +107,28 @@ async def test_delete_credentials(client, cleanup):
         - The user retrieval API responds with a 400 status code due to wrong username.
     """
 
-    credentials_create = schemas.CreateCredentials(username=USERNAME, password=PASSWORD)
+    credentials_create = OAuth2PasswordRequestForm(username=USERNAME, password=PASSWORD)
     username = await utils.create_credentials(credentials_create)
     assert not isinstance(username, Err)
-    cleanup.append(username)
+    cleanup.append(USERNAME)
 
-    # Test unsuccessful request due to wrong password.
-    credentials_validate = schemas.ValidateCredentials(password="WrongPassword").model_dump()
-    response = await client.post(url=f"/credentials/{USERNAME}", json=credentials_validate)
-    assert response.status_code == 403
+    token = await utils.validate_credentials(credentials_create)
+    assert not isinstance(token, Err)
+
+    # Test unsuccessful request due to wrong token.
+    wrong_token = await create_access_token({"username": "Wrong"})
+    response = await client.post(url=f"/credentials/{USERNAME}/delete-user",
+                                 headers={"Authorization": f"Bearer {wrong_token}"})
+    assert response.status_code == 401
 
     # Test unsuccessful request due to wrong username.
-    credentials_validate = schemas.ValidateCredentials(password=PASSWORD).model_dump()
-    response = await client.post(url=f"/credentials/WrongUsername", json=credentials_validate)
-    assert response.status_code == 403
+    response = await client.post(url=f"/credentials/Wrong/delete-user",
+                                 headers={"Authorization": f"Bearer {token.access_token}"})
+    assert response.status_code == 401
 
     # Test successful request.
-    credentials_validate = schemas.ValidateCredentials(password=PASSWORD).model_dump()
-    response = await client.post(url=f"/credentials/{USERNAME}", json=credentials_validate)
+    response = await client.post(url=f"/credentials/{USERNAME}/delete-user",
+                                 headers={"Authorization": f"Bearer {token.access_token}"})
     assert response.status_code == 200
 
 @pytest.mark.anyio
@@ -128,26 +143,33 @@ async def test_update_password(client, cleanup):
 
     Asserts:
         - The user deletion API responds with a 200 status code.
-        - The user retrieval API responds with a 400 status code due to wrong password.
+        - The user retrieval API responds with a 400 status code due to wrong token.
         - The user retrieval API responds with a 400 status code due to wrong username.
     """
 
-    credentials_create = schemas.CreateCredentials(username=USERNAME, password=PASSWORD)
+    credentials_create = OAuth2PasswordRequestForm(username=USERNAME, password=PASSWORD)
     username = await utils.create_credentials(credentials_create)
     assert not isinstance(username, Err)
     cleanup.append(username)
 
-    # Test unsuccessful request due to wrong password.
-    credentials_update = schemas.UpdateCredentials(password="WrongPassword", new_password="NewPassword").model_dump()
-    response = await client.post(url=f"/credentials/{USERNAME}/update-password", json=credentials_update)
-    assert response.status_code == 403
+    token = await utils.validate_credentials(credentials_create)
+    assert not isinstance(token, Err)
+
+    # Test unsuccessful request due to wrong token.
+    wrong_token = await create_access_token({"username": "Wrong"})
+    response = await client.post(url=f"/credentials/{USERNAME}/update-password",
+                                 params={"password": "New"},
+                                 headers={"Authorization": f"Bearer {wrong_token}"})
+    assert response.status_code == 401
 
     # Test unsuccessful request due to wrong username.
-    credentials_update = schemas.UpdateCredentials(password=PASSWORD, new_password="NewPassword").model_dump()
-    response = await client.post(url=f"/credentials/WrongUsername/update-password", json=credentials_update)
-    assert response.status_code == 403
+    response = await client.post(url=f"/credentials/Wrong/update-password",
+                                 params={"password": "New"},
+                                 headers={"Authorization": f"Bearer {token.access_token}"})
+    assert response.status_code == 401
 
     # Test successful request.
-    credentials_update = schemas.UpdateCredentials(password=PASSWORD, new_password="NewPassword").model_dump()
-    response = await client.post(url=f"/credentials/{USERNAME}/update-password", json=credentials_update)
+    response = await client.post(url=f"/credentials/{USERNAME}/update-password",
+                                 params={"password": "New"},
+                                 headers={"Authorization": f"Bearer {token.access_token}"})
     assert response.status_code == 200

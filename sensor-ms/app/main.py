@@ -22,9 +22,9 @@ app = FastAPI(
 )
 
 # Include all routers and mounts.
-app.include_router(sensor_api.router)
 app.include_router(users_api.router)
 app.include_router(sensor_data_api.router)
+app.include_router(sensor_api.router)
 app.include_router(health_check_api.router)
 
 async def start_api():

@@ -12,6 +12,8 @@ from app.helpers import ErrorResponse as Err
 from app.helpers import get_collection as gc
 from .helpers import get_collection, USERNAME, DISPLAYNAME
 
+from auth.token_utils import create_access_token
+
 # NOTE: If the function passed to the patch should mimic an async one use:
 # CODE: AsyncMock(return_value=get_collection())
 
@@ -27,13 +29,18 @@ async def test_create_user(client, cleanup):
     """
 
     # Test successful request.
+    token = await create_access_token({"username": USERNAME})
     user_create = schemas.UserCreate(username=USERNAME).model_dump()
-    response = await client.post(url="/users/create-user", json=user_create)
+    response = await client.post(url="/users/create-user",
+                                 headers={"Authorization": f"Bearer {token}"},
+                                 json=user_create)
     assert response.status_code == 200
     cleanup.append(response.text)
 
     # Test unsuccessful request.
-    response = await client.post(url="/users/create-user", json=user_create)
+    response = await client.post(url="/users/create-user",
+                                 headers={"Authorization": f"Bearer {token}"},
+                                 json=user_create)
     assert response.status_code == 402
 
 @pytest.mark.anyio
@@ -47,10 +54,12 @@ async def test_get_user(client, cleanup):
     """
 
     # Test successful request.
+    token = await create_access_token({"username": USERNAME})
     username = await utils.create_user(schemas.UserCreate(username=USERNAME))
     assert not isinstance(username, Err)
     cleanup.append(username)
-    response = await client.get(url=f"/users/{username}")
+    response = await client.get(url=f"/users/{username}",
+                                headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
 
 @pytest.mark.anyio
@@ -64,10 +73,12 @@ async def test_delete_user(client, cleanup):
     """
 
     # Test successful request.
+    token = await create_access_token({"username": USERNAME})
     username = await utils.create_user(schemas.UserCreate(username=USERNAME))
     assert not isinstance(username, Err)
     cleanup.append(username)
-    response = await client.delete(url=f"/users/{username}")
+    response = await client.delete(url=f"/users/{username}",
+                                   headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
 
 @pytest.mark.anyio
@@ -81,10 +92,13 @@ async def test_update_user_name(client, cleanup):
     """
 
     # Test successful request.
+    token = await create_access_token({"username": USERNAME})
     username = await utils.create_user(schemas.UserCreate(username=USERNAME))
     assert not isinstance(username, Err)
     cleanup.append(username)
-    response = await client.put(url=f"/users/{username}/update-name", params={"new_name": DISPLAYNAME})
+    response = await client.put(url=f"/users/{username}/update-name",
+                                headers={"Authorization": f"Bearer {token}"},
+                                params={"new_name": DISPLAYNAME})
     assert response.status_code == 200
 
 @pytest.mark.anyio
@@ -98,8 +112,10 @@ async def test_delete_user_storages(client, cleanup):
     """
 
     # Test successful request.
+    token = await create_access_token({"username": USERNAME})
     username = await utils.create_user(schemas.UserCreate(username=USERNAME))
     assert not isinstance(username, Err)
     cleanup.append(username)
-    response = await client.put(url=f"/users/{username}/empty-storages")
+    response = await client.put(url=f"/users/{username}/empty-storages",
+                                headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200

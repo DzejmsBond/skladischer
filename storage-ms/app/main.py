@@ -34,8 +34,8 @@ schema = make_executable_schema(type_defs, [resolvers.query, resolvers.items])
 
 # Include all routers and mounts.
 app.include_router(users_api.router)
-app.include_router(item_api.router)
 app.include_router(storage_api.router)
+app.include_router(item_api.router)
 app.include_router(health_check_api.router)
 
 # To test the endpoint use:
