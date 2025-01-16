@@ -1,6 +1,9 @@
 # Author: Nina Mislej
 # Date created: 5.12.2024
 
+# Logging default library.
+import logging
+
 # Internal dependencies.
 from ..config import CODES_MS_HOST
 
@@ -22,7 +25,11 @@ async def create_code(item_code : str) -> str:
         str: The generated code image in Base64 format.
     """
 
-    async with grpc.aio.insecure_channel(f"{CODES_MS_HOST}:{PORT_CODE}") as channel:
-        stub = pb_grpc.CodeServiceStub(channel)
-        response = await stub.CreateCode(pb.CodeRequest(item_code=item_code))
-    return response.image_base64
+    try:
+        async with grpc.aio.insecure_channel(f"{CODES_MS_HOST}:{PORT_CODE}") as channel:
+            stub = pb_grpc.CodeServiceStub(channel)
+            response = await stub.CreateCode(pb.CodeRequest(item_code=item_code))
+        return response.image_base64
+    except Exception as e:
+        logging.warning(f"RPC failure: {e}")
+        return Err(message=f"RPC Client Error: {e}", code=400)

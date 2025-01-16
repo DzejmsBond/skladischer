@@ -1,6 +1,9 @@
 # Author: Nina Mislej
 # Date created: 5.12.2024
 
+# Logging default library.
+import logging
+
 # RabbitMQ dependencies.
 import pika
 import json
@@ -56,6 +59,7 @@ async def send_to_channel(data: dict) -> str | Err:
         return "Sensor processed."
 
     except Exception as e:
+        logging.warning(f"Could not send sensor data to RabbitMQ: {e}")
         return Err(message=f"Error while sending data to channel: {e}")
 
 async def receive_from_channel(username: str) -> GetSensorData | Err:
@@ -100,6 +104,7 @@ async def receive_from_channel(username: str) -> GetSensorData | Err:
         channel.start_consuming()
         connection.close()
 
+        logging.info(f"Read {message_count} from messaging queue.")
         processed_queue = await sensor_data_utils.process_queue(username, queue)
         if isinstance(processed_queue, Err):
             return processed_queue
@@ -114,4 +119,5 @@ async def receive_from_channel(username: str) -> GetSensorData | Err:
         return processed_queue
 
     except Exception as e:
+        logging.warning(f"Could not recieve sensor data to RabbitMQ: {e}")
         return Err(message=f"Error while recieving data from channel: {e}")
