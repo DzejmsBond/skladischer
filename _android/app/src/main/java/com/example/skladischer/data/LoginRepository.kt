@@ -1,6 +1,8 @@
 package com.example.skladischer.data
 
+import android.util.Log
 import com.example.skladischer.data.model.LoggedInUser
+import javax.security.auth.callback.Callback
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -27,16 +29,28 @@ class LoginRepository(val dataSource: LoginDataSource) {
         dataSource.logout()
     }
 
-    fun login(username: String, password: String): Result<LoggedInUser> {
+    fun login(username: String, password: String, callback: (Result<LoggedInUser>) -> Unit) {
         // handle login
-        val result = dataSource.login(username, password)
-
-        if (result is Result.Success) {
-            setLoggedInUser(result.data)
+        dataSource.login(username, password) {result ->
+            when (result) {
+                is Result.Success -> {
+                    setLoggedInUser(result.data)
+                    callback(result)
+                }
+                is Result.Error -> {
+                    Log.d("ERROR", "Error logging in: ${result.exception.message}")
+                    callback(result)
+                }
+            }
         }
-
-        return result
     }
+
+    fun register(username: String, password: String, callback: (Result<Unit>) -> Unit){
+        dataSource.register(username, password) {result ->
+            callback(result)
+        }
+    }
+
 
     private fun setLoggedInUser(loggedInUser: LoggedInUser) {
         this.user = loggedInUser

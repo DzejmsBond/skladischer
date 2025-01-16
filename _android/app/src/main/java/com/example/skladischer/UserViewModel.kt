@@ -16,6 +16,7 @@ import retrofit2.Response
 
 class UserViewModel : ViewModel() {
     var username = "testuser"
+    var token = ""
     var display_name = "none"
 
     private val _user = MutableLiveData<User?>()
@@ -33,8 +34,13 @@ class UserViewModel : ViewModel() {
     private val _selectedStorage = MutableLiveData<Storage?>()
     val selectedStorage: LiveData<Storage?> get() = _selectedStorage
 
-    fun fetchUser(uUsername: String) {
-        RetrofitClient.apiService.getUser(uUsername).enqueue(object : Callback<User> {
+    fun setCreds(token: String, username: String) {
+        this.token = token
+        this.username = username
+    }
+
+    fun fetchUser(token: String, uUsername: String) {
+        RetrofitClient.apiService.getUser(token, uUsername).enqueue(object : Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
                 if (response.isSuccessful) {
                     val gotUser = response.body()
@@ -65,7 +71,7 @@ class UserViewModel : ViewModel() {
 
     fun fetchStorage(context: Context) {
         val storageName = _selectedStorage.value!!.name
-        RetrofitClient.apiService.getStorage(username, storageName).enqueue(object : Callback<Storage> {
+        RetrofitClient.apiService.getStorage(token, username, storageName).enqueue(object : Callback<Storage> {
             override fun onResponse(call: Call<Storage>, response: Response<Storage>) {
                 if (response.isSuccessful) {
                     _selectedStorage.value = response.body() // Update LiveData with the new storage data
@@ -85,12 +91,12 @@ class UserViewModel : ViewModel() {
     fun addStorage(storageName: String, context: Context) {
         val newStorage = StorageRequest(name = storageName)
 
-        RetrofitClient.apiService.createStorage(username, newStorage).enqueue(object : Callback<Void> {
+        RetrofitClient.apiService.createStorage(token, username, newStorage).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     Toast.makeText(context, "Storage added successfully", Toast.LENGTH_SHORT).show()
                     // Fetch updated user data
-                    fetchUser(username)
+                    fetchUser(token, username)
                 } else {
                     Toast.makeText(context, "Failed to add storage: ${response.code()}", Toast.LENGTH_SHORT).show()
                 }
@@ -103,12 +109,12 @@ class UserViewModel : ViewModel() {
     }
 
     fun deleteStorage(storageName: String, context: Context) {
-        RetrofitClient.apiService.deleteStorage(username, storageName).enqueue(object : Callback<Void> {
+        RetrofitClient.apiService.deleteStorage(token, username, storageName).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     Toast.makeText(context, "Storage deleted successfully", Toast.LENGTH_SHORT).show()
                     // Refresh the user data after deletion
-                    fetchUser(username)
+                    fetchUser(token, username)
                 } else {
                     Toast.makeText(context, "Failed to delete storage: ${response.code()}", Toast.LENGTH_SHORT).show()
                 }
@@ -124,7 +130,7 @@ class UserViewModel : ViewModel() {
 
     fun addItem(newItem: ItemRequest, context: Context) {
         val storageName = _selectedStorage.value!!.name
-        RetrofitClient.apiService.createItem(username, storageName, newItem).enqueue(object : Callback<Void> {
+        RetrofitClient.apiService.createItem(token, username, storageName, newItem).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     Toast.makeText(context, "Item added successfully", Toast.LENGTH_SHORT).show()
@@ -143,7 +149,7 @@ class UserViewModel : ViewModel() {
 
     fun deleteItem(itemId: String, context: Context) {
         val storageName = _selectedStorage.value!!.name
-        RetrofitClient.apiService.deleteItem(username, storageName, itemId).enqueue(object : Callback<Void> {
+        RetrofitClient.apiService.deleteItem(token, username, storageName, itemId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     Toast.makeText(context, "Item deleted successfully", Toast.LENGTH_SHORT).show()

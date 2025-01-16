@@ -41,9 +41,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val authToken = intent.getStringExtra("AUTH_TOKEN")!!
+        val noBearToken = intent.getStringExtra("AUTH_TOKEN")!!
+        val token = "Bearer $noBearToken"
+        val username = intent.getStringExtra("USERNAME")!!
 
-        userViewModel.fetchUser("testuser")
+        userViewModel.setCreds(token,username)
+        userViewModel.fetchUser(token, username)
 
         val welcomeText = findViewById<TextView>(R.id.welcomeDisplayName)
         welcomeText.text = userViewModel.display_name
@@ -161,7 +164,7 @@ class MainActivity : ComponentActivity() {
             }
         })
 
-        userViewModel.fetchUser("testuser")
+        userViewModel.fetchUser(token, username)
         welcomeText.text = userViewModel.display_name
         //not working
         welcomeText.text = "skladischer"

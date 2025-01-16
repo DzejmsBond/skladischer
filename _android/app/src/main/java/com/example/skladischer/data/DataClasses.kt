@@ -27,3 +27,32 @@ data class ItemRequest(
 )
 
 data class StorageRequest(val name: String)
+
+data class RegistrationRequest(
+    val username: String,
+    val password: String,
+    val grant_type: String = "password",
+    val scope: String = "",
+    val client_id: String = "",
+    val client_secret: String = ""
+)
+
+data class LoginRequest(
+    val grant_type: String = "password",
+    val username: String,
+    val password: String,
+    val scope: String="",
+    val client_id: String="",
+    val client_secret: String=""
+)
+
+data class LoginResponse(
+    val access_token: String,
+    val token_type: String
+)
+
+data class RegisterResponse(
+    val username: String
+)
+
+
