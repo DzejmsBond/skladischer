@@ -26,7 +26,7 @@ env:
     configMapKey: "ALGORITHM"
   aSecretKey:
     secretName: "secret-key"
-    secretKey: "SECRET_KEY""
+    secretKey: "SECRET_KEY"
 
 
 
