@@ -8,18 +8,18 @@ from ..services.code_utils import check_reachable
 router = APIRouter()
 
 @router.get("/liveness", status_code=200, response_class=PlainTextResponse)
-def health():
+async def health():
     """
     This endpoint allows liveness check for Kubernetes clusters.
     """
 
-    if not check_reachable():
+    if not await check_reachable():
         raise HTTPException(status_code=400, detail="QR code api not reachable.")
     return "Status OK."
 
 # NOTE: Currently no special init conditions.
 @router.get("/readiness", status_code=200, response_class=PlainTextResponse)
-def readiness():
+async def readiness():
     """
     This endpoint allows rediness check for Kubernetes clusters.
     """

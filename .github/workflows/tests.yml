@@ -30,13 +30,13 @@ jobs:
 
       - name: Generate Proto Files and Install Module.
         run: |
-          pip install -e ./proto
+          pip install -e ./skladischer_proto
           make generate-proto-files
           echo "PYTHONPATH=$(pwd)">>$GITHUB_ENV
           
       - name: Install Auth Module.
         run: |
-          pip install -e ./auth
+          pip install -e ./skladischer_auth
 
       - name: Run Tests for Storage MS.
         env:

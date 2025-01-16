@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="auth",
+    name="skladischer_auth",
     version="0.1.0",
     packages=find_packages()
 )

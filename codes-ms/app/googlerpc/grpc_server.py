@@ -9,9 +9,9 @@ from ..services import code_utils as utils
 # GRPC Logic.
 import asyncio
 from concurrent import futures
-from proto import code_ms_pb2_grpc as pb_grpc
-from proto import code_ms_pb2 as pb
-from proto.config import PORT_CODE
+from skladischer_proto import code_ms_pb2_grpc as pb_grpc
+from skladischer_proto import code_ms_pb2 as pb
+from skladischer_proto.config import PORT_CODE
 import grpc
 
 class CodeService(pb_grpc.CodeServiceServicer):

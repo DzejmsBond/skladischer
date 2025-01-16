@@ -6,8 +6,8 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import PlainTextResponse
 
 # OAuth2 authentication dependencies.
-from auth.token_bearer import JWTBearer
-from auth.token_utils import validate_token_with_username
+from skladischer_auth.token_bearer import JWTBearer
+from skladischer_auth.token_utils import validate_token_with_username
 
 # Internal dependencies.
 from ..services import sensor_utils as utils

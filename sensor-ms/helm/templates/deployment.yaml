@@ -87,6 +87,26 @@ spec:
                 configMapKeyRef:
                   key: {{ .Values.env.rabbitHost.configMapKey }}
                   name: {{ .Values.env.rabbitHost.configMapName}}
+            - name: ALGORITHM
+              valueFrom:
+                configMapKeyRef:
+                  key: {{ .Values.env.algorithm.configMapKey }}
+                  name: {{ .Values.env.algorithm.configMapName}}
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: {{ .Values.env.aSecretKey.secretKey }}
+                  name: {{ .Values.env.aSecretKey.secretName }}
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  key: {{ .Values.env.rabbitUser.secretKey }}
+                  name: {{ .Values.env.rabbitUser.secretName }}
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: {{ .Values.env.rabbitPass.secretKey }}
+                  name: {{ .Values.env.rabbitPass.secretName }}
 
 
 

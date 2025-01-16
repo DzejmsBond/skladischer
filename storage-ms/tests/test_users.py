@@ -12,7 +12,7 @@ from app.helpers import ErrorResponse as Err
 from app.helpers import get_collection as gc
 from .helpers import get_collection, USERNAME, DISPLAYNAME
 
-from auth.token_utils import create_access_token
+from skladischer_auth.token_utils import create_access_token
 
 # NOTE: If the function passed to the patch should mimic an async one use:
 # CODE: AsyncMock(return_value=get_collection())

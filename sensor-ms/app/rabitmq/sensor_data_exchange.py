@@ -6,7 +6,7 @@ import pika
 import json
 
 # Internal dependencies.
-from ..config import RABBITMQ_HOST
+from ..config import RABBITMQ_HOST, RABBITMQ_PASSWORD, RABBITMQ_USER
 from ..helpers.error import ErrorResponse as Err
 from ..services import sensor_data_utils, user_utils
 from ..schemas.user_schemas import GetSensorData
@@ -41,7 +41,9 @@ async def send_to_channel(data: dict) -> str | Err:
         if not processed_data:
             return Err(message="Sensor processed.")
 
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST))
+        credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASSWORD)
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST,
+                                                                       credentials=credentials))
         channel = connection.channel()
         channel.exchange_declare(exchange=EXCHANGE_NAME, exchange_type=EXCHANGE_TYPE)
 
@@ -68,7 +70,9 @@ async def receive_from_channel(username: str) -> GetSensorData | Err:
     """
 
     try:
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST))
+        credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASSWORD)
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST,
+                                                                       credentials=credentials))
         channel = connection.channel()
         channel.exchange_declare(exchange=EXCHANGE_NAME, exchange_type=EXCHANGE_TYPE)
 

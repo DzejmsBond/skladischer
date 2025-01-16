@@ -25,4 +25,8 @@ echo "password: $password"
 kubectl port-forward "service/rabbit" 15672
 ```
 
+Grafana:
 
+`helm install grafana grafana/grafana --namespace monitoring`
+
+`helm upgrade grafana grafana/grafana -f values.yaml -n monitoring`

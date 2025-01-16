@@ -11,7 +11,7 @@ from app.schemas import storage_schemas, user_schemas, item_schemas
 from app.helpers import ErrorResponse as Err
 from app.helpers import get_collection as gc
 
-from auth.token_utils import create_access_token
+from skladischer_auth.token_utils import create_access_token
 
 from .helpers import (
     get_collection,
