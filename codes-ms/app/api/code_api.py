@@ -37,9 +37,6 @@ async def create_code(code_schema : schema.CodeCreate, token : str = Depends(tok
         PlainTextResponse: The encoded QR code image in string format.
     """
 
-    if not validate_token_with_username(username, token):
-        raise HTTPException(status_code=401, detail="Token username missmatch.")
-
     result = await utils.create_code(code_schema)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)

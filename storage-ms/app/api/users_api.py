@@ -38,9 +38,6 @@ async def create_user(user_schema : schema.UserCreate, token : str = Depends(tok
         PlainTextResponse: The username if the user is created successfully.
     """
 
-    if not validate_token_with_username(username, token):
-        raise HTTPException(status_code=401, detail="Token username missmatch.")
-
     result = await utils.create_user(user_schema)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
@@ -63,7 +60,7 @@ async def get_user(username: str, token : str = Depends(token_bearer)):
         User: The retrieved user details.
     """
 
-    if not validate_token_with_username(username, token):
+    if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
     result = await utils.get_user(username)
@@ -88,7 +85,7 @@ async def delete_user(username: str, token : str = Depends(token_bearer)):
         PlainTextResponse: The username if the user is deleted successfully.
     """
 
-    if not validate_token_with_username(username, token):
+    if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
     result = await utils.delete_user(username)
@@ -114,7 +111,7 @@ async def update_display_name(username: str, new_name : str, token : str = Depen
         PlainTextResponse: The username if the users display name is updated successfully.
     """
 
-    if not validate_token_with_username(username, token):
+    if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
     result = await utils.update_display_name(username, new_name)
@@ -139,7 +136,7 @@ async def empty_storages(username: str, token : str = Depends(token_bearer)):
         PlainTextResponse: The username if the user storages are emptied successfully.
     """
 
-    if not validate_token_with_username(username, token):
+    if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
     result = await utils.empty_storages(username)

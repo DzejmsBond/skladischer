@@ -33,6 +33,10 @@ jobs:
           pip install -e ./proto
           make generate-proto-files
           echo "PYTHONPATH=$(pwd)">>$GITHUB_ENV
+          
+      - name: Install Auth Module.
+        run: |
+          pip install -e ./auth
 
       - name: Run Tests for Storage MS.
         env:

@@ -61,7 +61,7 @@ async def get_sensor_data(username: str, token : str = Depends(token_bearer) ):
         HTTPException: If an error occurs while retrieving or processing data.
     """
 
-    if not validate_token_with_username(username, token):
+    if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
     result = await receive_from_channel(username)

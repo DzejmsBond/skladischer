@@ -41,7 +41,7 @@ async def create_item(username: str, storage_name: str, item_schema: schema.Item
         PlainTextResponse: The item code if the item is created successfully.
     """
 
-    if not validate_token_with_username(username, token):
+    if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
     result = await utils.create_item(username, storage_name, item_schema)
@@ -68,7 +68,7 @@ async def get_item(username: str, storage_name: str, item_code: str, token : str
         Item: The retrieved item details.
     """
 
-    if not validate_token_with_username(username, token):
+    if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
     result = await utils.get_item(username, storage_name, item_code)
@@ -97,7 +97,7 @@ async def delete_item(username: str, storage_name: str, item_code: str, token : 
         PlainTextResponse: The item code if the item is deleted successfully.
     """
 
-    if not validate_token_with_username(username, token):
+    if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
     result = await utils.delete_item(username, storage_name, item_code)
@@ -125,7 +125,7 @@ async def update_item(username: str, storage_name: str,  item_code: str, item : 
         PlainTextResponse: The item code if the item is updated successfully.
     """
 
-    if not validate_token_with_username(username, token):
+    if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
     result = await utils.update_item(username, storage_name, item_code, item)

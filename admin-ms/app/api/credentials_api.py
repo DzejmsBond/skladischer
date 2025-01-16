@@ -84,9 +84,8 @@ async def delete_credentials(username: str, token: str = Depends(auth_schema)):
         PlainTextResponse: The username if the user is deleted successfully.
     """
 
-    validation = await validate_token_with_username(username, token)
-    if isinstance(validation, Err):
-        raise HTTPException(status_code=validation.code, detail=validation.message)
+    if not await validate_token_with_username(username, token):
+        raise HTTPException(status_code=401, detail="Token username missmatch.")
 
     result = await utils.delete_credentials(username)
     if isinstance(result, Err):
@@ -111,9 +110,8 @@ async def update_password(username: str, password: str, token: str = Depends(aut
         PlainTextResponse: The username if the password is updated successfully.
     """
 
-    validation = await validate_token_with_username(username, token)
-    if isinstance(validation, Err):
-        raise HTTPException(status_code=validation.code, detail=validation.message)
+    if not await validate_token_with_username(username, token):
+        raise HTTPException(status_code=401, detail="Token username missmatch.")
 
     result = await utils.update_password(username, password)
     if isinstance(result, Err):

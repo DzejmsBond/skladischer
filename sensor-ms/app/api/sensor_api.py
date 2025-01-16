@@ -38,7 +38,7 @@ async def create_temperature_sensor(username: str, sensor_schema: schema.Tempera
         PlainTextResponse: The sensor name if it is created successfully.
     """
 
-    if not validate_token_with_username(username, token):
+    if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
     result = await utils.create_temperature_sensor(username, sensor_schema)
@@ -64,7 +64,7 @@ async def create_humidity_sensor(username: str, sensor_schema: schema.HumiditySe
         PlainTextResponse: The sensor name if it is created successfully.
     """
 
-    if not validate_token_with_username(username, token):
+    if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
     result = await utils.create_humidity_sensor(username, sensor_schema)
@@ -90,7 +90,7 @@ async def create_door_sensor(username: str, sensor_schema: schema.DoorSensorCrea
         PlainTextResponse: The sensor name if it is created successfully.
     """
 
-    if not validate_token_with_username(username, token):
+    if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
     result = await utils.create_door_sensor(username, sensor_schema)
@@ -116,7 +116,7 @@ async def get_sensor(username: str, sensor_name: str, token : str = Depends(toke
         PlainTextResponse: The sensor details if it is fetched successfully.
     """
 
-    if not validate_token_with_username(username, token):
+    if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
     result = await utils.get_sensor(username, sensor_name)
@@ -142,7 +142,7 @@ async def delete_sensor(username: str, sensor_name: str, token : str = Depends(t
         PlainTextResponse: The sensor name if it is deleted successfully.
     """
 
-    if not validate_token_with_username(username, token):
+    if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
     result = await utils.delete_sensor(username, sensor_name)
@@ -169,7 +169,7 @@ async def update_sensor_name(username: str, sensor_name: str, new_name: str, tok
         PlainTextResponse: The sensor name if it is updated successfully.
     """
 
-    if not validate_token_with_username(username, token):
+    if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
     result = await utils.update_sensor_name(username, sensor_name, new_name)
