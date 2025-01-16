@@ -8,6 +8,7 @@ COPY admin-ms /app
 COPY skladischer_proto /app/skladischer_proto
 COPY skladischer_auth /app/skladischer_auth
 copy Makefile /app/
+ENV GOOGLE_CLOUD_LOGGING=true
 
 RUN export PYTHONPATH=. && pip install --no-cache-dir -r requirements.txt
 
