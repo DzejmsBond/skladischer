@@ -21,3 +21,5 @@ CODES_MS_HOST = os.getenv("CODES_MS_HOST")
 # Authorization.
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
+
+GOOGLE_CLOUD_LOGGING = os.getenv("GOOGLE_CLOUD_LOGGING")
