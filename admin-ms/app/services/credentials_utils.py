@@ -129,19 +129,19 @@ async def delete_credentials(username: str) -> Err | str:
         # TODO: Improve this rollback.
         result = await delete_storage_user(username)
         if isinstance(result, Err):
-            logging.debug(f"Deleting user failed {credentials.username} - rollback needed.")
+            logging.debug(f"Deleting user failed {username} - rollback needed.")
             return result
 
         result = await delete_sensor_user(username)
         if isinstance(result, Err):
-            logging.debug(f"Deleting user failed {credentials.username} - rollback needed.")
+            logging.debug(f"Deleting user failed {username} - rollback needed.")
             return result
 
         result = await db_admin.delete_one({"username": username})
         if not result.acknowledged or result.deleted_count == 0:
             return Err(message=f"Deleting user '{username}' failed.")
 
-        logging.debug(f"User deleted: {credentials.username}.")
+        logging.debug(f"User deleted: {username}.")
         return username
 
     except Exception as e:

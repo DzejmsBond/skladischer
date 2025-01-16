@@ -1,6 +1,9 @@
 # Author: Jure
 # Date created: 4.12.2024
 
+# Logging default library.
+import logging
+
 from ..schemas import storage_schemas as schema
 from ..models.storage import Storage
 from ..helpers.database_helpers import get_collection
