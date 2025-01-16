@@ -26,7 +26,7 @@ async def validate_token(token: str) -> bool:
         return False
 
 async def validate_token_with_username(username, token) -> bool:
-    if not validate_token(token):
+    if not await validate_token(token):
         return False
 
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
