@@ -1,15 +1,16 @@
 # Author: Nina Mislej
 # Date created: 13.01.2025
 
-# Logging default library.
-import logging
-
 from typing import Any
 from ..schemas import user_schemas as schema
 from ..models.user import User
 from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
 from ..models.sensors import DOOR
+
+# logger default library.
+from ..logger_setup import get_logger
+logger = get_logger("sensor-ms.services")
 
 async def create_user(user : schema.UserCreate) -> Err | str:
     """
@@ -40,11 +41,11 @@ async def create_user(user : schema.UserCreate) -> Err | str:
         if not result.acknowledged:
             return Err(message=f"Creating user failed.")
 
-        logging.info(f"Created user: {user.username}")
+        logger.info(f"Created user: {user.username}")
         return str(user.username)
 
     except Exception as e:
-        logging.warning(f"Failed creating user: {e}")
+        logger.warning(f"Failed creating user: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
@@ -73,7 +74,7 @@ async def get_user(username : str) -> Err | dict:
         return result
 
     except Exception as e:
-        logging.warning(f"Failed getting user: {e}")
+        logger.warning(f"Failed getting user: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
@@ -100,11 +101,11 @@ async def delete_user(username : str) -> Err | str:
         if not result.acknowledged:
             return Err(message=f"Deleting user '{username}' failed.")
 
-        logging.info(f"Deleted user: {username}")
+        logger.info(f"Deleted user: {username}")
         return username
 
     except Exception as e:
-        logging.warning(f"Failed deleting user: {e}")
+        logger.warning(f"Failed deleting user: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def delete_sensors(username : str) -> Err | str:
@@ -138,7 +139,7 @@ async def delete_sensors(username : str) -> Err | str:
         return username
 
     except Exception as e:
-        logging.warning(f"Failed deleting all user sensors: {e}")
+        logger.warning(f"Failed deleting all user sensors: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def get_all_door_sensors(username : str) -> Err | list:
@@ -175,5 +176,5 @@ async def get_all_door_sensors(username : str) -> Err | list:
         return result
 
     except Exception as e:
-        logging.warning(f"Failed getting all door sensors: {e}")
+        logger.warning(f"Failed getting all door sensors: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)

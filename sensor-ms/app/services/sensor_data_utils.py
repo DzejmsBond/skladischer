@@ -1,9 +1,6 @@
 # Author: Nina Mislej
 # Date created: 13.01.2025
 
-# Logging default library.
-import logging
-
 from ..schemas import sensor_schemas, user_schemas
 from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
@@ -18,6 +15,10 @@ from ..models.sensors import (
 
 from ..models.sensors import TEMPERATURE, HUMIDITY, DOOR
 from datetime import datetime, timezone
+
+# logger default library.
+from ..logger_setup import get_logger
+logger = get_logger("sensor-ms.services")
 
 async def process_queue(username: str, queue: list) -> Err | user_schemas.GetSensorData:
     """
@@ -44,7 +45,7 @@ async def process_queue(username: str, queue: list) -> Err | user_schemas.GetSen
         return response
 
     except Exception as e:
-        logging.warning(f"Processing message queue failure: {e}")
+        logger.warning(f"Processing message queue failure: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def pre_process_data(data: dict) -> Err | dict | None:
@@ -75,7 +76,7 @@ async def pre_process_data(data: dict) -> Err | dict | None:
             return await process_door(data.get("username"), sensor)
 
     except Exception as e:
-        logging.warning(f"Preprocessing message from sensor failure: {e}")
+        logger.warning(f"Preprocessing message from sensor failure: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def post_process_data(data: dict, response: user_schemas.GetSensorData) -> None | Err:
@@ -100,7 +101,7 @@ async def post_process_data(data: dict, response: user_schemas.GetSensorData) ->
             return await process_humidity(data, sensor, response)
 
     except Exception as e:
-        logging.warning(f"Postprocessing message from sensor failure: {e}")
+        logger.warning(f"Postprocessing message from sensor failure: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def get_valid_sensor(data: dict) -> Tuple[str, Sensor] | Err:
@@ -142,7 +143,7 @@ async def get_valid_sensor(data: dict) -> Tuple[str, Sensor] | Err:
         return stored_data["type"], sensor
 
     except Exception as e:
-        logging.warning(f"Getting sensor metadata failure: {e}")
+        logger.warning(f"Getting sensor metadata failure: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def process_door(username: str, sensor: Sensor) -> Err | str :
@@ -173,7 +174,7 @@ async def process_door(username: str, sensor: Sensor) -> Err | str :
         return sensor.name
 
     except Exception as e:
-        logging.debug(f"Failed processing door sensor: {e}")
+        logger.debug(f"Failed processing door sensor: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def process_temperature(data: dict, sensor: Sensor, response: user_schemas.GetSensorData) -> None | Err:
@@ -211,7 +212,7 @@ async def process_temperature(data: dict, sensor: Sensor, response: user_schemas
             return None
 
     except Exception as e:
-        logging.debug(f"Failed processing temperature sensor: {e}")
+        logger.debug(f"Failed processing temperature sensor: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def process_humidity(data: dict, sensor: Sensor, response: user_schemas.GetSensorData) -> None | Err:
@@ -249,5 +250,5 @@ async def process_humidity(data: dict, sensor: Sensor, response: user_schemas.Ge
             return None
 
     except Exception as e:
-        logging.debug(f"Failed processing humidity sensor: {e}")
+        logger.debug(f"Failed processing humidity sensor: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)

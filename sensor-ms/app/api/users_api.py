@@ -15,6 +15,10 @@ from ..services import user_utils as utils
 from ..models.user import User
 from ..helpers.error import ErrorResponse as Err
 
+# Logging default library.
+from ..logger_setup import get_logger
+logger = get_logger("sensor-ms.api")
+
 token_bearer = JWTBearer()
 
 router = APIRouter(
@@ -38,6 +42,7 @@ async def create_user(user_schema : schema.UserCreate, token : str = Depends(tok
         PlainTextResponse: The username if the user is created successfully.
     """
 
+    logger.debug("Create user endpoint request.")
     result = await utils.create_user(user_schema)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
@@ -60,6 +65,7 @@ async def get_user(username: str, token : str = Depends(token_bearer) ):
         User: The retrieved user details.
     """
 
+    logger.debug("Get user endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
@@ -85,6 +91,7 @@ async def delete_user(username: str, token : str = Depends(token_bearer) ):
         PlainTextResponse: The username if the user is deleted successfully.
     """
 
+    logger.debug("Delete user endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
@@ -110,6 +117,7 @@ async def delete_sensors(username: str, token : str = Depends(token_bearer) ):
         PlainTextResponse: The username if the user sensors are deleted successfully.
     """
 
+    logger.debug("Delete user sensors endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 

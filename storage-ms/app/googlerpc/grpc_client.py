@@ -1,9 +1,6 @@
 # Author: Nina Mislej
 # Date created: 5.12.2024
 
-# Logging default library.
-import logging
-
 # Internal dependencies.
 from ..config import CODES_MS_HOST
 
@@ -13,6 +10,10 @@ from skladischer_proto import code_ms_pb2_grpc as pb_grpc
 from skladischer_proto import code_ms_pb2 as pb
 from skladischer_proto.config import PORT_CODE
 import grpc
+
+# logger default library.
+from ..logger_setup import get_logger
+logger = get_logger("storage-ms.googlerpc")
 
 async def create_code(item_code : str) -> str:
     """
@@ -31,5 +32,5 @@ async def create_code(item_code : str) -> str:
             response = await stub.CreateCode(pb.CodeRequest(item_code=item_code))
         return response.image_base64
     except Exception as e:
-        logging.warning(f"RPC failure: {e}")
+        logger.warning(f"RPC failure: {e}")
         return Err(message=f"RPC Client Error: {e}", code=400)

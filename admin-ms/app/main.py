@@ -6,13 +6,14 @@ import asyncio
 import uvicorn
 from fastapi import FastAPI
 
-# Logging default library.
-import logging
-
 # Internal dependencies.
 from .api import (
     credentials_api,
     health_check_api)
+
+# Logging default library.
+from .logger_setup import get_logger
+logger = get_logger("admin-ms.main")
 
 app = FastAPI(
     title="Admin Managment Microservice",
@@ -20,17 +21,6 @@ app = FastAPI(
     redoc_url="/credentials/redoc",           # Redoc UI
     openapi_url="/credentials/openapi.json"   # OpenAPI schema URL
 )
-
-# Imports the Cloud Logging client library.
-import google.cloud.logging
-
-# Instantiates a client.
-# Retrieves a Cloud Logging handler based on the environment
-# you're running in and integrates the handler with the
-# Python logging module. By default, this captures all logs
-# at INFO level and higher.
-client = google.cloud.logging.Client()
-client.setup_logging()
 
 # Include all routers and mounts.
 app.include_router(credentials_api.router)
@@ -47,7 +37,7 @@ async def main():
 
 # Run the application with asyncio.
 if __name__ == "__main__":
-    logging.info("Starting Admin Microservice.")
+    logger.info("Starting Admin Microservice.")
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     asyncio.run(main())

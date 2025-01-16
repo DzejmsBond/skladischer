@@ -14,6 +14,10 @@ from ..services import code_utils as utils
 from ..helpers.error import ErrorResponse as Err
 from ..schemas import code_schemas as schema
 
+# Logging default library.
+from ..logger_setup import get_logger
+logger = get_logger("codes-ms.api")
+
 token_bearer = JWTBearer()
 
 router = APIRouter(
@@ -37,6 +41,7 @@ async def create_code(code_schema : schema.CodeCreate, token : str = Depends(tok
         PlainTextResponse: The encoded QR code image in string format.
     """
 
+    logger.debug(f"Create code endpoint called.")
     result = await utils.create_code(code_schema)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)

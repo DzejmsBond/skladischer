@@ -16,6 +16,10 @@ from ..services import credentials_utils as utils
 from ..helpers.error import ErrorResponse as Err
 from ..models.token import Token
 
+# Logging default library.
+from ..logger_setup import get_logger
+logger = get_logger("admin-ms.api")
+
 router = APIRouter(
     prefix="/credentials",
     tags=["credentials"]
@@ -41,6 +45,7 @@ async def create_credentials(credentials: OAuth2PasswordRequestForm = Depends())
         PlainTextResponse: The username if the user is created successfully.
     """
 
+    logger.debug(f"Request to create credentials.")
     result = await utils.create_credentials(credentials)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
@@ -62,6 +67,7 @@ async def validate_credentials(credentials: OAuth2PasswordRequestForm = Depends(
         Token: The retrieved username.
     """
 
+    logger.debug(f"Request to create login endpoint.")
     result = await utils.validate_credentials(credentials)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)
@@ -84,6 +90,7 @@ async def delete_credentials(username: str, token: str = Depends(auth_schema)):
         PlainTextResponse: The username if the user is deleted successfully.
     """
 
+    logger.debug(f"Request to delete credentials.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
@@ -110,6 +117,7 @@ async def update_password(username: str, password: str, token: str = Depends(aut
         PlainTextResponse: The username if the password is updated successfully.
     """
 
+    logger.debug(f"Request to update password.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 

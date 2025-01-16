@@ -15,6 +15,11 @@ from ..services import storage_utils as utils
 from ..models.storage import Storage
 from ..helpers.error import ErrorResponse as Err
 
+
+# Logging default library.
+from ..logger_setup import get_logger
+logger = get_logger("storage-ms.api")
+
 token_bearer = JWTBearer()
 
 router = APIRouter(
@@ -39,6 +44,7 @@ async def create_storage(username: str, storage_schema : schema.StorageCreate, t
         PlainTextResponse: The storage name if the storage is created successfully.
     """
 
+    logger.debug("Create storage endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
@@ -65,6 +71,7 @@ async def get_storage(username: str, storage_name: str, token : str = Depends(to
         Storage: The retrieved storage details.
     """
 
+    logger.debug("Get storage endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
@@ -91,6 +98,7 @@ async def delete_storage(username: str, storage_name: str, token : str = Depends
         PlainTextResponse: The storage name if the storage is deleted successfully.
     """
 
+    logger.debug("Delete storage endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
@@ -118,6 +126,7 @@ async def update_storage_name(username: str, storage_name: str, new_name : str, 
         PlainTextResponse: The storage name if the storage name is updated successfully.
     """
 
+    logger.debug("Update storage endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
@@ -144,6 +153,7 @@ async def empty_storage(username: str, storage_name: str, token : str = Depends(
         PlainTextResponse: The storage name if the storage is emptied successfully.
     """
 
+    logger.debug("Empty storage endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 

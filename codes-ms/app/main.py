@@ -1,9 +1,6 @@
 # Author: Nina Mislej
 # Date created: 08.01.2025
 
-# Logging default library.
-import logging
-
 # REST and GRPC dependencies.
 import asyncio
 import uvicorn
@@ -23,16 +20,9 @@ app = FastAPI(
     openapi_url="/codes/openapi.json"   # OpenAPI schema URL
 )
 
-# Imports the Cloud Logging client library.
-import google.cloud.logging
-
-# Instantiates a client.
-# Retrieves a Cloud Logging handler based on the environment
-# you're running in and integrates the handler with the
-# Python logging module. By default, this captures all logs
-# at INFO level and higher.
-client = google.cloud.logging.Client()
-client.setup_logging()
+# Logging default library.
+from .logger_setup import get_logger
+logger = get_logger("codes-ms.main")
 
 # Include all routers and mounts.
 app.include_router(code_api.router)
@@ -52,7 +42,7 @@ async def main():
 
 # Run the application with asyncio.
 if __name__ == "__main__":
-    logging.info("Starting Item Code Microservice.")
+    logger.info("Starting Item Code Microservice.")
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     asyncio.run(main())

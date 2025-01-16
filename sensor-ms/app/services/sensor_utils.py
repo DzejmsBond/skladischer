@@ -1,15 +1,16 @@
 # Author: Nina Mislej
 # Date created: 13.01.2025
 
-# Logging default library.
-import logging
-
 from typing import Any, Mapping
 
 from ..schemas import sensor_schemas as schema
 from ..models.sensors import HumiditySensor, DoorSensor, TemperatureSensor, Sensor
 from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
+
+# logger default library.
+from ..logger_setup import get_logger
+logger = get_logger("sensor-ms.services")
 
 async def create_humidity_sensor(username: str, sensor : schema.HumiditySensorCreate) -> Err | str:
     """
@@ -49,7 +50,7 @@ async def create_humidity_sensor(username: str, sensor : schema.HumiditySensorCr
         return sensor.name
 
     except Exception as e:
-        logging.warning(f"Failed creating humidity sensor: {e}")
+        logger.warning(f"Failed creating humidity sensor: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def create_temperature_sensor(username: str, sensor : schema.TemperatureSensorCreate) -> Err | str:
@@ -90,7 +91,7 @@ async def create_temperature_sensor(username: str, sensor : schema.TemperatureSe
         return sensor.name
 
     except Exception as e:
-        logging.warning(f"Failed creating temperature sensor: {e}")
+        logger.warning(f"Failed creating temperature sensor: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def create_door_sensor(username: str, sensor : schema.DoorSensorCreate) -> Err | str:
@@ -130,7 +131,7 @@ async def create_door_sensor(username: str, sensor : schema.DoorSensorCreate) ->
         return sensor.name
 
     except Exception as e:
-        logging.warning(f"Failed creating door sensor: {e}")
+        logger.warning(f"Failed creating door sensor: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
@@ -176,7 +177,7 @@ async def get_sensor(username: str, name : str) -> Err | dict:
         return schema.GetSensor(name=result_dict["name"], data=result_dict["data"]).model_dump()
 
     except Exception as e:
-        logging.warning(f"Failed aquiring sensor: {e}")
+        logger.warning(f"Failed aquiring sensor: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
@@ -209,7 +210,7 @@ async def delete_sensor(username : str, name : str) -> Err | str:
         return name
 
     except Exception as e:
-        logging.warning(f"Failed deleting sensor: {e}")
+        logger.warning(f"Failed deleting sensor: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
@@ -245,5 +246,5 @@ async def update_sensor_name(username : str, name : str, new_name : str) -> Err 
         return new_name
 
     except Exception as e:
-        logging.warning(f"Failed updating sensor name: {e}")
+        logger.warning(f"Failed updating sensor name: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)

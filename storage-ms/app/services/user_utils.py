@@ -1,15 +1,16 @@
 # Author: Jure
 # Date created: 4.12.2024
 
-# Logging default library.
-import logging
-
 from typing import Any, Mapping
 
 from ..schemas import user_schemas as schema
 from ..models.user import User
 from ..helpers.database_helpers import get_collection
 from ..helpers.error import ErrorResponse as Err
+
+# logger default library.
+from ..logger_setup import get_logger
+logger = get_logger("storage-ms.services")
 
 # TODO: What would be better than None?
 #       Returning 'user' seems to be misleading because it is not really part of the result.
@@ -43,12 +44,12 @@ async def create_user(user : schema.UserCreate) -> Err | str:
         if not result.acknowledged:
             return Err(message=f"Creating user failed.")
 
-        logging.debug(f"User '{user.username}' created.")
+        logger.debug(f"User '{user.username}' created.")
         return str(user.username)
 
     # TODO: Should the end user know what error happened internally?
     except Exception as e:
-        logging.warning(f"Could not create user: {e}")
+        logger.warning(f"Could not create user: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
@@ -77,7 +78,7 @@ async def get_user(username : str) -> Err | dict:
         return result
 
     except Exception as e:
-        logging.warning(f"Could not get user: {e}")
+        logger.warning(f"Could not get user: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 
@@ -106,7 +107,7 @@ async def delete_user(username : str) -> Err | str:
         return username
 
     except Exception as e:
-        logging.warning(f"Could not delete user: {e}")
+        logger.warning(f"Could not delete user: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def update_display_name(username : str, new_name : str) -> Err | str:
@@ -138,7 +139,7 @@ async def update_display_name(username : str, new_name : str) -> Err | str:
         return username
 
     except Exception as e:
-        logging.warning(f"Could not update user: {e}")
+        logger.warning(f"Could not update user: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)
 
 async def empty_storages(username : str) -> Err | str:
@@ -170,9 +171,9 @@ async def empty_storages(username : str) -> Err | str:
         if result.matched_count == 0:
             return Err(message=f"Couldnt match to any record in datbabase.")
 
-        logging.debug(f"User '{username}' deleted.")
+        logger.debug(f"User '{username}' deleted.")
         return username
 
     except Exception as e:
-        logging.warning(f"Could not empty user's storages: {e}")
+        logger.warning(f"Could not empty user's storages: {e}")
         return Err(message=f"Unknown exception: {e}", code=500)

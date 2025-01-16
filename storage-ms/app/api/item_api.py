@@ -15,6 +15,10 @@ from ..models.item import Item
 from ..services import item_utils as utils
 from ..helpers.error import ErrorResponse as Err
 
+# Logging default library.
+from ..logger_setup import get_logger
+logger = get_logger("storage-ms.api")
+
 token_bearer = JWTBearer()
 
 router = APIRouter(
@@ -41,6 +45,7 @@ async def create_item(username: str, storage_name: str, item_schema: schema.Item
         PlainTextResponse: The item code if the item is created successfully.
     """
 
+    logger.debug("Create item endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
@@ -68,6 +73,7 @@ async def get_item(username: str, storage_name: str, item_code: str, token : str
         Item: The retrieved item details.
     """
 
+    logger.debug("Get item endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
@@ -97,6 +103,7 @@ async def delete_item(username: str, storage_name: str, item_code: str, token : 
         PlainTextResponse: The item code if the item is deleted successfully.
     """
 
+    logger.debug("Delete item endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
@@ -125,6 +132,7 @@ async def update_item(username: str, storage_name: str,  item_code: str, item : 
         PlainTextResponse: The item code if the item is updated successfully.
     """
 
+    logger.debug("Update item endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 

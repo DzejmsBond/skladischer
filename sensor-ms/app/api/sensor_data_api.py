@@ -16,6 +16,10 @@ from ..rabitmq.sensor_data_exchange import (
     send_to_channel,
     receive_from_channel)
 
+# Logging default library.
+from ..logger_setup import get_logger
+logger = get_logger("sensor-ms.api")
+
 token_bearer = JWTBearer()
 
 router = APIRouter(
@@ -61,6 +65,7 @@ async def get_sensor_data(username: str, token : str = Depends(token_bearer) ):
         HTTPException: If an error occurs while retrieving or processing data.
     """
 
+    logger.debug("Get sensor data for user endpoint request.")
     if not await validate_token_with_username(username, token):
         raise HTTPException(status_code=401, detail="Token username missmatch.")
 
