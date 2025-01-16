@@ -31,10 +31,10 @@ async def create_humidity_sensor(username: str, sensor : schema.HumiditySensorCr
         data = HumiditySensor(max_humidity=sensor.max_humidity,
                                       min_humidity=sensor.min_humidity)
 
-        sensor_dict = Sensor(name=sensor.name, data=data)
-
         if not isinstance(await get_sensor(username, sensor.name), Err):
             return Err(message=f"Sensor name '{sensor.name}' already exists and cannot be created.", code=409)
+
+        sensor_dict = Sensor(name=sensor.name, data=data).model_dump()
 
         result = await db_users.update_one({"username": username},
                                            {"$push": {"sensors": sensor_dict}})
@@ -71,7 +71,7 @@ async def create_temperature_sensor(username: str, sensor : schema.TemperatureSe
         data = TemperatureSensor(max_temperature=sensor.max_temperature,
                                 min_temperature=sensor.min_temperature)
 
-        sensor_dict = Sensor(name=sensor.name, data=data)
+        sensor_dict = Sensor(name=sensor.name, data=data).model_dump()
 
         if not isinstance(await get_sensor(username, sensor.name), Err):
             return Err(message=f"Sensor name '{sensor.name}' already exists and cannot be created.", code=409)
@@ -109,10 +109,11 @@ async def create_door_sensor(username: str, sensor : schema.DoorSensorCreate) ->
             return Err(message=f"Cannot get DB collection.")
 
         data = DoorSensor(description=sensor.description)
-        sensor_dict = Sensor(name=sensor.name, data=data)
 
         if not isinstance(await get_sensor(username, sensor.name), Err):
             return Err(message=f"Sensor name '{sensor.name}' already exists and cannot be created.", code=409)
+
+        sensor_dict = Sensor(name=sensor.name, data=data).model_dump()
 
         result = await db_users.update_one({"username": username},
                                            {"$push": {"sensors": sensor_dict}})

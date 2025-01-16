@@ -64,4 +64,4 @@ jobs:
           DATABASE_NAME: ${{ vars.DATABASE_NAME }}
           COLLECTION: ${{ vars.COLLECTION_SENSORS }}
         run: |
-          pytest admin-ms/tests
+          pytest sensor-ms/tests

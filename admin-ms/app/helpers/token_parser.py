@@ -7,7 +7,7 @@ from jwt import InvalidTokenError
 from .error import ErrorResponse as Err
 from ..config import SECRET_KEY, ALGORITHM
 
-async def validate_token(token: str, username: str) -> dict | Err:
+async def validate_token(token: str, username: str) -> None | Err:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         if "username" not in payload:

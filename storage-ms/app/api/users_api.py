@@ -47,13 +47,12 @@ async def create_user(user_schema : schema.UserCreate):
     return result
 
 @router.get("/{username}", response_model=User)
-async def get_user(username: str, token: Annotated[str, Depends(auth_schema)]):
+async def get_user(username: str):
     """
     This endpoint fetches the details of a user from the system.
 
     Args:
         username (str): The username of the user to retrieve.
-        token (str): Access bearer token.
 
     Raises:
         HTTPException: If an error occurs during user retrieval.
@@ -61,9 +60,7 @@ async def get_user(username: str, token: Annotated[str, Depends(auth_schema)]):
     Returns:
         User: The retrieved user details.
     """
-    validation = await validate_token(token, username)
-    if isinstance(validation, Err):
-        raise HTTPException(status_code=validation.code, detail=validation.message)
+
     result = await utils.get_user(username)
     if isinstance(result, Err):
         raise HTTPException(status_code=result.code, detail=result.message)

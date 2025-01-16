@@ -2,18 +2,16 @@
 # Date created: 5.12.2024
 
 # REST FastAPI dependencies.
-from fastapi import APIRouter, HTTPException, Depends, Path, Form
-from fastapi.responses import PlainTextResponse
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi.responses import PlainTextResponse, JSONResponse
 
 # OAuth2 authentication dependencies.
-from typing import Annotated
 from fastapi.security import (
     OAuth2PasswordBearer,
     OAuth2PasswordRequestForm)
 
 # Internal dependencies.
 from ..services import credentials_utils as utils
-from ..models.credentials import Credentials
 from ..helpers.error import ErrorResponse as Err
 from ..helpers.token_parser import validate_token
 from ..models.token import Token
@@ -23,12 +21,13 @@ router = APIRouter(
     tags=["credentials"]
 )
 
+# This is the endpoint for authentication.
 auth_schema = OAuth2PasswordBearer(tokenUrl="login")
 
 # NOTE: High-risk security data is not sent by GET requests, best option is POST.
 
 @router.post("/create-credentials", status_code=200, response_class=PlainTextResponse)
-async def create_credentials(credentials: Annotated[OAuth2PasswordRequestForm, Depends()]):
+async def create_credentials(credentials: OAuth2PasswordRequestForm = Depends()):
     """
     This endpoint allows creating new user credentials in the system.
 
@@ -49,7 +48,7 @@ async def create_credentials(credentials: Annotated[OAuth2PasswordRequestForm, D
     return result
 
 @router.post("/login", response_model=Token)
-async def validate_credentials(credentials: Annotated[OAuth2PasswordRequestForm, Depends()]):
+async def validate_credentials(credentials: OAuth2PasswordRequestForm = Depends()):
     """
     This endpoint validates the details of a user based on their username and password.
 
@@ -70,8 +69,7 @@ async def validate_credentials(credentials: Annotated[OAuth2PasswordRequestForm,
     return result
 
 @router.post("/{username}/delete-user", status_code=200, response_class=PlainTextResponse)
-async def delete_credentials(username: Annotated[str, Path(title="Username of the user.")],
-                             token: Annotated[str, Depends(auth_schema)]):
+async def delete_credentials(username: str, token: str = Depends(auth_schema)):
     """
     This endpoint removes a user from the system by their credentials.
 
@@ -97,9 +95,7 @@ async def delete_credentials(username: Annotated[str, Path(title="Username of th
     return result
 
 @router.post("/{username}/update-password", status_code=200, response_class=PlainTextResponse)
-async def update_password(username: Annotated[str, Path(title="Username of the user.")],
-                          token: Annotated[str, Depends(auth_schema)],
-                          password: Annotated[str, Form()]):
+async def update_password(username: str, password: str, token: str = Depends(auth_schema)):
     """
     This endpoint allows updating the display name of a user.
 
